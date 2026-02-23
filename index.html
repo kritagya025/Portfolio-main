@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kritagya Yadav | Portfolio</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            bgDark: '#050505',
+            textMain: '#f4f4f5',
+            textMuted: '#a1a1aa',
+          },
+          animation: {
+            'blob': 'blob 10s infinite',
+          },
+          keyframes: {
+            blob: {
+              '0%': { transform: 'translate(0px, 0px) scale(1)' },
+              '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+              '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+              '100%': { transform: 'translate(0px, 0px) scale(1)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    body {
+      background-color: #050505;
+      color: #f4f4f5;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Cinematic Film Grain */
+    .film-grain {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Glassmorphism utility */
+    .glass {
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .text-gradient {
+      background: linear-gradient(135deg, #ffffff 0%, #71717a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Animation Delays for Background */
+    .animation-delay-2000 { animation-delay: 2s; }
+    .animation-delay-4000 { animation-delay: 4s; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #050505; }
+    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-zinc-800 selection:text-white">
+
+<div class="film-grain"></div>
+
+<div class="fixed inset-0 w-full h-full overflow-hidden -z-10">
+  <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-zinc-800/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
+  <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-indigo-900/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
+  <div class="absolute bottom-[-20%] left-[20%] w-[30rem] h-[30rem] bg-zinc-700/10 rounded-full mix-blend-screen filter blur-[120px] animate-blob animation-delay-4000"></div>
+</div>
+
+<nav class="fixed w-full z-50 glass border-x-0 border-t-0 py-4 transition-all duration-300" id="navbar">
+  <div class="max-w-6xl mx-auto flex justify-between items-center px-6">
+    <a href="#" class="text-lg font-bold tracking-tight text-white hover:text-zinc-300 transition-colors uppercase tracking-widest">
+      Kritagya Yadav
+    </a>
+    
+    <div class="hidden md:flex space-x-6 text-sm font-medium text-textMuted">
+      <a href="#about" class="hover:text-white transition-colors">About</a>
+      <a href="#skills" class="hover:text-white transition-colors">Skills</a>
+      <a href="#projects" class="hover:text-white transition-colors">Projects</a>
+    </div>
+
+    <div class="flex items-center space-x-5">
+      <a href="https://github.com/kritagya025" target="_blank" class="text-textMuted hover:text-white transition-colors">
+        <i class="fab fa-github text-xl"></i>
+      </a>
+      <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" class="text-textMuted hover:text-white transition-colors">
+        <i class="fab fa-linkedin text-xl"></i>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6">
+
+  <section id="about" class="min-h-screen flex flex-col justify-center items-center text-center pt-16">
+    <div class="max-w-3xl flex flex-col items-center">
+      
+      <div data-aos="fade-down" class="mb-8">
+        <span class="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-xs font-mono text-zinc-300 backdrop-blur-md tracking-widest uppercase">
+          Aspiring Software Engineer
+        </span>
+      </div>
+      
+      <h1 class="text-center mb-8" data-aos="zoom-out">
+        <span class="block text-3xl md:text-5xl text-zinc-400 font-light tracking-tight mb-2">Hi, I am</span>
+        <span class="inline-block text-6xl md:text-8xl lg:text-[7rem] font-black tracking-tighter text-gradient leading-none pb-2">KRITAGYA</span>
+      </h1>
+      
+      <p class="text-lg md:text-xl text-textMuted leading-relaxed mb-10 text-center" data-aos="fade-up" data-aos-delay="200">
+       I am a Computer Science student at KCCITM. I enjoy building clean web applications using Java and Python, and I have a strong interest in algorithms. I am actively learning about backend development and machine learning, always looking for new ways to solve real-world problems.
+      </p>
+      
+      <div class="flex flex-wrap justify-center gap-4" data-aos="fade-up" data-aos-delay="400">
+        <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" class="px-6 py-3 bg-white text-black text-sm font-semibold rounded-lg hover:bg-zinc-200 transition-colors duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center gap-2">
+          <i class="fab fa-linkedin text-lg"></i> Connect on LinkedIn
+        </a>
+        <a href="https://github.com/kritagya025" target="_blank" class="px-6 py-3 glass text-white text-sm font-semibold rounded-lg hover:bg-white/10 transition-colors flex items-center gap-2">
+          <i class="fab fa-github text-lg"></i> GitHub
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="skills" class="min-h-screen flex flex-col justify-center pt-16">
+    <div class="w-full">
+      <h2 class="text-3xl font-bold text-white tracking-tight mb-12" data-aos="fade-right">Technical Stack</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="glass p-10 rounded-2xl hover:border-white/20 transition-colors duration-300" data-aos="fade-up" data-aos-delay="100">
+          <h3 class="text-sm font-mono text-zinc-400 uppercase tracking-wider mb-6 flex items-center gap-2">
+            <i class="fas fa-code"></i> Core
+          </h3>
+          <div class="flex flex-wrap gap-3">
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Java</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Python</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">JavaScript</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">DSA</span>
+          </div>
+        </div>
+        
+        <div class="glass p-10 rounded-2xl hover:border-white/20 transition-colors duration-300" data-aos="fade-up" data-aos-delay="200">
+          <h3 class="text-sm font-mono text-zinc-400 uppercase tracking-wider mb-6 flex items-center gap-2">
+            <i class="fas fa-wrench"></i> Web & Tools
+          </h3>
+          <div class="flex flex-wrap gap-3">
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">HTML / CSS</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Firebase</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Git</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">GitHub</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="min-h-screen flex flex-col justify-center pt-16 pb-12">
+    <div class="w-full">
+      <h2 class="text-3xl font-bold text-white tracking-tight mb-12" data-aos="fade-right">Projects</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="group relative glass p-8 rounded-2xl hover:-translate-y-2 hover:border-white/30 transition-all duration-500 flex flex-col h-full overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all"></div>
+          
+          <div class="flex justify-between items-start mb-4 relative z-10">
+            <h3 class="text-xl font-bold text-white group-hover:text-zinc-300 transition-colors">RescueSync</h3>
+            <a href="https://github.com/kritagya025/disaster-coordination-system" target="_blank" class="text-zinc-500 hover:text-white transition-colors">
+              <i class="fab fa-github text-2xl"></i>
+            </a>
+          </div>
+          <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow relative z-10">
+            A real-time emergency coordination system built for rapid disaster response. Focuses on efficient data handling and user connectivity during crises.
+          </p>
+          <div class="flex flex-wrap gap-2 mt-auto relative z-10">
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">JavaScript</span>
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">HTML/CSS</span>
+          </div>
+        </div>
+
+        <div class="group relative glass p-8 rounded-2xl hover:-translate-y-2 hover:border-white/30 transition-all duration-500 flex flex-col h-full overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all"></div>
+
+          <div class="flex justify-between items-start mb-4 relative z-10">
+            <h3 class="text-xl font-bold text-white group-hover:text-zinc-300 transition-colors">Expense Tracker</h3>
+            <a href="https://github.com/kritagya025/Expense-Tracker" target="_blank" class="text-zinc-500 hover:text-white transition-colors">
+              <i class="fab fa-github text-2xl"></i>
+            </a>
+          </div>
+          <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow relative z-10">
+            A comprehensive financial utility to manage budgets, track spending habits, and visualize personal economy through a clean web interface.
+          </p>
+          <div class="flex flex-wrap gap-2 mt-auto relative z-10">
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">Web Development</span>
+          </div>
+        </div>
+
+        <div class="group relative glass p-8 rounded-2xl hover:-translate-y-2 hover:border-white/30 transition-all duration-500 flex flex-col h-full overflow-hidden" data-aos="fade-up" data-aos-delay="300">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all"></div>
+
+          <div class="flex justify-between items-start mb-4 relative z-10">
+            <h3 class="text-xl font-bold text-white group-hover:text-zinc-300 transition-colors">SIH Hackathon</h3>
+            <a href="https://github.com/kritagya025/SIH_Project" target="_blank" class="text-zinc-500 hover:text-white transition-colors">
+              <i class="fab fa-github text-2xl"></i>
+            </a>
+          </div>
+          <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow relative z-10">
+            Developed for the Smart India Hackathon to solve real-world logistical and technical challenges efficiently under a strict time constraint.
+          </p>
+          <div class="flex flex-wrap gap-2 mt-auto relative z-10">
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">JS/HTML/CSS</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-textMuted pb-8">
+    <p class="font-mono text-xs">© 2026 Kritagya Yadav. All rights reserved.</p>
+    <div class="flex items-center space-x-6">
+      <a href="mailto:kritagyay2005@email.com" class="hover:text-white transition-colors">Email</a>
+      <a href="https://github.com/kritagya025" target="_blank" class="hover:text-white transition-colors">GitHub</a>
+      <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" class="hover:text-white transition-colors">LinkedIn</a>
+    </div>
+  </footer>
+
+</main>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  // Initialize Animate On Scroll
+  AOS.init({ 
+    duration: 800, 
+    once: true, 
+    offset: 0,
+    easing: 'ease-out-cubic'
+  });
+
+  // Dynamic Navbar Styling on Scroll
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (window.scrollY > 20) {
+      nav.style.backgroundColor = 'rgba(5, 5, 5, 0.8)';
+      nav.style.borderBottom = '1px solid rgba(255, 255, 255, 0.08)';
+    } else {
+      nav.style.backgroundColor = 'rgba(255, 255, 255, 0.02)';
+      nav.style.borderBottom = '1px solid transparent';
+    }
+  });
+</script>
+
+</body>
+</html>
