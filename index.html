@@ -61,8 +61,8 @@
     /* Glassmorphism utility */
     .glass {
       background: rgba(255, 255, 255, 0.02);
-      backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
     }
@@ -70,6 +70,7 @@
     .text-gradient {
       background: linear-gradient(135deg, #ffffff 0%, #71717a 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
@@ -104,13 +105,17 @@
       <a href="#about" class="hover:text-white transition-colors">About</a>
       <a href="#skills" class="hover:text-white transition-colors">Skills</a>
       <a href="#projects" class="hover:text-white transition-colors">Projects</a>
+      <a href="#certifications" class="hover:text-white transition-colors">Certifications</a>
     </div>
 
     <div class="flex items-center space-x-5">
-      <a href="https://github.com/kritagya025" target="_blank" class="text-textMuted hover:text-white transition-colors">
+      <a href="Kritagya_Yadav_Resume.pdf" download="Kritagya_Yadav_Resume.pdf" class="hidden md:flex items-center gap-2 text-xs font-semibold text-zinc-300 border border-white/15 px-3 py-1.5 rounded-lg hover:bg-white/10 hover:text-white transition-colors">
+        <i class="fas fa-download text-xs"></i> Resume
+      </a>
+      <a href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer" title="GitHub Profile" class="text-textMuted hover:text-white transition-colors">
         <i class="fab fa-github text-xl"></i>
       </a>
-      <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" class="text-textMuted hover:text-white transition-colors">
+      <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" rel="noopener noreferrer" title="LinkedIn Profile" class="text-textMuted hover:text-white transition-colors">
         <i class="fab fa-linkedin text-xl"></i>
       </a>
     </div>
@@ -134,15 +139,18 @@
       </h1>
       
       <p class="text-lg md:text-xl text-textMuted leading-relaxed mb-10 text-center" data-aos="fade-up" data-aos-delay="200">
-       I am a Computer Science student at KCCITM. I enjoy building clean web applications using Java and Python, and I have a strong interest in algorithms. I am actively learning about backend development and machine learning, always looking for new ways to solve real-world problems.
+       B.Tech CSE student at KCCITM (2027) with hands-on experience building RESTful APIs using Spring Boot and MongoDB. I write clean object-oriented Java code and enjoy working with algorithms and backend systems. Eager to grow within a collaborative engineering team and contribute to scalable, production-quality solutions.
       </p>
       
       <div class="flex flex-wrap justify-center gap-4" data-aos="fade-up" data-aos-delay="400">
-        <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" class="px-6 py-3 bg-white text-black text-sm font-semibold rounded-lg hover:bg-zinc-200 transition-colors duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center gap-2">
+        <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-white text-black text-sm font-semibold rounded-lg hover:bg-zinc-200 transition-colors duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center gap-2">
           <i class="fab fa-linkedin text-lg"></i> Connect on LinkedIn
         </a>
-        <a href="https://github.com/kritagya025" target="_blank" class="px-6 py-3 glass text-white text-sm font-semibold rounded-lg hover:bg-white/10 transition-colors flex items-center gap-2">
+        <a href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer" class="px-6 py-3 glass text-white text-sm font-semibold rounded-lg hover:bg-white/10 transition-colors flex items-center gap-2">
           <i class="fab fa-github text-lg"></i> GitHub
+        </a>
+        <a href="Kritagya_Yadav_Resume.pdf" download="Kritagya_Yadav_Resume.pdf" class="px-6 py-3 glass text-white text-sm font-semibold rounded-lg hover:bg-white/10 transition-colors flex items-center gap-2 border border-white/20">
+          <i class="fas fa-download text-lg"></i> Resume
         </a>
       </div>
 
@@ -156,25 +164,59 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="glass p-10 rounded-2xl hover:border-white/20 transition-colors duration-300" data-aos="fade-up" data-aos-delay="100">
           <h3 class="text-sm font-mono text-zinc-400 uppercase tracking-wider mb-6 flex items-center gap-2">
-            <i class="fas fa-code"></i> Core
+            <i class="fas fa-code"></i> Languages
           </h3>
           <div class="flex flex-wrap gap-3">
             <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Java</span>
-            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Python</span>
             <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">JavaScript</span>
-            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">DSA</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">SQL</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">HTML / CSS</span>
+          </div>
+        </div>
+
+        <div class="glass p-10 rounded-2xl hover:border-white/20 transition-colors duration-300" data-aos="fade-up" data-aos-delay="150">
+          <h3 class="text-sm font-mono text-zinc-400 uppercase tracking-wider mb-6 flex items-center gap-2">
+            <i class="fas fa-layer-group"></i> Core Java
+          </h3>
+          <div class="flex flex-wrap gap-3">
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Collections Framework</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Streams API</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Exception Handling</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Generics</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Multithreading</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">OOP</span>
           </div>
         </div>
         
         <div class="glass p-10 rounded-2xl hover:border-white/20 transition-colors duration-300" data-aos="fade-up" data-aos-delay="200">
           <h3 class="text-sm font-mono text-zinc-400 uppercase tracking-wider mb-6 flex items-center gap-2">
-            <i class="fas fa-wrench"></i> Web & Tools
+            <i class="fas fa-server"></i> Frameworks & Databases
           </h3>
           <div class="flex flex-wrap gap-3">
-            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">HTML / CSS</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Spring Boot</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Spring Data MongoDB</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Maven</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Lombok</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">MongoDB</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">MySQL</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">PostgreSQL</span>
             <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Firebase</span>
-            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Git</span>
-            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">GitHub</span>
+          </div>
+        </div>
+
+        <div class="glass p-10 rounded-2xl hover:border-white/20 transition-colors duration-300" data-aos="fade-up" data-aos-delay="250">
+          <h3 class="text-sm font-mono text-zinc-400 uppercase tracking-wider mb-6 flex items-center gap-2">
+            <i class="fas fa-wrench"></i> Tools & Concepts
+          </h3>
+          <div class="flex flex-wrap gap-3">
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Git / GitHub</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Postman</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">IntelliJ IDEA</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">Linux CLI</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">RESTful APIs</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">MVC Architecture</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">DSA</span>
+            <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-medium hover:bg-white/10 transition-colors cursor-default">SOLID Principles</span>
           </div>
         </div>
       </div>
@@ -186,13 +228,49 @@
       <h2 class="text-3xl font-bold text-white tracking-tight mb-12" data-aos="fade-right">Projects</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div class="group relative glass p-8 rounded-2xl hover:-translate-y-2 hover:border-white/30 transition-all duration-500 flex flex-col h-full overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-900/10 rounded-full blur-3xl group-hover:bg-indigo-900/20 transition-all"></div>
+          <div class="flex justify-between items-start mb-4 relative z-10">
+            <h3 class="text-xl font-bold text-white group-hover:text-zinc-300 transition-colors">Student Management API</h3>
+            <a href="#" title="Student Management API GitHub Repository" class="text-zinc-500 hover:text-white transition-colors">
+              <i class="fab fa-github text-2xl"></i>
+            </a>
+          </div>
+          <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow relative z-10">
+            Production-style REST API with 11 endpoints supporting full CRUD, GPA-based queries, and partial search. Features global exception handling with custom exceptions and Bean Validation (JSR-303) for server-side request validation.
+          </p>
+          <div class="flex flex-wrap gap-2 mt-auto relative z-10">
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">Spring Boot</span>
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">MongoDB</span>
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">Java 17</span>
+          </div>
+        </div>
+
+        <div class="group relative glass p-8 rounded-2xl hover:-translate-y-2 hover:border-white/30 transition-all duration-500 flex flex-col h-full overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-violet-900/10 rounded-full blur-3xl group-hover:bg-violet-900/20 transition-all"></div>
+          <div class="flex justify-between items-start mb-4 relative z-10">
+            <h3 class="text-xl font-bold text-white group-hover:text-zinc-300 transition-colors">IdeaForge</h3>
+            <a href="#" title="IdeaForge GitHub Repository" class="text-zinc-500 hover:text-white transition-colors">
+              <i class="fab fa-github text-2xl"></i>
+            </a>
+          </div>
+          <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow relative z-10">
+            AI-powered startup validation platform. Built REST endpoints for idea submission and feasibility scoring. Integrated Gemini AI API to generate automated validation reports with structured JSON responses.
+          </p>
+          <div class="flex flex-wrap gap-2 mt-auto relative z-10">
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">Spring Boot</span>
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">Gemini AI</span>
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">Java</span>
+          </div>
+        </div>
         
         <div class="group relative glass p-8 rounded-2xl hover:-translate-y-2 hover:border-white/30 transition-all duration-500 flex flex-col h-full overflow-hidden" data-aos="fade-up" data-aos-delay="100">
           <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all"></div>
           
           <div class="flex justify-between items-start mb-4 relative z-10">
             <h3 class="text-xl font-bold text-white group-hover:text-zinc-300 transition-colors">RescueSync</h3>
-            <a href="https://github.com/kritagya025/disaster-coordination-system" target="_blank" class="text-zinc-500 hover:text-white transition-colors">
+            <a href="https://github.com/kritagya025/disaster-coordination-system" target="_blank" rel="noopener noreferrer" title="RescueSync GitHub Repository" class="text-zinc-500 hover:text-white transition-colors">
               <i class="fab fa-github text-2xl"></i>
             </a>
           </div>
@@ -210,15 +288,17 @@
 
           <div class="flex justify-between items-start mb-4 relative z-10">
             <h3 class="text-xl font-bold text-white group-hover:text-zinc-300 transition-colors">Expense Tracker</h3>
-            <a href="https://github.com/kritagya025/Expense-Tracker" target="_blank" class="text-zinc-500 hover:text-white transition-colors">
+            <a href="https://github.com/kritagya025/Expense-Tracker" target="_blank" rel="noopener noreferrer" title="Expense Tracker GitHub Repository" class="text-zinc-500 hover:text-white transition-colors">
               <i class="fab fa-github text-2xl"></i>
             </a>
           </div>
           <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow relative z-10">
-            A comprehensive financial utility to manage budgets, track spending habits, and visualize personal economy through a clean web interface.
+            Personal finance manager with backend services for income/expense CRUD operations, real-time balance calculation using Java Streams, and RESTful endpoints for category analytics and PDF export.
           </p>
           <div class="flex flex-wrap gap-2 mt-auto relative z-10">
-            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">Web Development</span>
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">Spring Boot</span>
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">Java Streams</span>
+            <span class="text-[10px] font-mono text-zinc-300 bg-white/10 px-3 py-1.5 rounded-md border border-white/5">Web</span>
           </div>
         </div>
 
@@ -227,7 +307,7 @@
 
           <div class="flex justify-between items-start mb-4 relative z-10">
             <h3 class="text-xl font-bold text-white group-hover:text-zinc-300 transition-colors">SIH Hackathon</h3>
-            <a href="https://github.com/kritagya025/SIH_Project" target="_blank" class="text-zinc-500 hover:text-white transition-colors">
+            <a href="https://github.com/kritagya025/SIH_Project" target="_blank" rel="noopener noreferrer" title="SIH Hackathon GitHub Repository" class="text-zinc-500 hover:text-white transition-colors">
               <i class="fab fa-github text-2xl"></i>
             </a>
           </div>
@@ -243,12 +323,44 @@
     </div>
   </section>
 
+  <section id="certifications" class="flex flex-col justify-center pt-16 pb-12">
+    <div class="w-full">
+      <h2 class="text-3xl font-bold text-white tracking-tight mb-12" data-aos="fade-right">Certifications</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div class="glass p-8 rounded-2xl hover:border-white/20 transition-colors duration-300 flex gap-5 items-start" data-aos="fade-up" data-aos-delay="100">
+          <div class="mt-1 flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300">
+            <i class="fas fa-certificate text-sm"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-semibold text-white mb-1">Claude Code in Action</h3>
+            <p class="text-xs font-mono text-zinc-400 mb-2">Anthropic · Mar 2026</p>
+            <p class="text-sm text-textMuted">Agentic AI coding workflows, prompt engineering, and multi-step code generation pipelines.</p>
+            <p class="text-[11px] font-mono text-zinc-500 mt-2">Cert ID: jwyuk7funzq6</p>
+          </div>
+        </div>
+
+        <div class="glass p-8 rounded-2xl hover:border-white/20 transition-colors duration-300 flex gap-5 items-start" data-aos="fade-up" data-aos-delay="200">
+          <div class="mt-1 flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300">
+            <i class="fas fa-shield-halved text-sm"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-semibold text-white mb-1">Cyber Job Simulation</h3>
+            <p class="text-xs font-mono text-zinc-400 mb-2">Deloitte Australia (Forage) · 2024</p>
+            <p class="text-sm text-textMuted">Cybersecurity fundamentals, risk assessment, and real-world threat analysis in a professional simulation.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <footer class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-textMuted pb-8">
     <p class="font-mono text-xs">© 2026 Kritagya Yadav. All rights reserved.</p>
     <div class="flex items-center space-x-6">
-      <a href="mailto:kritagyay2005@email.com" class="hover:text-white transition-colors">Email</a>
-      <a href="https://github.com/kritagya025" target="_blank" class="hover:text-white transition-colors">GitHub</a>
-      <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" class="hover:text-white transition-colors">LinkedIn</a>
+      <a href="mailto:kritagyay2006@gmail.com" class="hover:text-white transition-colors">Email</a>
+      <a href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">GitHub</a>
+      <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">LinkedIn</a>
     </div>
   </footer>
 
