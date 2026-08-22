@@ -186,6 +186,37 @@
     .js-tilt-glare {
       border-radius: inherit;
     }
+
+    /* Mobile Menu */
+    .mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .mobile-menu.active {
+      transform: translateX(0);
+    }
+    .mobile-menu-backdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .mobile-menu-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Back to Top Button */
+    .back-to-top {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .back-to-top.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
   </style>
 </head>
 
@@ -226,7 +257,28 @@
           <i class="fas fa-download text-xs"></i> Resume
         </a>
       </div>
+      <!-- Mobile Menu Toggle -->
+      <button id="mobile-menu-btn" class="md:hidden flex flex-col items-center justify-center w-10 h-10 rounded-lg bg-white/5 border border-white/10 gap-1.5 hover:bg-white/10 transition-colors" aria-label="Toggle mobile menu" aria-expanded="false">
+        <span class="block w-5 h-0.5 bg-white transition-all duration-300" id="hamburger-top"></span>
+        <span class="block w-5 h-0.5 bg-white transition-all duration-300" id="hamburger-mid"></span>
+        <span class="block w-5 h-0.5 bg-white transition-all duration-300" id="hamburger-bot"></span>
+      </button>
     </div>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div id="mobile-menu-backdrop" class="mobile-menu-backdrop fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"></div>
+  <div id="mobile-menu" class="mobile-menu fixed top-0 right-0 w-72 h-full bg-bgDark/95 backdrop-blur-xl border-l border-white/10 z-50 p-8 pt-20 flex flex-col gap-6 md:hidden">
+    <a href="#about" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">About</a>
+    <a href="#skills" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">Skills</a>
+    <a href="#projects" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">Projects</a>
+    <a href="#education" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">Education</a>
+    <a href="#certifications" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">Certifications</a>
+    <a href="#contact" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">Contact</a>
+    <hr class="border-white/10 my-2">
+    <a href="Kritagya_Yadav_Resume.pdf" download="Kritagya_Yadav_Resume.pdf" class="flex items-center gap-2 text-sm font-semibold text-zinc-300 bg-white/5 border border-white/10 px-4 py-2.5 rounded-full hover:bg-white/10 hover:text-white transition-all w-fit">
+      <i class="fas fa-download text-xs"></i> Download Resume
+    </a>
   </div>
 </nav>
 
@@ -823,11 +875,11 @@
     }
   });
 
-  // GSAP Hero Animations
-  gsap.from(".hero-sub", { opacity: 0, duration: 1.5, delay: 0.2, ease: "power2.out" });
-  gsap.from(".hero-title", { opacity: 0, duration: 1.5, delay: 0.4, ease: "power2.out" });
-  gsap.from(".hero-desc", { opacity: 0, duration: 1.5, delay: 0.6, ease: "power2.out" });
-  gsap.from(".hero-btns", { opacity: 0, duration: 1.5, delay: 0.8, ease: "power2.out" });
+  // GSAP Hero Animations (enhanced with y-axis slide-in)
+  gsap.from(".hero-sub", { opacity: 0, y: 20, duration: 1.2, delay: 0.2, ease: "power3.out" });
+  gsap.from(".hero-title", { opacity: 0, y: 40, duration: 1.4, delay: 0.4, ease: "power3.out" });
+  gsap.from(".hero-desc", { opacity: 0, y: 25, duration: 1.2, delay: 0.7, ease: "power3.out" });
+  gsap.from(".hero-btns", { opacity: 0, y: 20, duration: 1.2, delay: 0.9, ease: "power3.out" });
 
   // Parallax Background Logic
   const parallaxBgs = document.querySelectorAll('.parallax-bg');
@@ -861,7 +913,57 @@
       el.style.transition = `transform 0.1s linear`;
     });
   });
+
+  // Mobile Menu Toggle
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+  const hamburgerTop = document.getElementById('hamburger-top');
+  const hamburgerMid = document.getElementById('hamburger-mid');
+  const hamburgerBot = document.getElementById('hamburger-bot');
+
+  function toggleMobileMenu() {
+    const isOpen = mobileMenu.classList.toggle('active');
+    mobileMenuBackdrop.classList.toggle('active');
+    mobileMenuBtn.setAttribute('aria-expanded', isOpen);
+    
+    if (isOpen) {
+      hamburgerTop.style.transform = 'rotate(45deg) translate(3px, 3px)';
+      hamburgerMid.style.opacity = '0';
+      hamburgerBot.style.transform = 'rotate(-45deg) translate(3px, -3px)';
+    } else {
+      hamburgerTop.style.transform = '';
+      hamburgerMid.style.opacity = '1';
+      hamburgerBot.style.transform = '';
+    }
+  }
+
+  mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+  mobileMenuBackdrop.addEventListener('click', toggleMobileMenu);
+  document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      if (mobileMenu.classList.contains('active')) toggleMobileMenu();
+    });
+  });
+
+  // Back to Top Button
+  const backToTopBtn = document.getElementById('back-to-top');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 600) {
+      backToTopBtn.classList.add('visible');
+    } else {
+      backToTopBtn.classList.remove('visible');
+    }
+  });
+  backToTopBtn.addEventListener('click', () => {
+    lenis.scrollTo(0, { duration: 1.5 });
+  });
 </script>
+
+<!-- Back to Top Button -->
+<button id="back-to-top" class="back-to-top fixed bottom-8 right-8 z-50 w-11 h-11 rounded-full bg-white/10 border border-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 hover:scale-110 transition-all duration-300 shadow-lg" aria-label="Back to top">
+  <i class="fas fa-arrow-up text-sm"></i>
+</button>
 
 </body>
 </html>
