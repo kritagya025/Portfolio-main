@@ -58,6 +58,12 @@ A modern, high-performance personal developer portfolio showcasing software engi
 
 ---
 
+## 🌐 Browser Compatibility
+
+Tested and optimized for modern evergreen browsers including Google Chrome, Microsoft Edge, Mozilla Firefox, Apple Safari, and Brave.
+
+---
+
 ## 💻 Local Preview & Setup
 
 1. **Clone the repository**:
