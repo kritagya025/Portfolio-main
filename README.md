@@ -90,4 +90,10 @@ Tested and optimized for modern evergreen browsers including Google Chrome, Micr
 
 ---
 
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
+
+---
+
 *Designed & Maintained by Kritagya Yadav.*
