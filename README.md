@@ -31,6 +31,7 @@ A modern, high-performance personal developer portfolio showcasing software engi
   - Infinite skill badge marquees with dual scroll directions
 - **📱 Responsive & Accessible**: Fully optimized across desktop, tablet, and mobile displays with screen-reader friendly skip navigation landmarks (`a11y`).
 - **🔍 SEO & Social Card Ready**: Complete Open Graph, Twitter Cards, resource preconnects, and custom inline SVG branding favicon.
+- **🚀 Performance Optimized**: Fast asset prefetching, asynchronous script hydration, and lightweight vector assets.
 
 ---
 
