@@ -10,6 +10,16 @@ A modern, high-performance personal developer portfolio showcasing software engi
 
 ---
 
+## 📑 Table of Contents
+
+- [Features & User Experience](#-features--user-experience)
+- [Technical Stack](#️-technical-stack)
+- [Featured Backend Systems](#-featured-backend-systems)
+- [Local Preview & Setup](#-local-preview--setup)
+- [Contact & Connect](#-contact--connect)
+
+---
+
 ## ✨ Features & User Experience
 
 - **💎 Glassmorphism UI**: Deep dark `#030712` aesthetic featuring film grain overlays, backdrop blur effects, animated gradient typography, and glowing card borders.
