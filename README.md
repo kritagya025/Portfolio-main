@@ -97,3 +97,4 @@ This project is open-source and available under the [MIT License](LICENSE).
 ---
 
 *Designed & Maintained by Kritagya Yadav.*
+> Last updated: 2026-09-04
