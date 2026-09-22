@@ -1,0 +1,7 @@
+# robots.txt for Portfolio
+# https://kritagya025.github.io/Portfolio-main/
+
+User-agent: *
+Allow: /
+
+Sitemap: https://kritagya025.github.io/Portfolio-main/sitemap.xml
