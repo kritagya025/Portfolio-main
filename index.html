@@ -260,6 +260,27 @@
       pointer-events: auto;
       transform: translateY(0);
     }
+
+    /* Active Navigation Link Indicator */
+    .nav-active {
+      color: #ffffff !important;
+      position: relative;
+    }
+    .nav-active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+      border-radius: 1px;
+      animation: navIndicatorIn 0.3s ease-out;
+    }
+    @keyframes navIndicatorIn {
+      from { transform: scaleX(0); opacity: 0; }
+      to { transform: scaleX(1); opacity: 1; }
+    }
   </style>
 </head>
 
@@ -942,6 +963,32 @@
       bg.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
     });
   });
+
+  // Active Navigation Link Highlighting via Intersection Observer
+  const navLinks = document.querySelectorAll('nav .hidden.md\\:flex a[href^="#"]');
+  const sections = document.querySelectorAll('section[id]');
+  
+  const observerOptions = {
+    root: null,
+    rootMargin: '-20% 0px -60% 0px',
+    threshold: 0
+  };
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const sectionId = entry.target.getAttribute('id');
+        navLinks.forEach(link => {
+          link.classList.remove('nav-active');
+          if (link.getAttribute('href') === `#${sectionId}`) {
+            link.classList.add('nav-active');
+          }
+        });
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach(section => sectionObserver.observe(section));
 
   // Magnetic Button Physics
   const magneticEls = document.querySelectorAll('.magnetic');
