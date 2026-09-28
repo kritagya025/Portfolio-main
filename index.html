@@ -297,11 +297,27 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
     }
+
+    /* Scroll Progress Indicator */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(to right, #ffffff, #a1a1aa);
+      z-index: 9999;
+      transition: width 0.1s linear;
+      border-radius: 0 2px 2px 0;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    }
   </style>
 </head>
 
 <!-- ====== Document Body Start ====== -->
 <body class="antialiased selection:bg-white/20 selection:text-white">
+
+<!-- Scroll Progress Bar -->
+<div class="scroll-progress" id="scroll-progress"></div>
 
 <!-- Accessibility Skip Link -->
 <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-bgDark focus:font-bold focus:rounded-lg focus:shadow-lg focus:outline-none">
@@ -959,6 +975,13 @@
       nav.style.borderBottom = '1px solid transparent';
       nav.style.backdropFilter = 'none';
     }
+
+    // Update scroll progress bar
+    const scrollProgress = document.getElementById('scroll-progress');
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = (scrollTop / docHeight) * 100;
+    scrollProgress.style.width = scrollPercent + '%';
   });
 
   // GSAP Hero Animations (enhanced with y-axis slide-in)
