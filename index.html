@@ -139,6 +139,7 @@
       pointer-events: none;
       z-index: 9999;
       opacity: 0.03;
+      will-change: opacity;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
 
@@ -203,6 +204,7 @@
       grid-template-columns: repeat(4, 1fr);
       grid-auto-rows: minmax(240px, auto);
       gap: 1.5rem;
+      contain: layout style;
     }
     .bento-large { grid-column: span 2; grid-row: span 2; }
     .bento-wide { grid-column: span 2; grid-row: span 1; }
@@ -913,18 +915,18 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- GitHub Stats Card -->
         <div class="glass glow-border p-6 rounded-3xl flex items-center justify-center" data-aos="fade-up">
-          <img src="https://github-readme-stats.vercel.app/api?username=kritagya025&show_icons=true&theme=transparent&hide_border=true&title_color=ffffff&text_color=94a3b8&icon_color=a1a1aa&bg_color=00000000&ring_color=ffffff" alt="Kritagya's GitHub Stats" class="w-full max-w-md" loading="lazy">
+          <img src="https://github-readme-stats.vercel.app/api?username=kritagya025&show_icons=true&theme=transparent&hide_border=true&title_color=ffffff&text_color=94a3b8&icon_color=a1a1aa&bg_color=00000000&ring_color=ffffff" alt="Kritagya's GitHub Stats" class="w-full max-w-md" loading="lazy" decoding="async">
         </div>
 
         <!-- GitHub Streak Stats -->
         <div class="glass glow-border p-6 rounded-3xl flex items-center justify-center" data-aos="fade-up" data-aos-delay="100">
-          <img src="https://github-readme-streak-stats.herokuapp.com/?user=kritagya025&theme=transparent&hide_border=true&ring=ffffff&fire=ffffff&currStreakLabel=ffffff&sideLabels=94a3b8&currStreakNum=f8fafc&sideNums=f8fafc&dates=52525b&background=00000000" alt="Kritagya's GitHub Streak" class="w-full max-w-md" loading="lazy">
+          <img src="https://github-readme-streak-stats.herokuapp.com/?user=kritagya025&theme=transparent&hide_border=true&ring=ffffff&fire=ffffff&currStreakLabel=ffffff&sideLabels=94a3b8&currStreakNum=f8fafc&sideNums=f8fafc&dates=52525b&background=00000000" alt="Kritagya's GitHub Streak" class="w-full max-w-md" loading="lazy" decoding="async">
         </div>
       </div>
 
       <!-- Top Languages Card -->
       <div class="mt-6 glass glow-border p-6 rounded-3xl flex items-center justify-center" data-aos="fade-up" data-aos-delay="200">
-        <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=kritagya025&layout=compact&theme=transparent&hide_border=true&title_color=ffffff&text_color=94a3b8&bg_color=00000000" alt="Top Languages" class="w-full max-w-lg" loading="lazy">
+        <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=kritagya025&layout=compact&theme=transparent&hide_border=true&title_color=ffffff&text_color=94a3b8&bg_color=00000000" alt="Top Languages" class="w-full max-w-lg" loading="lazy" decoding="async">
       </div>
     </div>
   </section>
