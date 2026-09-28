@@ -96,7 +96,59 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 ---
 
+## 🏗️ Project Architecture & File Structure
+
+```
+Portfolio-main/
+├── index.html              # Single-page application (all HTML, CSS, JS)
+├── Kritagya_Yadav_Resume.pdf  # Downloadable resume asset
+├── robots.txt              # SEO crawler directives
+├── .editorconfig           # Editor formatting consistency rules
+├── .gitattributes          # Git line-ending normalization
+├── CONTRIBUTING.md         # Contribution guidelines
+├── SECURITY.md             # Security vulnerability disclosure policy
+├── LICENSE                 # MIT License
+└── README.md               # This file
+```
+
+### Key Architectural Decisions
+
+| Decision | Rationale |
+|---|---|
+| **Single HTML file** | Zero build step, instant deployment via GitHub Pages, no framework overhead |
+| **CDN-loaded libraries** | Avoids `node_modules` bloat; leverages browser caching from shared CDNs |
+| **JSON-LD structured data** | Improves search engine rich snippet rendering (Person schema) |
+| **Intersection Observer** | Efficient scroll-based nav highlighting without costly scroll listeners |
+| **CSS `contain` property** | Enables browser layout isolation for Bento Grid performance |
+| **`prefers-reduced-motion`** | WCAG 2.1 AA compliance for motion-sensitive users |
+
+---
+
+## ⚡ Performance Optimizations
+
+- **Critical font preloading** via `<link rel="preload">` to eliminate render-blocking
+- **DNS prefetching** for all CDN origins (`fonts.googleapis.com`, `unpkg.com`, `cdnjs.cloudflare.com`)
+- **Lazy loading** with `loading="lazy"` and `decoding="async"` on below-fold images
+- **CSS containment** (`contain: layout style`) on the Bento Grid for isolated reflows
+- **`will-change`** hints on animated elements for GPU layer promotion
+- **Smooth scroll** via Lenis with custom easing for 60fps inertia scrolling
+
+---
+
+## 🚀 Deployment
+
+This portfolio is designed for **GitHub Pages** deployment:
+
+1. Push to the `main` branch
+2. Go to **Settings → Pages → Source → Deploy from branch**
+3. Select `main` / `/ (root)` and save
+4. Site will be live at `https://<username>.github.io/Portfolio-main/`
+
+Alternatively, deploy to any static hosting provider (Netlify, Vercel, Cloudflare Pages) by pointing to the repository root.
+
+---
+
 *Designed & Maintained by Kritagya Yadav.*
-> Last updated: 2026-09-26
+> Last updated: 2026-09-28
 
 
