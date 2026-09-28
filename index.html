@@ -310,6 +310,32 @@
       border-radius: 0 2px 2px 0;
       box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
     }
+
+    /* ---- Keyboard Accessibility Focus Styles ---- */
+    /* Custom visible focus ring for keyboard navigation (WCAG 2.1 AA) */
+    *:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.6);
+      outline-offset: 3px;
+      border-radius: 4px;
+      transition: outline-offset 0.15s ease;
+    }
+
+    /* Enhanced focus for glass cards */
+    .glass:focus-within {
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Reduce motion for users who prefer it */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .scroll-progress { transition: none; }
+    }
   </style>
 </head>
 
