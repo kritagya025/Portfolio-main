@@ -284,6 +284,19 @@
       from { transform: scaleX(0); opacity: 0; }
       to { transform: scaleX(1); opacity: 1; }
     }
+
+    /* Typing Cursor Animation */
+    .typing-cursor {
+      display: inline-block;
+      animation: blink 1s step-end infinite;
+      color: #a1a1aa;
+      font-weight: 300;
+      margin-left: 2px;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
   </style>
 </head>
 
@@ -362,7 +375,7 @@
       
       <div data-aos="fade" data-aos-duration="1500" class="mb-6">
         <span class="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-xs font-mono text-zinc-300 backdrop-blur-md tracking-widest uppercase glow-border">
-          Java Backend Developer — Software Engineer
+          <span id="typed-role">Java Backend Developer</span><span class="typing-cursor">|</span>
         </span>
       </div>
       
@@ -966,6 +979,42 @@
       bg.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
     });
   });
+
+  // Typing Animation for Hero Role Badge
+  const typedRoles = [
+    'Java Backend Developer',
+    'Spring Boot Engineer',
+    'Software Engineer',
+    'API Architect',
+    'Backend Systems Builder'
+  ];
+  let roleIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+  const typedEl = document.getElementById('typed-role');
+
+  function typeEffect() {
+    const currentRole = typedRoles[roleIndex];
+    if (!isDeleting) {
+      typedEl.textContent = currentRole.substring(0, charIndex + 1);
+      charIndex++;
+      if (charIndex === currentRole.length) {
+        isDeleting = true;
+        setTimeout(typeEffect, 2000);
+        return;
+      }
+      setTimeout(typeEffect, 80);
+    } else {
+      typedEl.textContent = currentRole.substring(0, charIndex - 1);
+      charIndex--;
+      if (charIndex === 0) {
+        isDeleting = false;
+        roleIndex = (roleIndex + 1) % typedRoles.length;
+      }
+      setTimeout(typeEffect, 40);
+    }
+  }
+  setTimeout(typeEffect, 1500);
 
   // Active Navigation Link Highlighting via Intersection Observer
   const navLinks = document.querySelectorAll('nav .hidden.md\\:flex a[href^="#"]');
