@@ -396,6 +396,15 @@
       60% { width: 70%; }
       100% { width: 100%; }
     }
+
+    /* ---- Particle Constellation Canvas ---- */
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -5;
+      pointer-events: none;
+      opacity: 0.5;
+    }
   </style>
 </head>
 
@@ -426,6 +435,9 @@
   <div class="parallax-bg absolute top-[20%] right-[-10%] w-[35rem] h-[35rem] bg-slate-800/10 rounded-full mix-blend-screen filter blur-[120px] animate-blob [animation-delay:2s]" data-speed="-2"></div>
   <div class="parallax-bg absolute bottom-[-20%] left-[20%] w-[45rem] h-[45rem] bg-zinc-700/10 rounded-full mix-blend-screen filter blur-[140px] animate-blob [animation-delay:4s]" data-speed="1.5"></div>
 </div>
+
+<!-- Particle Constellation Canvas -->
+<canvas id="particle-canvas" aria-hidden="true"></canvas>
 
 <!-- ====== Primary Navigation Header Bar ====== -->
 <nav class="fixed w-full z-50 glass border-x-0 border-t-0 py-4 transition-all duration-300" id="navbar" aria-label="Main Navigation">
@@ -1255,6 +1267,106 @@
 
   // Dynamic Copyright Year
   document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+  // ---- Particle Constellation Background ----
+  (function initParticles() {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height, particles, mouse;
+    const PARTICLE_COUNT = Math.min(60, Math.floor(window.innerWidth / 25));
+    const CONNECTION_DIST = 150;
+    const MOUSE_RADIUS = 200;
+
+    mouse = { x: -9999, y: -9999 };
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    function createParticles() {
+      particles = [];
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          radius: Math.random() * 1.5 + 0.5,
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < CONNECTION_DIST) {
+            const alpha = (1 - dist / CONNECTION_DIST) * 0.15;
+            ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw & update particles
+      particles.forEach(p => {
+        // Subtle mouse attraction
+        const dx = mouse.x - p.x;
+        const dy = mouse.y - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MOUSE_RADIUS && dist > 0) {
+          const force = (MOUSE_RADIUS - dist) / MOUSE_RADIUS * 0.008;
+          p.vx += dx * force;
+          p.vy += dy * force;
+        }
+
+        // Dampen velocity
+        p.vx *= 0.99;
+        p.vy *= 0.99;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Wrap edges
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+    window.addEventListener('resize', () => {
+      resize();
+    });
+
+    resize();
+    createParticles();
+    draw();
+  })();
 
   // Dismiss Preloader on Page Load
   window.addEventListener('load', () => {
