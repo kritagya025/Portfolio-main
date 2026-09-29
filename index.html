@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 2.0.4 -->
+<!-- Portfolio Version: 2.1.0 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
   Tech Stack: HTML5, CSS3/Tailwind, JavaScript, GSAP, AOS
-  Last Updated: September 26, 2026
+  Last Updated: September 29, 2026
   ========================================================
 -->
 <html lang="en">
@@ -1375,6 +1375,25 @@
       preloader.classList.add('loaded');
       preloader.addEventListener('transitionend', () => preloader.remove());
     }, 400);
+  });
+
+  // ---- Developer Easter Egg Console Message ----
+  console.log(
+    '%c\n  ╔═══════════════════════════════════════════╗\n  ║     🚀  KRITAGYA YADAV  —  PORTFOLIO      ║\n  ║                                           ║\n  ║   Java Backend  •  Spring Boot  •  APIs   ║\n  ║                                           ║\n  ║   Curious about the source?               ║\n  ║   github.com/kritagya025/Portfolio-main    ║\n  ╚═══════════════════════════════════════════╝\n',
+    'color: #a1a1aa; font-family: monospace; font-size: 12px; line-height: 1.6;'
+  );
+  console.log(
+    '%c💼 Open to Backend Engineering opportunities — let\'s connect!',
+    'color: #ffffff; font-size: 13px; font-weight: bold; padding: 8px 0;'
+  );
+
+  // ---- Smooth Hash Navigation Error Recovery ----
+  // If someone navigates to a non-existent hash anchor, scroll to top gracefully
+  window.addEventListener('hashchange', () => {
+    const hash = window.location.hash;
+    if (hash && !document.querySelector(hash)) {
+      lenis.scrollTo(0, { duration: 1.2 });
+    }
   });
 </script>
 
