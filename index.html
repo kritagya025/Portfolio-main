@@ -338,11 +338,75 @@
       }
       .scroll-progress { transition: none; }
     }
+
+    /* ---- Page Entrance Preloader ---- */
+    .preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: #030712;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+    }
+    .preloader.loaded {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .preloader-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 22px;
+      color: #ffffff;
+      letter-spacing: 1px;
+      animation: preloaderPulse 1.8s ease-in-out infinite;
+    }
+    .preloader-bar {
+      width: 120px;
+      height: 2px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 2px;
+      margin-top: 24px;
+      overflow: hidden;
+    }
+    .preloader-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(255,255,255,0.4), rgba(255,255,255,0.8));
+      border-radius: 2px;
+      animation: preloaderFill 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes preloaderPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.05); }
+      50% { transform: scale(1.06); box-shadow: 0 0 30px 4px rgba(255,255,255,0.04); }
+    }
+    @keyframes preloaderFill {
+      0% { width: 0%; }
+      60% { width: 70%; }
+      100% { width: 100%; }
+    }
   </style>
 </head>
 
 <!-- ====== Document Body Start ====== -->
 <body class="antialiased selection:bg-white/20 selection:text-white">
+
+<!-- Page Entrance Preloader -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader-logo">KY</div>
+  <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
+</div>
 
 <!-- Scroll Progress Bar -->
 <div class="scroll-progress" id="scroll-progress"></div>
@@ -1191,6 +1255,15 @@
 
   // Dynamic Copyright Year
   document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+  // Dismiss Preloader on Page Load
+  window.addEventListener('load', () => {
+    const preloader = document.getElementById('preloader');
+    setTimeout(() => {
+      preloader.classList.add('loaded');
+      preloader.addEventListener('transitionend', () => preloader.remove());
+    }, 400);
+  });
 </script>
 
 <!-- Back to Top Button -->
