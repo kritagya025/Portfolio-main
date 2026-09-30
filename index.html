@@ -1303,7 +1303,8 @@
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
-      // Draw connections
+      // Draw connections — O(n²) pairwise distance check; keep particle count low
+      // to avoid frame drops. Consider spatial hashing if count exceeds ~200.
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
