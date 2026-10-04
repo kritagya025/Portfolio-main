@@ -405,6 +405,29 @@
       pointer-events: none;
       opacity: 0.5;
     }
+    /* ---- Print Stylesheet ---- */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .preloader, .film-grain, .parallax-bg, #particle-canvas,
+      .back-to-top, .scroll-progress, .mobile-menu, .mobile-menu-backdrop,
+      nav { display: none !important; }
+      .glass {
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border: 1px solid #e5e7eb !important;
+        box-shadow: none !important;
+      }
+      .text-gradient-animated {
+        background: none !important;
+        -webkit-text-fill-color: #000000 !important;
+      }
+      a { color: #000000 !important; text-decoration: underline; }
+      a[href]::after { content: " (" attr(href) ")"; font-size: 0.8em; color: #6b7280; }
+    }
   </style>
 </head>
 
