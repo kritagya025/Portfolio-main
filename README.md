@@ -101,10 +101,15 @@ This project is open-source and available under the [MIT License](LICENSE).
 ```
 Portfolio-main/
 ├── index.html              # Single-page application (all HTML, CSS, JS)
+├── 404.html                # Custom GitHub Pages 404 error page
 ├── Kritagya_Yadav_Resume.pdf  # Downloadable resume asset
 ├── robots.txt              # SEO crawler directives
+├── sitemap.xml             # XML sitemap for search engines
 ├── .editorconfig           # Editor formatting consistency rules
 ├── .gitattributes          # Git line-ending normalization
+├── .gitignore              # OS, editor, and build artifact exclusions
+├── CHANGELOG.md            # Version history (Keep a Changelog format)
+├── CODE_OF_CONDUCT.md      # Contributor Covenant v2.1
 ├── CONTRIBUTING.md         # Contribution guidelines
 ├── SECURITY.md             # Security vulnerability disclosure policy
 ├── LICENSE                 # MIT License
