@@ -440,6 +440,137 @@
       a { color: #000000 !important; text-decoration: underline; }
       a[href]::after { content: " (" attr(href) ")"; font-size: 0.8em; color: #6b7280; }
     }
+
+    /* ---- Command Palette (Ctrl+K) ---- */
+    .cmd-palette-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99990;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    .cmd-palette-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .cmd-palette {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.96);
+      z-index: 99991;
+      width: 90%;
+      max-width: 520px;
+      background: rgba(15, 15, 20, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    }
+    .cmd-palette.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) scale(1);
+    }
+    .cmd-palette-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .cmd-palette-input-wrap i {
+      color: #71717a;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .cmd-palette-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      caret-color: #a1a1aa;
+    }
+    .cmd-palette-input::placeholder {
+      color: #52525b;
+    }
+    .cmd-palette-kbd {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #52525b;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .cmd-palette-results {
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 8px;
+    }
+    .cmd-palette-results::-webkit-scrollbar { width: 4px; }
+    .cmd-palette-results::-webkit-scrollbar-thumb { background: #27272a; border-radius: 2px; }
+    .cmd-palette-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      color: #a1a1aa;
+    }
+    .cmd-palette-item:hover, .cmd-palette-item.active {
+      background: rgba(255, 255, 255, 0.06);
+      color: #f8fafc;
+    }
+    .cmd-palette-item i {
+      width: 20px;
+      text-align: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .cmd-palette-item-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .cmd-palette-item-hint {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #3f3f46;
+    }
+    .cmd-palette-footer {
+      padding: 10px 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #3f3f46;
+    }
+    .cmd-palette-footer span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cmd-palette-empty {
+      padding: 24px 16px;
+      text-align: center;
+      color: #52525b;
+      font-size: 13px;
+    }
   </style>
 </head>
 
@@ -1117,10 +1248,25 @@
 
 </main>
 
-<!-- Back to Top Button -->
 <button id="back-to-top" class="back-to-top fixed bottom-8 right-8 z-50 w-11 h-11 rounded-full bg-white/10 border border-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 hover:scale-110 transition-all duration-300 shadow-lg" aria-label="Back to top">
   <i class="fas fa-arrow-up text-sm"></i>
 </button>
+
+<!-- Command Palette (Ctrl+K) -->
+<div class="cmd-palette-overlay" id="cmd-overlay" aria-hidden="true"></div>
+<div class="cmd-palette" id="cmd-palette" role="dialog" aria-label="Command Palette" aria-hidden="true">
+  <div class="cmd-palette-input-wrap">
+    <i class="fas fa-search"></i>
+    <input type="text" class="cmd-palette-input" id="cmd-input" placeholder="Jump to section..." autocomplete="off" spellcheck="false">
+    <span class="cmd-palette-kbd">ESC</span>
+  </div>
+  <div class="cmd-palette-results" id="cmd-results"></div>
+  <div class="cmd-palette-footer">
+    <span><kbd class="cmd-palette-kbd">↑↓</kbd> Navigate</span>
+    <span><kbd class="cmd-palette-kbd">↵</kbd> Jump</span>
+    <span><kbd class="cmd-palette-kbd">Ctrl K</kbd> Toggle</span>
+  </div>
+</div>
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
@@ -1448,6 +1594,150 @@
       lenis.scrollTo(0, { duration: 1.2 });
     }
   });
+
+  // ---- Command Palette (Ctrl+K Quick Navigation) ----
+  (function initCommandPalette() {
+    const overlay = document.getElementById('cmd-overlay');
+    const palette = document.getElementById('cmd-palette');
+    const input = document.getElementById('cmd-input');
+    const resultsContainer = document.getElementById('cmd-results');
+    let activeIndex = 0;
+
+    const commands = [
+      { label: 'About', icon: 'fas fa-user', section: '#about', hint: 'Hero & intro' },
+      { label: 'Skills', icon: 'fas fa-code', section: '#skills', hint: 'Tech stack' },
+      { label: 'Projects', icon: 'fas fa-project-diagram', section: '#projects', hint: 'Bento grid' },
+      { label: 'Education', icon: 'fas fa-graduation-cap', section: '#education', hint: 'Academic' },
+      { label: 'Certifications', icon: 'fas fa-certificate', section: '#certifications', hint: 'Training' },
+      { label: 'GitHub Activity', icon: 'fab fa-github', section: '#github-activity', hint: 'Stats & streak' },
+      { label: 'Contact', icon: 'fas fa-envelope', section: '#contact', hint: 'Get in touch' },
+      { label: 'Download Resume', icon: 'fas fa-download', section: 'resume', hint: 'PDF' },
+      { label: 'LinkedIn', icon: 'fab fa-linkedin', section: 'linkedin', hint: 'External' },
+      { label: 'GitHub Profile', icon: 'fab fa-github', section: 'github', hint: 'External' },
+    ];
+
+    function openPalette() {
+      overlay.classList.add('active');
+      palette.classList.add('active');
+      overlay.setAttribute('aria-hidden', 'false');
+      palette.setAttribute('aria-hidden', 'false');
+      input.value = '';
+      activeIndex = 0;
+      renderResults(commands);
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function closePalette() {
+      overlay.classList.remove('active');
+      palette.classList.remove('active');
+      overlay.setAttribute('aria-hidden', 'true');
+      palette.setAttribute('aria-hidden', 'true');
+      input.blur();
+    }
+
+    function renderResults(items) {
+      if (items.length === 0) {
+        resultsContainer.innerHTML = '<div class="cmd-palette-empty">No results found</div>';
+        return;
+      }
+      resultsContainer.innerHTML = items.map((cmd, i) =>
+        `<div class="cmd-palette-item${i === activeIndex ? ' active' : ''}" data-index="${i}" data-section="${cmd.section}">
+          <i class="${cmd.icon}"></i>
+          <span class="cmd-palette-item-label">${cmd.label}</span>
+          <span class="cmd-palette-item-hint">${cmd.hint}</span>
+        </div>`
+      ).join('');
+
+      // Attach click handlers
+      resultsContainer.querySelectorAll('.cmd-palette-item').forEach(el => {
+        el.addEventListener('click', () => {
+          executeCommand(items[parseInt(el.dataset.index)]);
+        });
+        el.addEventListener('mouseenter', () => {
+          activeIndex = parseInt(el.dataset.index);
+          updateActiveItem();
+        });
+      });
+    }
+
+    function updateActiveItem() {
+      const items = resultsContainer.querySelectorAll('.cmd-palette-item');
+      items.forEach((el, i) => {
+        el.classList.toggle('active', i === activeIndex);
+      });
+      // Scroll active item into view
+      const activeEl = items[activeIndex];
+      if (activeEl) activeEl.scrollIntoView({ block: 'nearest' });
+    }
+
+    function executeCommand(cmd) {
+      closePalette();
+      if (cmd.section === 'resume') {
+        const link = document.createElement('a');
+        link.href = 'Kritagya_Yadav_Resume.pdf';
+        link.download = 'Kritagya_Yadav_Resume.pdf';
+        link.click();
+      } else if (cmd.section === 'linkedin') {
+        window.open('https://www.linkedin.com/in/kritagya-yadav/', '_blank');
+      } else if (cmd.section === 'github') {
+        window.open('https://github.com/kritagya025', '_blank');
+      } else {
+        const target = document.querySelector(cmd.section);
+        if (target) lenis.scrollTo(target, { duration: 1.2, offset: -80 });
+      }
+    }
+
+    function getFilteredCommands(query) {
+      if (!query) return commands;
+      const q = query.toLowerCase();
+      return commands.filter(cmd =>
+        cmd.label.toLowerCase().includes(q) ||
+        cmd.hint.toLowerCase().includes(q)
+      );
+    }
+
+    // Keyboard shortcut: Ctrl+K
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        if (palette.classList.contains('active')) {
+          closePalette();
+        } else {
+          openPalette();
+        }
+      }
+      if (e.key === 'Escape' && palette.classList.contains('active')) {
+        closePalette();
+      }
+    });
+
+    // Input filtering
+    input.addEventListener('input', () => {
+      const filtered = getFilteredCommands(input.value.trim());
+      activeIndex = 0;
+      renderResults(filtered);
+    });
+
+    // Arrow key navigation within palette
+    input.addEventListener('keydown', (e) => {
+      const filtered = getFilteredCommands(input.value.trim());
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIndex = (activeIndex + 1) % filtered.length;
+        updateActiveItem();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIndex = (activeIndex - 1 + filtered.length) % filtered.length;
+        updateActiveItem();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (filtered[activeIndex]) executeCommand(filtered[activeIndex]);
+      }
+    });
+
+    // Close on overlay click
+    overlay.addEventListener('click', closePalette);
+  })();
 </script>
 
 </body>
