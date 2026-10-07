@@ -412,7 +412,7 @@
     }
     /* ---- Content Visibility for Below-Fold Sections ---- */
     /* Allows browser to skip rendering of off-screen sections until scrolled into view */
-    #skills, #projects, #education, #certifications, #github-activity, #contact {
+    #skills, #projects, #learning, #education, #certifications, #github-activity, #contact {
       content-visibility: auto;
       contain-intrinsic-size: auto 800px;
     }
@@ -628,6 +628,7 @@
       <a href="#about" class="hover:text-white transition-colors tracking-wide magnetic">About</a>
       <a href="#skills" class="hover:text-white transition-colors tracking-wide magnetic">Skills</a>
       <a href="#projects" class="hover:text-white transition-colors tracking-wide magnetic">Projects</a>
+      <a href="#learning" class="hover:text-white transition-colors tracking-wide magnetic">Learning</a>
       <a href="#education" class="hover:text-white transition-colors tracking-wide magnetic">Education</a>
       <a href="#certifications" class="hover:text-white transition-colors tracking-wide magnetic">Certifications</a>
       <a href="#contact" class="hover:text-white transition-colors tracking-wide magnetic">Contact</a>
@@ -658,6 +659,7 @@
     <a href="#about" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">About</a>
     <a href="#skills" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">Skills</a>
     <a href="#projects" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">Projects</a>
+    <a href="#learning" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">Learning</a>
     <a href="#education" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">Education</a>
     <a href="#certifications" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">Certifications</a>
     <a href="#contact" class="text-lg font-display text-textMuted hover:text-white transition-colors tracking-wide mobile-nav-link">Contact</a>
@@ -1074,6 +1076,68 @@
               <span class="text-xs font-mono text-zinc-300 bg-white/5 px-2.5 py-1 rounded-md border border-white/10">PostgreSQL</span>
               <span class="text-xs font-mono text-zinc-300 bg-white/5 px-2.5 py-1 rounded-md border border-white/10">Spring Data JPA</span>
             </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CURRENTLY LEARNING SECTION -->
+  <section id="learning" class="flex flex-col justify-center pt-24 pb-12">
+    <div class="w-full">
+      <div class="flex items-center gap-4 mb-10" data-aos="fade-right">
+        <div class="h-[1px] w-12 bg-white/30"></div>
+        <h2 class="text-3xl md:text-4xl font-display font-bold text-white tracking-tight">Currently Exploring</h2>
+      </div>
+
+      <p class="text-textMuted text-sm md:text-base max-w-2xl mb-8" data-aos="fade-right" data-aos-delay="50">
+        Technologies and concepts I'm actively studying and building with to deepen my backend engineering expertise.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <div class="glass glow-border p-6 rounded-3xl group" data-aos="fade-up" data-aos-delay="100">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="p-2.5 bg-orange-500/10 rounded-xl border border-orange-500/20 text-orange-400 group-hover:bg-orange-500/20 transition-colors">
+              <i class="fas fa-cubes text-base"></i>
+            </div>
+            <h3 class="font-display font-bold text-white text-lg">Microservices Architecture</h3>
+          </div>
+          <p class="text-sm text-textMuted leading-relaxed">Designing distributed systems with service decomposition, API gateways, inter-service communication patterns, and circuit breakers.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="text-[11px] font-mono text-orange-300/80 bg-orange-500/10 px-2.5 py-1 rounded-md border border-orange-500/15">Spring Cloud</span>
+            <span class="text-[11px] font-mono text-orange-300/80 bg-orange-500/10 px-2.5 py-1 rounded-md border border-orange-500/15">Eureka</span>
+            <span class="text-[11px] font-mono text-orange-300/80 bg-orange-500/10 px-2.5 py-1 rounded-md border border-orange-500/15">Resilience4j</span>
+          </div>
+        </div>
+
+        <div class="glass glow-border p-6 rounded-3xl group" data-aos="fade-up" data-aos-delay="200">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="p-2.5 bg-sky-500/10 rounded-xl border border-sky-500/20 text-sky-400 group-hover:bg-sky-500/20 transition-colors">
+              <i class="fas fa-stream text-base"></i>
+            </div>
+            <h3 class="font-display font-bold text-white text-lg">Message Queues & Event Streaming</h3>
+          </div>
+          <p class="text-sm text-textMuted leading-relaxed">Exploring asynchronous event-driven patterns with message brokers for decoupled, fault-tolerant backend communication.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="text-[11px] font-mono text-sky-300/80 bg-sky-500/10 px-2.5 py-1 rounded-md border border-sky-500/15">Apache Kafka</span>
+            <span class="text-[11px] font-mono text-sky-300/80 bg-sky-500/10 px-2.5 py-1 rounded-md border border-sky-500/15">RabbitMQ</span>
+          </div>
+        </div>
+
+        <div class="glass glow-border p-6 rounded-3xl group" data-aos="fade-up" data-aos-delay="300">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="p-2.5 bg-violet-500/10 rounded-xl border border-violet-500/20 text-violet-400 group-hover:bg-violet-500/20 transition-colors">
+              <i class="fas fa-cloud-upload-alt text-base"></i>
+            </div>
+            <h3 class="font-display font-bold text-white text-lg">Cloud & Kubernetes</h3>
+          </div>
+          <p class="text-sm text-textMuted leading-relaxed">Learning container orchestration, cloud-native deployments, and infrastructure-as-code for production-grade backend systems.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="text-[11px] font-mono text-violet-300/80 bg-violet-500/10 px-2.5 py-1 rounded-md border border-violet-500/15">Kubernetes</span>
+            <span class="text-[11px] font-mono text-violet-300/80 bg-violet-500/10 px-2.5 py-1 rounded-md border border-violet-500/15">AWS</span>
+            <span class="text-[11px] font-mono text-violet-300/80 bg-violet-500/10 px-2.5 py-1 rounded-md border border-violet-500/15">Terraform</span>
           </div>
         </div>
 
@@ -1629,6 +1693,7 @@
       { label: 'About', icon: 'fas fa-user', section: '#about', hint: 'Hero & intro' },
       { label: 'Skills', icon: 'fas fa-code', section: '#skills', hint: 'Tech stack' },
       { label: 'Projects', icon: 'fas fa-project-diagram', section: '#projects', hint: 'Bento grid' },
+      { label: 'Currently Exploring', icon: 'fas fa-book-reader', section: '#learning', hint: 'Ongoing studies' },
       { label: 'Education', icon: 'fas fa-graduation-cap', section: '#education', hint: 'Academic' },
       { label: 'Certifications', icon: 'fas fa-certificate', section: '#certifications', hint: 'Training' },
       { label: 'GitHub Activity', icon: 'fab fa-github', section: '#github-activity', hint: 'Stats & streak' },
