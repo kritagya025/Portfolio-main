@@ -571,6 +571,23 @@
       color: #52525b;
       font-size: 13px;
     }
+
+    /* ---- Floating Toast Notification ---- */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 99999;
+      pointer-events: none;
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
   </style>
 </head>
 
@@ -1269,10 +1286,16 @@
           </p>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <a href="mailto:kritagyay2006@gmail.com" class="glass glow-border p-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/5 transition-colors group">
-              <i class="fas fa-envelope text-zinc-400 group-hover:text-white transition-colors"></i>
-              <span class="text-sm font-mono text-zinc-200">kritagyay2006@gmail.com</span>
-            </a>
+            <div class="glass glow-border p-4 sm:p-5 rounded-2xl flex items-center justify-between gap-2 group">
+              <a href="mailto:kritagyay2006@gmail.com" class="flex items-center gap-3 text-zinc-200 hover:text-white transition-colors truncate" title="Send email via default client">
+                <i class="fas fa-envelope text-zinc-400 group-hover:text-white transition-colors flex-shrink-0"></i>
+                <span class="text-sm font-mono truncate">kritagyay2006@gmail.com</span>
+              </a>
+              <button id="copy-email-btn" class="px-2.5 py-1 text-xs font-mono text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all flex items-center gap-1.5 cursor-pointer flex-shrink-0" aria-label="Copy email address" title="Copy to clipboard">
+                <i class="far fa-copy text-xs"></i>
+                <span class="text-[11px] hidden sm:inline">Copy</span>
+              </button>
+            </div>
             <a href="tel:+918368099806" class="glass glow-border p-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/5 transition-colors group">
               <i class="fas fa-phone text-zinc-400 group-hover:text-white transition-colors"></i>
               <span class="text-sm font-mono text-zinc-200">+91-8368099806</span>
@@ -1334,6 +1357,12 @@
     <span><kbd class="cmd-palette-kbd">↵</kbd> Jump</span>
     <span><kbd class="cmd-palette-kbd">Ctrl K</kbd> Toggle</span>
   </div>
+</div>
+
+<!-- Floating Toast Notification -->
+<div id="toast" class="glass glow-border px-5 py-3 rounded-full text-xs font-mono text-zinc-200 shadow-2xl flex items-center gap-2" role="status" aria-live="polite">
+  <i class="fas fa-check text-emerald-400"></i>
+  <span id="toast-message">Copied to clipboard!</span>
 </div>
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -1681,6 +1710,38 @@
     }
   });
 
+  // ---- Global Floating Toast Helper ----
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toast-message');
+    if (!toast || !toastMsg) return;
+    toastMsg.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(window._toastTimeout);
+    window._toastTimeout = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2500);
+  }
+
+  // ---- Copy Email to Clipboard ----
+  const copyEmailBtn = document.getElementById('copy-email-btn');
+  if (copyEmailBtn) {
+    copyEmailBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const email = 'kritagyay2006@gmail.com';
+      navigator.clipboard.writeText(email).then(() => {
+        showToast('Email copied to clipboard!');
+        const icon = copyEmailBtn.querySelector('i');
+        if (icon) {
+          icon.className = 'fas fa-check text-emerald-400 text-xs';
+          setTimeout(() => { icon.className = 'far fa-copy text-xs'; }, 2000);
+        }
+      }).catch(() => {
+        showToast('Failed to copy email');
+      });
+    });
+  }
+
   // ---- Command Palette (Ctrl+K Quick Navigation) ----
   (function initCommandPalette() {
     const overlay = document.getElementById('cmd-overlay');
@@ -1698,6 +1759,7 @@
       { label: 'Certifications', icon: 'fas fa-certificate', section: '#certifications', hint: 'Training' },
       { label: 'GitHub Activity', icon: 'fab fa-github', section: '#github-activity', hint: 'Stats & streak' },
       { label: 'Contact', icon: 'fas fa-envelope', section: '#contact', hint: 'Get in touch' },
+      { label: 'Copy Email Address', icon: 'far fa-copy', section: 'copy-email', hint: 'Clipboard' },
       { label: 'Download Resume', icon: 'fas fa-download', section: 'resume', hint: 'PDF' },
       { label: 'LinkedIn', icon: 'fab fa-linkedin', section: 'linkedin', hint: 'External' },
       { label: 'GitHub Profile', icon: 'fab fa-github', section: 'github', hint: 'External' },
@@ -1768,6 +1830,12 @@
         window.open('https://www.linkedin.com/in/kritagya-yadav/', '_blank');
       } else if (cmd.section === 'github') {
         window.open('https://github.com/kritagya025', '_blank');
+      } else if (cmd.section === 'copy-email') {
+        navigator.clipboard.writeText('kritagyay2006@gmail.com').then(() => {
+          showToast('Email copied to clipboard!');
+        }).catch(() => {
+          showToast('Failed to copy email');
+        });
       } else {
         const target = document.querySelector(cmd.section);
         if (target) lenis.scrollTo(target, { duration: 1.2, offset: -80 });
