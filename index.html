@@ -1478,6 +1478,8 @@
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
     let width, height, particles, mouse;
+    let animFrameId = null;
+    let isTabVisible = true;
     const PARTICLE_COUNT = Math.min(60, Math.floor(window.innerWidth / 25));
     const CONNECTION_DIST = 150;
     const MOUSE_RADIUS = 200;
@@ -1555,8 +1557,24 @@
         ctx.fill();
       });
 
-      requestAnimationFrame(draw);
+      animFrameId = requestAnimationFrame(draw);
     }
+
+    // Pause animation when tab is not visible to save CPU/battery
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        isTabVisible = false;
+        if (animFrameId) {
+          cancelAnimationFrame(animFrameId);
+          animFrameId = null;
+        }
+      } else {
+        isTabVisible = true;
+        if (!animFrameId) {
+          animFrameId = requestAnimationFrame(draw);
+        }
+      }
+    });
 
     window.addEventListener('mousemove', e => {
       mouse.x = e.clientX;
@@ -1568,7 +1586,7 @@
 
     resize();
     createParticles();
-    draw();
+    animFrameId = requestAnimationFrame(draw);
   })();
 
   // Dismiss Preloader on Page Load
