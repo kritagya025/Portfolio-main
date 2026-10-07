@@ -589,6 +589,47 @@
       opacity: 1;
       pointer-events: auto;
     }
+
+    /* ---- Shortcuts Modal ---- */
+    .shortcuts-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99990;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    .shortcuts-modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .shortcuts-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.96);
+      width: 90%;
+      max-width: 440px;
+      z-index: 99995;
+      background: rgba(9, 9, 11, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 24px;
+    }
+    .shortcuts-modal.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
   </style>
 </head>
 
@@ -1331,7 +1372,11 @@
       <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
       <p class="font-mono text-xs">© <span id="footer-year"></span> Kritagya Yadav. All rights reserved.</p>
     </div>
-    <div class="flex items-center space-x-8 text-xs font-mono">
+    <div class="flex items-center space-x-6 text-xs font-mono">
+      <button id="shortcuts-trigger-btn" class="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5" title="Keyboard Shortcuts (?)">
+        <i class="fas fa-keyboard text-[11px]"></i>
+        <span>Shortcuts <kbd class="px-1 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">?</kbd></span>
+      </button>
       <a href="mailto:kritagyay2006@gmail.com" class="hover:text-white transition-colors magnetic" aria-label="Send email to Kritagya Yadav">Email</a>
       <a href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors magnetic" aria-label="Visit Kritagya Yadav's GitHub profile">GitHub</a>
       <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors magnetic" aria-label="Visit Kritagya Yadav's LinkedIn profile">LinkedIn</a>
@@ -1356,6 +1401,7 @@
   <div class="cmd-palette-footer">
     <span><kbd class="cmd-palette-kbd">↑↓</kbd> Navigate</span>
     <span><kbd class="cmd-palette-kbd">↵</kbd> Jump</span>
+    <span><kbd class="cmd-palette-kbd">?</kbd> Shortcuts</span>
     <span><kbd class="cmd-palette-kbd">Ctrl K</kbd> Toggle</span>
   </div>
 </div>
@@ -1364,6 +1410,50 @@
 <div id="toast" class="glass glow-border px-5 py-3 rounded-full text-xs font-mono text-zinc-200 shadow-2xl flex items-center gap-2" role="status" aria-live="polite">
   <i class="fas fa-check text-emerald-400"></i>
   <span id="toast-message">Copied to clipboard!</span>
+</div>
+
+<!-- Keyboard Shortcuts Modal -->
+<div class="shortcuts-modal-overlay" id="shortcuts-overlay" aria-hidden="true"></div>
+<div class="shortcuts-modal" id="shortcuts-modal" role="dialog" aria-label="Keyboard Shortcuts" aria-modal="true" aria-hidden="true">
+  <div class="flex items-center justify-between pb-3.5 border-b border-white/10 mb-4">
+    <div class="flex items-center gap-2.5">
+      <div class="p-2 bg-white/5 rounded-lg border border-white/10 text-white">
+        <i class="fas fa-keyboard text-xs"></i>
+      </div>
+      <h3 class="font-display font-bold text-white text-base">Keyboard Shortcuts</h3>
+    </div>
+    <button id="shortcuts-close-btn" class="text-zinc-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer" aria-label="Close shortcuts">
+      <i class="fas fa-times text-sm"></i>
+    </button>
+  </div>
+  <div class="space-y-2.5 font-mono text-xs">
+    <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
+      <span class="text-zinc-300 font-sans text-xs sm:text-sm">Command Palette / Search</span>
+      <div class="flex gap-1">
+        <kbd class="px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">Ctrl</kbd>
+        <kbd class="px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">K</kbd>
+      </div>
+    </div>
+    <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
+      <span class="text-zinc-300 font-sans text-xs sm:text-sm">Keyboard Shortcuts</span>
+      <kbd class="px-2.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">?</kbd>
+    </div>
+    <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
+      <span class="text-zinc-300 font-sans text-xs sm:text-sm">Dismiss Dialogs</span>
+      <kbd class="px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">Esc</kbd>
+    </div>
+    <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
+      <span class="text-zinc-300 font-sans text-xs sm:text-sm">Navigate Palette Items</span>
+      <div class="flex gap-1">
+        <kbd class="px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">↑</kbd>
+        <kbd class="px-2 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">↓</kbd>
+      </div>
+    </div>
+    <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
+      <span class="text-zinc-300 font-sans text-xs sm:text-sm">Execute Selected Command</span>
+      <kbd class="px-2.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">↵ Enter</kbd>
+    </div>
+  </div>
 </div>
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -1761,6 +1851,7 @@
       { label: 'GitHub Activity', icon: 'fab fa-github', section: '#github-activity', hint: 'Stats & streak' },
       { label: 'Contact', icon: 'fas fa-envelope', section: '#contact', hint: 'Get in touch' },
       { label: 'Copy Email Address', icon: 'far fa-copy', section: 'copy-email', hint: 'Clipboard' },
+      { label: 'Keyboard Shortcuts', icon: 'fas fa-keyboard', section: 'shortcuts', hint: 'Cheatsheet (?)' },
       { label: 'Download Resume', icon: 'fas fa-download', section: 'resume', hint: 'PDF' },
       { label: 'LinkedIn', icon: 'fab fa-linkedin', section: 'linkedin', hint: 'External' },
       { label: 'GitHub Profile', icon: 'fab fa-github', section: 'github', hint: 'External' },
@@ -1837,6 +1928,8 @@
         }).catch(() => {
           showToast('Failed to copy email');
         });
+      } else if (cmd.section === 'shortcuts') {
+        openShortcutsModal();
       } else {
         const target = document.querySelector(cmd.section);
         if (target) lenis.scrollTo(target, { duration: 1.2, offset: -80 });
@@ -1900,6 +1993,54 @@
       cmdTriggerBtn.addEventListener('click', openPalette);
     }
   })();
+
+  // ---- Keyboard Shortcuts Modal Controller ----
+  const shortcutsOverlay = document.getElementById('shortcuts-overlay');
+  const shortcutsModal = document.getElementById('shortcuts-modal');
+  const shortcutsCloseBtn = document.getElementById('shortcuts-close-btn');
+  const shortcutsTriggerBtn = document.getElementById('shortcuts-trigger-btn');
+
+  function openShortcutsModal() {
+    if (!shortcutsOverlay || !shortcutsModal) return;
+    shortcutsOverlay.classList.add('active');
+    shortcutsModal.classList.add('active');
+    shortcutsOverlay.setAttribute('aria-hidden', 'false');
+    shortcutsModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeShortcutsModal() {
+    if (!shortcutsOverlay || !shortcutsModal) return;
+    shortcutsOverlay.classList.remove('active');
+    shortcutsModal.classList.remove('active');
+    shortcutsOverlay.setAttribute('aria-hidden', 'true');
+    shortcutsModal.setAttribute('aria-hidden', 'true');
+  }
+
+  function toggleShortcutsModal() {
+    if (!shortcutsModal) return;
+    if (shortcutsModal.classList.contains('active')) {
+      closeShortcutsModal();
+    } else {
+      openShortcutsModal();
+    }
+  }
+
+  if (shortcutsCloseBtn) shortcutsCloseBtn.addEventListener('click', closeShortcutsModal);
+  if (shortcutsOverlay) shortcutsOverlay.addEventListener('click', closeShortcutsModal);
+  if (shortcutsTriggerBtn) shortcutsTriggerBtn.addEventListener('click', openShortcutsModal);
+
+  document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+    if (tag === 'input' || tag === 'textarea') return;
+
+    if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+      e.preventDefault();
+      toggleShortcutsModal();
+    }
+    if (e.key === 'Escape' && shortcutsModal && shortcutsModal.classList.contains('active')) {
+      closeShortcutsModal();
+    }
+  });
 </script>
 
 </body>
