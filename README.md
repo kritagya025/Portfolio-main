@@ -23,15 +23,18 @@ A modern, high-performance personal developer portfolio showcasing software engi
 ## ✨ Features & User Experience
 
 - **💎 Glassmorphism UI**: Deep dark `#030712` aesthetic featuring film grain overlays, backdrop blur effects, animated gradient typography, and glowing card borders.
-- **🍱 Bento Grid Layout**: Organized showcase for projects, skills, education, and technical competencies using modern grid design.
+- **⌘ Command Palette & Shortcuts**: Fast navigation with `Ctrl+K` quick switcher and `?` keyboard shortcuts cheatsheet modal.
+- **🍱 Bento Grid Layout**: Organized showcase for projects, skills, continuous learning, and education using modern grid design.
+- **📋 One-Click Copy & Toast**: Instant email copying to clipboard with floating animated glass toast feedback.
 - **⚡ Interactive Micro-Animations**:
   - Smooth inertia scroll powered by [Lenis](https://lenis.darkroom.engineering/)
   - Reveal animations via [AOS (Animate On Scroll)](https://michalsnik.github.io/aos/)
-  - Physics-based tilt tilt cards with glare effects via [Vanilla-Tilt.js](https://micku7.github.io/vanilla-tilt.js/)
+  - Physics-based tilt cards with glare effects via [Vanilla-Tilt.js](https://micku7.github.io/vanilla-tilt.js/)
   - Infinite skill badge marquees with dual scroll directions
-- **📱 Responsive & Accessible**: Fully optimized across desktop, tablet, and mobile displays with screen-reader friendly skip navigation landmarks (`a11y`).
+  - Page Visibility API optimization pausing background particles when inactive
+- **📱 PWA & Mobile Ready**: Web App Manifest (`site.webmanifest`) for standalone home-screen installation, responsive drawer menu, and mobile status bar theming.
 - **🔍 SEO & Social Card Ready**: Complete Open Graph, Twitter Cards, resource preconnects, and custom inline SVG branding favicon.
-- **🚀 Performance Optimized**: Fast asset prefetching, asynchronous script hydration, and lightweight vector assets.
+- **🚀 Performance Optimized**: Resource hints, content-visibility containment, asynchronous script hydration, and lightweight vector assets.
 
 ---
 
@@ -105,6 +108,7 @@ Portfolio-main/
 ├── Kritagya_Yadav_Resume.pdf  # Downloadable resume asset
 ├── robots.txt              # SEO crawler directives
 ├── sitemap.xml             # XML sitemap for search engines
+├── site.webmanifest        # Web App Manifest for PWA installation
 ├── .editorconfig           # Editor formatting consistency rules
 ├── .gitattributes          # Git line-ending normalization
 ├── .gitignore              # OS, editor, and build artifact exclusions

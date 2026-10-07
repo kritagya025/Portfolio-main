@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.3.0] - 2026-10-07
+
+### Added
+- "Currently Exploring" section highlighting ongoing technical upskilling (Microservices, Kafka, Kubernetes)
+- One-click copy email button with floating glass toast notification feedback
+- Interactive Keyboard Shortcuts modal with `?` trigger and visual cheatsheet
+- Web App Manifest (`site.webmanifest`) for PWA installation support
+- Visual `Ctrl+K` shortcut indicator badge in desktop navigation bar
+- ARIA live region (`aria-live="polite"`, `role="status"`) on role typing animation for assistive technology
+- Page Visibility API integration to pause particle canvas loop when browser tab is inactive
+
+### Changed
+- Integrated "Currently Exploring", "Copy Email", and "Keyboard Shortcuts" into Ctrl+K Command Palette
+- Updated sitemap.xml to include `#learning` section URL and refreshed lastmod dates
+- Bumped version to v2.3.0
+
 ---
 
 ## [2.2.0] - 2026-10-04
