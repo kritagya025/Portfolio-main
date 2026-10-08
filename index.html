@@ -781,6 +781,21 @@
         B.Tech Computer Science & Engineering student (2023–2027) at KCC Institute of Technology & Management (AKTU, CGPA: 7.58). Specializing in Java, Spring Boot, RESTful API design, database architectures, and scalable backend engineering. Driven by core CS principles, robust software design, and automated testing.
       </p>
 
+      <!-- Live Availability & Local Time Status Banner -->
+      <div data-aos="fade-up" data-aos-delay="70" class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-8 text-xs font-mono">
+        <div class="glass glow-border px-4 py-2 rounded-full flex items-center gap-2.5 text-zinc-300">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span>Available for Backend Roles & Internships</span>
+        </div>
+        <div class="glass glow-border px-4 py-2 rounded-full flex items-center gap-2 text-zinc-400" title="Kritagya's Local Timezone">
+          <i class="far fa-clock text-zinc-400 text-[11px]"></i>
+          <span>Greater Noida, India &middot; <span id="live-ist-time" class="text-zinc-200 font-semibold">--:-- -- IST</span></span>
+        </div>
+      </div>
+
       <!-- Key Quick Stats Pill -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10 w-full max-w-3xl">
         <div class="glass glow-border p-4 rounded-2xl text-center">
@@ -1702,6 +1717,27 @@
 
   // Dynamic Copyright Year
   document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+  // ---- Real-time Local Time (IST: Asia/Kolkata) ----
+  function updateLocalTime() {
+    const timeEl = document.getElementById('live-ist-time');
+    if (!timeEl) return;
+    try {
+      const options = {
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      };
+      const formatted = new Intl.DateTimeFormat('en-US', options).format(new Date());
+      timeEl.textContent = `${formatted} IST`;
+    } catch (e) {
+      const now = new Date();
+      timeEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' IST';
+    }
+  }
+  updateLocalTime();
+  setInterval(updateLocalTime, 30000);
 
   // ---- Particle Constellation Background ----
   (function initParticles() {
