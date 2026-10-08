@@ -656,6 +656,51 @@
       visibility: visible;
       transform: translate(-50%, -50%) scale(1);
     }
+
+    /* ---- System Architecture Deep-Dive Modal ---- */
+    .arch-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99990;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    .arch-modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .arch-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.96);
+      width: 92%;
+      max-width: 720px;
+      max-height: 88vh;
+      overflow-y: auto;
+      z-index: 99995;
+      background: rgba(9, 9, 11, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 50px rgba(16, 185, 129, 0.08);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 24px 28px;
+    }
+    .arch-modal.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .arch-modal::-webkit-scrollbar { width: 5px; }
+    .arch-modal::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
   </style>
 </head>
 
@@ -1098,10 +1143,16 @@
                   Featured Backend Project
                 </span>
               </div>
-              <div class="magnetic">
-                <a href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer" title="GitHub Repository" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-textMuted hover:text-white hover:bg-white/10 transition-all">
-                  <i class="fab fa-github text-xl"></i>
-                </a>
+              <div class="flex items-center gap-2">
+                <button type="button" id="open-event-arch-btn" class="px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer" aria-label="View system architecture diagram and concurrency breakdown" title="System Architecture Deep Dive">
+                  <i class="fas fa-sitemap text-xs"></i>
+                  <span class="hidden sm:inline">Architecture</span>
+                </button>
+                <div class="magnetic">
+                  <a href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer" title="GitHub Repository" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-textMuted hover:text-white hover:bg-white/10 transition-all">
+                    <i class="fab fa-github text-xl"></i>
+                  </a>
+                </div>
               </div>
             </div>
             
@@ -1517,6 +1568,109 @@
       <span class="text-zinc-300 font-sans text-xs sm:text-sm">Execute Selected Command</span>
       <kbd class="px-2.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300">↵ Enter</kbd>
     </div>
+  </div>
+</div>
+
+<!-- System Architecture Modal (Event Booking System) -->
+<div class="arch-modal-overlay" id="arch-overlay" aria-hidden="true"></div>
+<div class="arch-modal" id="arch-modal" role="dialog" aria-label="System Architecture: Event Booking Engine" aria-modal="true" aria-hidden="true">
+  <div class="flex items-center justify-between pb-3.5 border-b border-white/10 mb-5">
+    <div class="flex items-center gap-3">
+      <div class="p-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400">
+        <i class="fas fa-sitemap text-sm"></i>
+      </div>
+      <div>
+        <h3 class="font-display font-bold text-white text-base">System Architecture</h3>
+        <p class="text-xs font-mono text-zinc-400">Event Booking Engine &middot; Concurrency & State Flow</p>
+      </div>
+    </div>
+    <button id="arch-close-btn" class="text-zinc-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer" aria-label="Close architecture modal">
+      <i class="fas fa-times text-sm"></i>
+    </button>
+  </div>
+
+  <!-- Architecture Flow Diagram Box -->
+  <div class="bg-black/40 border border-white/10 rounded-2xl p-4 mb-5 font-mono text-xs overflow-x-auto">
+    <div class="text-[11px] text-zinc-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+      <span>High-Concurrency Booking Lifecycle</span>
+      <span class="text-emerald-400">REST + STOMP / WebSocket</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-2 text-center text-xs">
+      <div class="p-3 bg-white/5 border border-white/10 rounded-xl">
+        <div class="text-zinc-400 text-[10px] uppercase">1. Client Request</div>
+        <div class="text-white font-semibold mt-1">Seat Lock Req</div>
+        <div class="text-[10px] text-zinc-400 mt-0.5">JWT Authorization</div>
+      </div>
+      <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+        <div class="text-emerald-400 text-[10px] uppercase">2. Security & Guard</div>
+        <div class="text-emerald-300 font-semibold mt-1">Spring Security</div>
+        <div class="text-[10px] text-zinc-400 mt-0.5">RBAC & Refresh Rotation</div>
+      </div>
+      <div class="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+        <div class="text-blue-400 text-[10px] uppercase">3. Distributed Lock</div>
+        <div class="text-blue-300 font-semibold mt-1">Redis TTL Lock</div>
+        <div class="text-[10px] text-zinc-400 mt-0.5">10-Min Hold Expiry</div>
+      </div>
+      <div class="p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+        <div class="text-purple-400 text-[10px] uppercase">4. Commit & Broadcast</div>
+        <div class="text-purple-300 font-semibold mt-1">PostgreSQL + WS</div>
+        <div class="text-[10px] text-zinc-400 mt-0.5">@Version Optimistic Lock</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Architecture Pillars Grid -->
+  <div class="space-y-3 font-sans text-xs">
+    <div class="p-3.5 rounded-xl bg-white/5 border border-white/5">
+      <div class="flex items-center gap-2 mb-1.5 font-mono text-zinc-200 font-semibold">
+        <i class="fas fa-shield-virus text-emerald-400"></i>
+        <span>Optimistic Concurrency Control (@Version)</span>
+      </div>
+      <p class="text-zinc-400 leading-relaxed">
+        PostgreSQL entity rows maintain an incremental version counter. When concurrent transactions attempt to book the same ticket, only the first transaction commits; subsequent transactions raise an <code class="text-zinc-200 font-mono text-[11px]">OptimisticLockException</code> and rollback cleanly, preventing overbooking.
+      </p>
+    </div>
+
+    <div class="p-3.5 rounded-xl bg-white/5 border border-white/5">
+      <div class="flex items-center gap-2 mb-1.5 font-mono text-zinc-200 font-semibold">
+        <i class="fas fa-stopwatch text-blue-400"></i>
+        <span>Redis Distributed Seat Lock with Auto-Expiration</span>
+      </div>
+      <p class="text-zinc-400 leading-relaxed">
+        Users reserve a seat for a 10-minute checkout window backed by Redis TTL keys (<code class="text-zinc-200 font-mono text-[11px]">seat:{id}:lock</code>). If the payment times out or the session abandons, the key naturally expires without blocking other customers.
+      </p>
+    </div>
+
+    <div class="p-3.5 rounded-xl bg-white/5 border border-white/5">
+      <div class="flex items-center gap-2 mb-1.5 font-mono text-zinc-200 font-semibold">
+        <i class="fas fa-satellite-dish text-indigo-400"></i>
+        <span>Real-Time Seat Availability via STOMP WebSockets</span>
+      </div>
+      <p class="text-zinc-400 leading-relaxed">
+        State transitions trigger a broadcast event over an in-memory STOMP message broker. Connected browsers receive instantaneous seat map delta updates without high-overhead polling loops.
+      </p>
+    </div>
+
+    <div class="p-3.5 rounded-xl bg-white/5 border border-white/5">
+      <div class="flex items-center gap-2 mb-1.5 font-mono text-zinc-200 font-semibold">
+        <i class="fas fa-lock text-yellow-400"></i>
+        <span>Dual-Token JWT Security & BCrypt Password Hashing</span>
+      </div>
+      <p class="text-zinc-400 leading-relaxed">
+        Short-lived access tokens (15m) paired with database-backed refresh token rotation ensure stateless REST verification while preserving instantaneous revocation capability upon security compromise.
+      </p>
+    </div>
+  </div>
+
+  <div class="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-zinc-400">
+    <div class="flex items-center gap-2">
+      <i class="fas fa-shield-alt text-emerald-400"></i>
+      <span>Verified with Mockito & JUnit 5</span>
+    </div>
+    <a href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer" class="text-white hover:text-emerald-400 flex items-center gap-1.5 transition-colors">
+      <span>View Source Code</span>
+      <i class="fas fa-external-link-alt text-[10px]"></i>
+    </a>
   </div>
 </div>
 
@@ -1976,6 +2130,7 @@
       { label: 'Filter: High Concurrency', icon: 'fas fa-bolt', section: 'filter:concurrency', hint: 'Projects' },
       { label: 'Filter: Cloud & DevOps', icon: 'fas fa-cloud', section: 'filter:devops', hint: 'Projects' },
       { label: 'Filter: Security & APIs', icon: 'fas fa-shield-alt', section: 'filter:security', hint: 'Projects' },
+      { label: 'Architecture: Event Booking System', icon: 'fas fa-sitemap', section: 'architecture-modal', hint: 'Deep dive' },
       { label: 'Currently Exploring', icon: 'fas fa-book-reader', section: '#learning', hint: 'Ongoing studies' },
       { label: 'Education', icon: 'fas fa-graduation-cap', section: '#education', hint: 'Academic' },
       { label: 'Certifications', icon: 'fas fa-certificate', section: '#certifications', hint: 'Training' },
@@ -2049,6 +2204,8 @@
         setActiveProjectFilter(filterCat);
         const target = document.querySelector('#projects');
         if (target) lenis.scrollTo(target, { duration: 1.2, offset: -80 });
+      } else if (cmd.section === 'architecture-modal') {
+        openArchModal();
       } else if (cmd.section === 'resume') {
         const link = document.createElement('a');
         link.href = 'Kritagya_Yadav_Resume.pdf';
@@ -2130,6 +2287,32 @@
     }
   })();
 
+  // ---- System Architecture Modal Controller ----
+  const archOverlay = document.getElementById('arch-overlay');
+  const archModal = document.getElementById('arch-modal');
+  const archCloseBtn = document.getElementById('arch-close-btn');
+  const openArchBtn = document.getElementById('open-event-arch-btn');
+
+  function openArchModal() {
+    if (!archOverlay || !archModal) return;
+    archOverlay.classList.add('active');
+    archModal.classList.add('active');
+    archOverlay.setAttribute('aria-hidden', 'false');
+    archModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeArchModal() {
+    if (!archOverlay || !archModal) return;
+    archOverlay.classList.remove('active');
+    archModal.classList.remove('active');
+    archOverlay.setAttribute('aria-hidden', 'true');
+    archModal.setAttribute('aria-hidden', 'true');
+  }
+
+  if (openArchBtn) openArchBtn.addEventListener('click', openArchModal);
+  if (archCloseBtn) archCloseBtn.addEventListener('click', closeArchModal);
+  if (archOverlay) archOverlay.addEventListener('click', closeArchModal);
+
   // ---- Keyboard Shortcuts Modal Controller ----
   const shortcutsOverlay = document.getElementById('shortcuts-overlay');
   const shortcutsModal = document.getElementById('shortcuts-modal');
@@ -2173,8 +2356,13 @@
       e.preventDefault();
       toggleShortcutsModal();
     }
-    if (e.key === 'Escape' && shortcutsModal && shortcutsModal.classList.contains('active')) {
-      closeShortcutsModal();
+    if (e.key === 'Escape') {
+      if (archModal && archModal.classList.contains('active')) {
+        closeArchModal();
+      }
+      if (shortcutsModal && shortcutsModal.classList.contains('active')) {
+        closeShortcutsModal();
+      }
     }
   });
 </script>
