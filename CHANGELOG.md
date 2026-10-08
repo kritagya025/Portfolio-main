@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.4.0] - 2026-10-08
+
+### Added
+- Interactive Project Filter system with animated category pills (All, High Concurrency, Cloud & DevOps, Security & APIs) and dynamic item counts
+- System Architecture Deep Dive interactive modal for featured high-concurrency Event Booking System project (flow lifecycle diagram, concurrency control, Redis TTL locks, STOMP WebSockets, dual-token JWT)
+- Live hiring availability status pill ("Available for Backend Roles & Internships") with pulsing indicator
+- Real-time IST (UTC+5:30) local time widget with automated minute ticker in Hero section
+- Direct architecture modal trigger and project filter commands in `Ctrl+K` Command Palette
+
+### Changed
+- Enhanced Bento Grid layout to gracefully handle filtered single-item views with responsive full-width spans
+- Updated `Escape` key shortcut controller to dismiss both Architecture modal and Shortcuts modal
+- Updated sitemap.xml `lastmod` timestamps to 2026-10-08
+- Bumped version to v2.4.0
+
+---
+
 ## [2.3.0] - 2026-10-07
 
 ### Added

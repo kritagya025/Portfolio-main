@@ -23,8 +23,10 @@ A modern, high-performance personal developer portfolio showcasing software engi
 ## ✨ Features & User Experience
 
 - **💎 Glassmorphism UI**: Deep dark `#030712` aesthetic featuring film grain overlays, backdrop blur effects, animated gradient typography, and glowing card borders.
-- **⌘ Command Palette & Shortcuts**: Fast navigation with `Ctrl+K` quick switcher and `?` keyboard shortcuts cheatsheet modal.
-- **🍱 Bento Grid Layout**: Organized showcase for projects, skills, continuous learning, and education using modern grid design.
+- **🟢 Live Availability & Local Time**: Real-time hiring availability badge paired with dynamic Indian Standard Time (IST &middot; UTC+5:30) clock widget in the Hero section.
+- **🍱 Interactive Bento Grid & Category Filters**: Filter projects smoothly across categories (*All*, *High Concurrency*, *Cloud & DevOps*, *Security & APIs*) with animated cards and real-time counts.
+- **🏛️ System Architecture Deep Dive**: Interactive architecture modal detailing the Event Booking Engine's high-concurrency lifecycle, `@Version` optimistic locking, Redis TTL locks, and STOMP WebSocket broadcasting.
+- **⌘ Command Palette & Shortcuts**: Fast navigation with `Ctrl+K` quick switcher (with category filtering and architecture deep-dive triggers) and `?` keyboard shortcuts cheatsheet modal.
 - **📋 One-Click Copy & Toast**: Instant email copying to clipboard with floating animated glass toast feedback.
 - **⚡ Interactive Micro-Animations**:
   - Smooth inertia scroll powered by [Lenis](https://lenis.darkroom.engineering/)
@@ -158,6 +160,6 @@ Alternatively, deploy to any static hosting provider (Netlify, Vercel, Cloudflar
 ---
 
 *Designed & Maintained by Kritagya Yadav.*
-> Last updated: 2026-10-04
+> Last updated: 2026-10-08
 
 
