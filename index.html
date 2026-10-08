@@ -228,6 +228,32 @@
       .bento-large, .bento-wide, .bento-tall, .bento-box { grid-column: span 1; grid-row: span 1; }
     }
 
+    /* ---- Project Category Filter Styles ---- */
+    .project-filter-btn {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .project-filter-btn.active {
+      background: #ffffff !important;
+      color: #030712 !important;
+      border-color: #ffffff !important;
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+    }
+    .project-filter-btn.active .filter-count {
+      background: rgba(3, 7, 18, 0.15) !important;
+      color: #030712 !important;
+    }
+    .bento-card-item {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      opacity: 1;
+      transform: scale(1);
+    }
+    .bento-card-item.is-filtered-out {
+      display: none !important;
+    }
+    .bento-grid.filtered-single > .bento-card-item:not(.is-filtered-out) {
+      grid-column: span 4;
+    }
+
     /* ---- Custom Scrollbar Styling ---- */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #030712; }
@@ -1014,14 +1040,37 @@
         <h2 class="text-3xl md:text-4xl font-display font-bold text-white tracking-tight">Verified Software Engineering Projects</h2>
       </div>
 
-      <p class="text-textMuted text-sm md:text-base max-w-2xl mb-12" data-aos="fade-right" data-aos-delay="50">
+      <p class="text-textMuted text-sm md:text-base max-w-2xl mb-8" data-aos="fade-right" data-aos-delay="50">
         Backend systems engineered with clean Java architectures, security standards, optimistic concurrency, and automated delivery pipelines.
       </p>
       
-      <div class="bento-grid">
+      <!-- Project Category Filter Pills -->
+      <div class="flex flex-wrap items-center gap-2.5 mb-8" data-aos="fade-up" id="project-filters" role="tablist" aria-label="Filter projects by category">
+        <button type="button" class="project-filter-btn active px-4 py-2 rounded-full text-xs font-mono font-medium border border-white/10 bg-white text-bgDark flex items-center gap-2 cursor-pointer transition-all" data-filter="all" role="tab" aria-selected="true">
+          <span>All Projects</span>
+          <span class="filter-count text-[10px] px-2 py-0.5 rounded-full bg-black/10 text-bgDark font-bold">3</span>
+        </button>
+        <button type="button" class="project-filter-btn px-4 py-2 rounded-full text-xs font-mono font-medium border border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 flex items-center gap-2 cursor-pointer transition-all" data-filter="concurrency" role="tab" aria-selected="false">
+          <i class="fas fa-bolt text-[11px] text-emerald-400"></i>
+          <span>High Concurrency</span>
+          <span class="filter-count text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 font-bold">1</span>
+        </button>
+        <button type="button" class="project-filter-btn px-4 py-2 rounded-full text-xs font-mono font-medium border border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 flex items-center gap-2 cursor-pointer transition-all" data-filter="devops" role="tab" aria-selected="false">
+          <i class="fas fa-cloud text-[11px] text-blue-400"></i>
+          <span>Cloud & DevOps</span>
+          <span class="filter-count text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 font-bold">1</span>
+        </button>
+        <button type="button" class="project-filter-btn px-4 py-2 rounded-full text-xs font-mono font-medium border border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 flex items-center gap-2 cursor-pointer transition-all" data-filter="security" role="tab" aria-selected="false">
+          <i class="fas fa-shield-alt text-[11px] text-purple-400"></i>
+          <span>Security & APIs</span>
+          <span class="filter-count text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 font-bold">2</span>
+        </button>
+      </div>
+
+      <div class="bento-grid" id="bento-project-grid">
 
         <!-- Project 1: Event Booking System (Large Bento) -->
-        <div class="bento-large group relative glass glow-border rounded-3xl p-8 flex flex-col justify-between overflow-hidden tilt-card" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.15" data-aos="fade-up">
+        <div class="bento-card-item bento-large group relative glass glow-border rounded-3xl p-8 flex flex-col justify-between overflow-hidden tilt-card" data-category="concurrency security" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.15" data-aos="fade-up">
           <div class="absolute top-0 right-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-[100px] group-hover:bg-emerald-500/15 transition-all duration-700 pointer-events-none transform translate-z-10"></div>
           
           <div>
@@ -1061,7 +1110,7 @@
         </div>
 
         <!-- Project 2: LinkPulse – URL Shortener Platform (Wide Bento) -->
-        <div class="bento-wide group relative glass glow-border rounded-3xl p-8 flex flex-col justify-between overflow-hidden tilt-card" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.15" data-aos="fade-up" data-aos-delay="100">
+        <div class="bento-card-item bento-wide group relative glass glow-border rounded-3xl p-8 flex flex-col justify-between overflow-hidden tilt-card" data-category="devops" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.15" data-aos="fade-up" data-aos-delay="100">
           <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] group-hover:bg-blue-500/15 transition-all duration-700 pointer-events-none transform translate-z-10"></div>
           
           <div>
@@ -1101,7 +1150,7 @@
         </div>
 
         <!-- Project 3: KeyVault (Tall/Wide Bento) -->
-        <div class="bento-tall group relative glass glow-border rounded-3xl p-8 flex flex-col justify-between overflow-hidden tilt-card" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.15" data-aos="fade-up" data-aos-delay="200">
+        <div class="bento-card-item bento-tall group relative glass glow-border rounded-3xl p-8 flex flex-col justify-between overflow-hidden tilt-card" data-category="security" data-tilt data-tilt-max="4" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.15" data-aos="fade-up" data-aos-delay="200">
           <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-purple-500/10 rounded-full blur-[70px] group-hover:bg-purple-500/15 transition-all duration-700 pointer-events-none transform translate-z-10"></div>
           
           <div>
@@ -1833,6 +1882,48 @@
     });
   }
 
+  // ---- Project Category Filtering ----
+  function setActiveProjectFilter(filterId) {
+    const filterBtns = document.querySelectorAll('.project-filter-btn');
+    const projectCards = document.querySelectorAll('.bento-card-item');
+    const projectGrid = document.getElementById('bento-project-grid');
+
+    filterBtns.forEach(btn => {
+      const isActive = btn.dataset.filter === filterId;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    let visibleCount = 0;
+    projectCards.forEach(card => {
+      const categories = card.dataset.category || '';
+      const matches = filterId === 'all' || categories.includes(filterId);
+      if (matches) {
+        card.classList.remove('is-filtered-out');
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1)';
+        visibleCount++;
+      } else {
+        card.classList.add('is-filtered-out');
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+      }
+    });
+
+    if (projectGrid) {
+      projectGrid.classList.toggle('filtered-single', visibleCount === 1);
+    }
+  }
+
+  (function initProjectFilters() {
+    const filterBtns = document.querySelectorAll('.project-filter-btn');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        setActiveProjectFilter(btn.dataset.filter);
+      });
+    });
+  })();
+
   // ---- Command Palette (Ctrl+K Quick Navigation) ----
   (function initCommandPalette() {
     const overlay = document.getElementById('cmd-overlay');
@@ -1845,6 +1936,10 @@
       { label: 'About', icon: 'fas fa-user', section: '#about', hint: 'Hero & intro' },
       { label: 'Skills', icon: 'fas fa-code', section: '#skills', hint: 'Tech stack' },
       { label: 'Projects', icon: 'fas fa-project-diagram', section: '#projects', hint: 'Bento grid' },
+      { label: 'Filter: All Projects', icon: 'fas fa-th-large', section: 'filter:all', hint: 'Projects' },
+      { label: 'Filter: High Concurrency', icon: 'fas fa-bolt', section: 'filter:concurrency', hint: 'Projects' },
+      { label: 'Filter: Cloud & DevOps', icon: 'fas fa-cloud', section: 'filter:devops', hint: 'Projects' },
+      { label: 'Filter: Security & APIs', icon: 'fas fa-shield-alt', section: 'filter:security', hint: 'Projects' },
       { label: 'Currently Exploring', icon: 'fas fa-book-reader', section: '#learning', hint: 'Ongoing studies' },
       { label: 'Education', icon: 'fas fa-graduation-cap', section: '#education', hint: 'Academic' },
       { label: 'Certifications', icon: 'fas fa-certificate', section: '#certifications', hint: 'Training' },
@@ -1913,7 +2008,12 @@
 
     function executeCommand(cmd) {
       closePalette();
-      if (cmd.section === 'resume') {
+      if (cmd.section.startsWith('filter:')) {
+        const filterCat = cmd.section.split(':')[1];
+        setActiveProjectFilter(filterCat);
+        const target = document.querySelector('#projects');
+        if (target) lenis.scrollTo(target, { duration: 1.2, offset: -80 });
+      } else if (cmd.section === 'resume') {
         const link = document.createElement('a');
         link.href = 'Kritagya_Yadav_Resume.pdf';
         link.download = 'Kritagya_Yadav_Resume.pdf';
