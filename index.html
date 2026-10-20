@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 3.13.0 -->
+<!-- Portfolio Version: 3.14.0 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
@@ -472,7 +472,10 @@
       border-radius: 5px;
     }
 
-    /* ---- Page Entrance Preloader ---- */
+    /* ---- Page intro: a "system boot" ----
+       Two blast-door panels with an LED dot field; a KY monogram draws itself inside a ring that fills
+       with the real loading progress; the name decodes from scrambled glyphs; a boot log types facts
+       from the site; then a seam glows and the doors part while the emblem flies toward the viewer. */
     .preloader {
       position: fixed;
       inset: 0;
@@ -480,75 +483,160 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: hsl(var(--background));
-      clip-path: circle(150% at 50% 50%);
-      transition: clip-path 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+      overflow: hidden;
+      cursor: pointer;
     }
-    .preloader.is-exiting { clip-path: circle(0% at 50% 50%); }
-    .preloader-marquee {
+    .preloader-half {
+      position: absolute;
+      inset-inline: 0;
+      height: 50.5%;
+      background-color: hsl(var(--background));
+      background-image: radial-gradient(hsl(var(--primary) / 0.14) 1px, transparent 1.7px);
+      background-size: 26px 26px;
+      transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1);
+    }
+    .preloader-half.is-top { top: 0; background-position: 0 0; }
+    .preloader-half.is-bottom { bottom: 0; background-position: 0 100%; }
+    .preloader.is-exiting .preloader-half.is-top { transform: translateY(-101%); }
+    .preloader.is-exiting .preloader-half.is-bottom { transform: translateY(101%); }
+    .preloader-glow {
+      position: absolute;
+      width: 60vmin;
+      height: 60vmin;
+      border-radius: 50%;
+      background: radial-gradient(circle, hsl(var(--primary) / 0.18), hsl(var(--accent) / 0.08) 45%, transparent 70%);
+      filter: blur(20px);
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+    .preloader-scan {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 22%;
+      background: linear-gradient(transparent, hsl(var(--primary) / 0.07) 50%, transparent);
+      animation: portal-scan 2.4s linear infinite;
+      pointer-events: none;
+    }
+    .preloader-seam {
       position: absolute;
       inset-inline: 0;
       top: 50%;
-      transform: translateY(-50%);
-      overflow: hidden;
+      height: 2px;
+      transform: translateY(-50%) scaleX(0);
+      background: linear-gradient(90deg, transparent, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--primary)), transparent);
+      box-shadow: 0 0 24px 2px hsl(var(--primary) / 0.7);
+      transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.5s ease 0.25s;
       pointer-events: none;
     }
-    .preloader-marquee > div { display: flex; width: max-content; animation: marquee 25s linear infinite; }
-    .preloader-marquee span {
-      padding-right: 0.4em;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 5vw;
-      letter-spacing: -0.02em;
-      white-space: nowrap;
-      color: hsl(var(--foreground) / 0.035);
-    }
-    .preloader-pill {
+    .preloader.is-done .preloader-seam { transform: translateY(-50%) scaleX(1); }
+    .preloader.is-exiting .preloader-seam,
+    .preloader.is-exiting .preloader-glow,
+    .preloader.is-exiting .preloader-scan,
+    .preloader.is-exiting .preloader-log,
+    .preloader.is-exiting .preloader-skip { opacity: 0; }
+    .preloader-core {
       position: relative;
-      isolation: isolate;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4rem;
+      padding: 0 1.5rem;
+      transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.55s ease, filter 0.7s ease;
+    }
+    .preloader.is-exiting .preloader-core { transform: scale(1.25); opacity: 0; filter: blur(8px); }
+    .preloader-emblem { position: relative; width: clamp(150px, 26vmin, 210px); aspect-ratio: 1; display: grid; place-items: center; }
+    .preloader-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+    .preloader-ring circle { fill: none; }
+    .preloader-ring .ring-track { stroke: hsl(var(--border)); stroke-width: 2; }
+    .preloader-ring .ring-progress {
+      stroke: url(#intro-gradient);
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-dasharray: 100;
+      stroke-dashoffset: calc(100 - var(--progress, 0));
+      filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.65));
+    }
+    .preloader-ring .ring-dash {
+      stroke: hsl(var(--accent) / 0.55);
+      stroke-width: 1.2;
+      stroke-dasharray: 2 7;
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: portal-spin 7s linear infinite;
+    }
+    .preloader-mono { width: 54%; overflow: visible; transition: filter 0.4s ease, transform 0.4s ease; }
+    .preloader-mono path {
+      fill: none;
+      stroke: url(#intro-mono-gradient);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: mono-draw 0.55s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    }
+    .preloader-mono path:nth-of-type(2) { animation-delay: 0.12s; }
+    .preloader-mono path:nth-of-type(3) { animation-delay: 0.24s; }
+    .preloader-mono path:nth-of-type(4) { animation-delay: 0.36s; }
+    .preloader-mono path:nth-of-type(5) { animation-delay: 0.48s; }
+    .preloader.is-done .preloader-mono { filter: drop-shadow(0 0 16px hsl(var(--primary) / 0.75)); transform: scale(1.06); }
+    .intro-stop-a { stop-color: hsl(var(--primary)); }
+    .intro-stop-b { stop-color: hsl(var(--accent)); }
+    .preloader-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.25rem, 3.6vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      margin-right: -0.3em;
+      color: hsl(var(--foreground));
+      white-space: nowrap;
+    }
+    .preloader-status {
       display: flex;
       align-items: center;
-      gap: 2rem;
-      padding: 1.25rem 3rem;
-      border-radius: 9999px;
+      gap: 0.9rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.875rem;
-      animation: pill-in 0.6s var(--ease-out) both;
-    }
-    .preloader-pill::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: -2;
-      border-radius: inherit;
-      opacity: 0.65;
-      background: conic-gradient(from calc(var(--progress, 0) * 3.6deg), hsl(var(--primary)), hsl(var(--accent)), hsl(var(--primary)));
-    }
-    .preloader-pill::after {
-      content: '';
-      position: absolute;
-      inset: 2px;
-      z-index: -1;
-      border-radius: inherit;
-      background: hsl(var(--card));
-    }
-    .preloader-label { font-weight: 500; letter-spacing: 0.2em; color: hsl(var(--foreground) / 0.6); }
-    .preloader-divider { width: 1px; height: 1.25rem; background: hsl(var(--foreground) / 0.1); }
-    .preloader-count { min-width: 4ch; font-weight: 700; letter-spacing: 0.05em; font-variant-numeric: tabular-nums; }
-    .preloader-welcome {
-      position: absolute;
-      bottom: 30%;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.875rem;
-      font-weight: 500;
-      letter-spacing: 0.5em;
+      font-size: 0.72rem;
+      letter-spacing: 0.28em;
       text-transform: uppercase;
-      color: hsl(var(--primary));
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
+      color: hsl(var(--muted-foreground));
+      transition: color 0.3s ease;
     }
-    .preloader.is-done .preloader-welcome { opacity: 1; transform: none; }
+    .preloader-status .preloader-count { min-width: 4ch; font-weight: 700; letter-spacing: 0.05em; font-variant-numeric: tabular-nums; }
+    .preloader.is-done .preloader-status { color: hsl(var(--primary)); }
+    .preloader-log {
+      position: absolute;
+      left: clamp(1rem, 4vw, 3rem);
+      bottom: clamp(1rem, 5vh, 2.75rem);
+      z-index: 1;
+      margin: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      line-height: 1.8;
+      color: hsl(var(--muted-foreground));
+      transition: opacity 0.4s ease;
+    }
+    .preloader-log span { display: block; white-space: pre; animation: log-type 0.28s steps(28, end) both; }
+    .preloader-log .ok { color: hsl(var(--primary)); }
+    .preloader-skip {
+      position: absolute;
+      right: clamp(1rem, 4vw, 3rem);
+      bottom: clamp(1rem, 5vh, 2.75rem);
+      z-index: 1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: hsl(var(--muted-foreground) / 0.7);
+      transition: opacity 0.4s ease;
+    }
+    @keyframes mono-draw { to { stroke-dashoffset: 0; } }
+    @keyframes log-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+    @media (max-width: 640px) {
+      .preloader-log { font-size: 0.62rem; }
+      .preloader-skip { display: none; }
+    }
 
     /* ---- Scroll Progress Indicator ---- */
     .scroll-progress {
@@ -1309,7 +1397,6 @@
     @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(12px); } }
     @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 33% { transform: translateY(-10px) rotate(0.6deg); } 66% { transform: translateY(5px) rotate(-0.6deg); } }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-    @keyframes pill-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
     @keyframes tile-in { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
     @keyframes card-in { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: none; } }
     @keyframes nav-dot-in { from { transform: translateX(-50%) scale(0); } to { transform: translateX(-50%) scale(1); } }
@@ -1361,20 +1448,46 @@
   </div>
 </noscript>
 
-<!-- Page Entrance Preloader -->
+<!-- Page intro: a "system boot" (script: initPreloader). Click or press any key to skip. -->
 <div class="preloader" id="preloader" aria-hidden="true">
-  <div class="preloader-marquee">
-    <div>
-      <span>JAVA BACKEND DEVELOPER • SPRING BOOT ENGINEER • SOFTWARE ENGINEER • API ARCHITECT •</span>
-      <span>JAVA BACKEND DEVELOPER • SPRING BOOT ENGINEER • SOFTWARE ENGINEER • API ARCHITECT •</span>
+  <div class="preloader-half is-top"></div>
+  <div class="preloader-half is-bottom"></div>
+  <div class="preloader-glow"></div>
+  <div class="preloader-scan"></div>
+  <div class="preloader-seam"></div>
+  <div class="preloader-core">
+    <div class="preloader-emblem">
+      <svg class="preloader-ring" viewBox="0 0 200 200" aria-hidden="true">
+        <defs>
+          <linearGradient id="intro-gradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" class="intro-stop-a"></stop>
+            <stop offset="1" class="intro-stop-b"></stop>
+          </linearGradient>
+        </defs>
+        <circle class="ring-track" cx="100" cy="100" r="92"></circle>
+        <circle class="ring-progress" cx="100" cy="100" r="92" pathLength="100"></circle>
+        <circle class="ring-dash" cx="100" cy="100" r="80"></circle>
+      </svg>
+      <svg class="preloader-mono" viewBox="0 0 112 80" aria-hidden="true">
+        <defs>
+          <!-- In user space: a bounding-box gradient can't paint the K's perfectly vertical stem -->
+          <linearGradient id="intro-mono-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="112" y2="80">
+            <stop offset="0" class="intro-stop-a"></stop>
+            <stop offset="1" class="intro-stop-b"></stop>
+          </linearGradient>
+        </defs>
+        <path pathLength="1" d="M12 8 V72"></path>
+        <path pathLength="1" d="M50 8 L14 44"></path>
+        <path pathLength="1" d="M26 32 L52 72"></path>
+        <path pathLength="1" d="M66 8 L84 38"></path>
+        <path pathLength="1" d="M102 8 L84 38 V72"></path>
+      </svg>
     </div>
+    <p class="preloader-name" id="preloader-name">KRITAGYA YADAV</p>
+    <p class="preloader-status"><span id="preloader-state">Booting</span><span class="preloader-count text-gradient" id="preloader-count">0%</span></p>
   </div>
-  <div class="preloader-pill">
-    <span class="preloader-label">LOADING</span>
-    <span class="preloader-divider"></span>
-    <span class="preloader-count text-gradient" id="preloader-count">0%</span>
-  </div>
-  <p class="preloader-welcome">Welcome</p>
+  <pre class="preloader-log" id="preloader-log"></pre>
+  <p class="preloader-skip">Click to skip</p>
 </div>
 
 <!-- Scroll Progress Bar -->
@@ -3255,44 +3368,102 @@
     }
   }
 
-  // ---- Page Entrance Preloader ----
+  // ---- Page intro: a "system boot" ----
+  // Progress is time-based (not per-frame) so throttled or low-FPS devices finish on schedule. The full
+  // boot plays once per visit; reloads in the same session get a short version; a click or key skips it.
   (function initPreloader() {
     const preloader = $('#preloader');
     const countEl = $('#preloader-count');
     if (!preloader) { startHero(); return; }
 
+    let seen = false;
+    try { seen = sessionStorage.getItem('ky-intro-seen') === '1'; sessionStorage.setItem('ky-intro-seen', '1'); } catch (e) { /* storage unavailable */ }
     let loaded = document.readyState === 'complete';
     window.addEventListener('load', () => { loaded = true; });
+    let skipped = false;
+    const skip = () => { skipped = true; };
+    preloader.addEventListener('click', skip);
+    window.addEventListener('keydown', skip, { once: true });
+
     const startTime = performance.now();
-    const MIN_TIME = prefersReducedMotion ? 0 : 900;
-    const MAX_TIME = 3000;
+    const MIN_TIME = prefersReducedMotion ? 0 : seen ? 700 : 1900;
+    const MAX_TIME = 3200;
     const FINISH_TIME = 250;
     let progress = 0;
     let finishStart = null;
     let finishFrom = 0;
 
+    // Boot log: lines appear as progress passes each threshold (facts from this page)
+    const logEl = $('#preloader-log');
+    const stateEl = $('#preloader-state');
+    const BOOT = [
+      [0, 'Booting', '$ boot kritagya.portfolio'],
+      [22, 'Loading modules', 'java · spring boot · postgresql · redis', true],
+      [45, 'Wiring endpoints', '83+ REST endpoints online', true],
+      [68, 'Running tests', '45+ tests passed', true],
+      [88, 'Waking Bella', 'bella.robot ready', true],
+    ];
+    let logged = 0;
+    function logUpTo(value) {
+      while (logged < BOOT.length && value >= BOOT[logged][0]) {
+        const [, state, text, ok] = BOOT[logged];
+        if (stateEl) stateEl.textContent = state;
+        if (logEl && !seen) {
+          const line = document.createElement('span');
+          line.textContent = ok ? `> ${text}  ` : text;
+          if (ok) {
+            const mark = document.createElement('b');
+            mark.className = 'ok';
+            mark.textContent = '✓';
+            line.appendChild(mark);
+          }
+          logEl.appendChild(line);
+        }
+        logged += 1;
+      }
+    }
+
+    // The name decodes out of scrambled glyphs
+    const nameEl = $('#preloader-name');
+    const NAME = nameEl ? nameEl.textContent : '';
+    const GLYPHS = '01<>/{}[]#$%&*+=?ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const decodeTime = seen ? 350 : 950;
+    function decodeName(elapsed) {
+      if (!nameEl || prefersReducedMotion) return;
+      const solved = Math.floor(NAME.length * Math.min(1, Math.max(0, elapsed - 150) / decodeTime));
+      let out = '';
+      for (let i = 0; i < NAME.length; i++) {
+        out += i < solved || NAME[i] === ' ' ? NAME[i] : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+      }
+      nameEl.textContent = out;
+    }
+
     function finish() {
+      if (nameEl) nameEl.textContent = NAME;
+      if (stateEl) stateEl.textContent = 'Access granted';
+      logUpTo(100);
       preloader.classList.add('is-done');
       setTimeout(() => {
         preloader.classList.add('is-exiting');
         startHero();
-        setTimeout(() => preloader.remove(), prefersReducedMotion ? 0 : 900);
-      }, prefersReducedMotion ? 0 : 420);
+        setTimeout(() => preloader.remove(), prefersReducedMotion ? 0 : 1050);
+      }, prefersReducedMotion ? 0 : 480);
     }
 
-    // Progress is time-based (not per-frame) so throttled or low-FPS devices finish on schedule
     function tick(now) {
       if (!preloader.isConnected) { startHero(); return; }
       const elapsed = now - startTime;
-      const canFinish = (loaded && elapsed >= MIN_TIME) || elapsed >= MAX_TIME;
+      const canFinish = skipped || (loaded && elapsed >= MIN_TIME) || elapsed >= MAX_TIME;
       if (!canFinish) {
         progress = Math.min(90, (elapsed / Math.max(MIN_TIME, 1)) * 90);
       } else {
         if (finishStart === null) { finishStart = now; finishFrom = progress; }
-        progress = finishFrom + (100 - finishFrom) * Math.min(1, (now - finishStart) / FINISH_TIME);
+        progress = finishFrom + (100 - finishFrom) * Math.min(1, (now - finishStart) / (skipped ? 120 : FINISH_TIME));
       }
       if (countEl) countEl.textContent = Math.round(progress) + '%';
       preloader.style.setProperty('--progress', progress.toFixed(1));
+      logUpTo(progress);
+      decodeName(elapsed);
       if (progress >= 100) { finish(); return; }
       requestAnimationFrame(tick);
     }

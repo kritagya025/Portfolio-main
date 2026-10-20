@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.14.0] - 2026-10-20
+
+### Changed
+- New opening intro, a "system boot" (replaces the loading pill): an LED dot field with a sweeping scanline; a KY monogram that draws itself stroke by stroke inside a gradient ring that fills with the real loading progress (plus an orbiting dashed ring); the name decoding out of scrambled glyphs; a terminal boot log typing facts from the site (`java · spring boot · postgresql · redis`, `83+ REST endpoints online`, `45+ tests passed`, `bella.robot ready`) with a status that moves from "Booting" to "Access granted"; then a glowing seam splits the screen, the two halves slide apart like blast doors, and the emblem flies toward the viewer as Bella launches out
+- The full boot plays once per visit; reloads in the same session get a short version (no log); clicking or pressing any key skips it; instant for reduced-motion users
+
+---
+
 ## [3.13.0] - 2026-10-20
 
 ### Added
