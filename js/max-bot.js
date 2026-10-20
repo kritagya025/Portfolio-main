@@ -1,11 +1,12 @@
 /**
- * Max: the floating robot guide (with a wolf face) for Kritagya Yadav's portfolio.
+ * Max: the hovering robo-wolf guide for Kritagya Yadav's portfolio.
  *
- * - Lazy-loads three.js (mapped by the import map in index.html) and his model after the page
- *   intro finishes, and only when the browser supports WebGL.
- * - Model: "Flying Robot 07" by Konstantin_Dem (Sketchfab), CC BY 4.0, optimized/modified; the same
- *   robot the reference design uses. His screen shows an LED dot-matrix wolf face: pointed ears,
- *   slanted eyes, a snout, and heart eyes when he says hello.
+ * - Lazy-loads three.js (mapped by the import map in index.html) after the page intro finishes,
+ *   and only when the browser supports WebGL.
+ * - An original design built in code (no model file): a helmet head with metal wolf ears and a
+ *   curved LED visor showing a wolf face (heart eyes when he says hello), a floating neck ring,
+ *   an egg-shaped body with a pulsing core, paw hands, a segmented tail, a hover thruster that
+ *   sheds sparks, twin back boosters, and a holographic orbit ring.
  * - Flies alongside the cursor while it moves and turns his body and eyes to look at it; flies to
  *   each section heading as it scrolls into view to introduce it; hovers by the hero terminal; leads
  *   the section-transition curtain; perches at the screen edge while you read; naps when you go idle.
@@ -14,8 +15,6 @@
  * - Honors prefers-reduced-motion: Max holds still, does not chase the cursor, and does not type letter by letter.
  */
 
-const MODEL_URL = 'assets/models/max-robot.glb';
-const DRACO_PATH = 'https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/gltf/';
 const HIDDEN_KEY = 'ky-bot-hidden';
 const root = document.documentElement;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -173,14 +172,15 @@ const HOVER_TARGETS = [
 const LOVE_HOVERS = new Set(['hire', 'copy', 'resume']);
 
 /* ------------------------------------------------------------------------------------------------
- * Face: a 24×24 LED dot matrix (like the reference robot's) showing a wolf
+ * Face: an LED dot matrix on Max's curved visor, showing a wolf
  * ---------------------------------------------------------------------------------------------- */
 
-const GRID = 24;
+const COLS = 26;
+const ROWS = 16;
 const CELL = 20;
 // Pattern cells: '#' bright LED, '+' dim LED, '*' heart LED, '.' off
 const PAT = {
-  ear: ['#.......', '##......', '#+#.....', '#++#....', '#+++#...', '#++++#..', '#+++++#.'],
+  blaze: ['+....+', '.+..+.', '..++..'],
   cheek: ['#...', '+#..', '.+#.', '+#..', '#...'],
   eye: ['###...', '#####.', '.#####', '...##.'],
   eyeHalf: ['.#####', '...##.'],
@@ -200,15 +200,15 @@ const PAT = {
   mouthWave: ['.#.#.#.', '#.#.#.#'],
   mouthSmirk: ['#..##...', '.##..###'],
 };
-const LED = { on: '#d1fae5', glow: '#34d399', dim: 'rgba(52, 211, 153, 0.5)', heart: '#ffe4e6', heartGlow: '#fb7185', off: '#121a2b', screen: '#05080f' };
+const LED = { on: '#d1fae5', glow: '#34d399', dim: 'rgba(52, 211, 153, 0.5)', heart: '#ffe4e6', heartGlow: '#fb7185', off: '#0e1626', screen: '#03060c' };
 
 const mirror = (pattern) => pattern.map((row) => Array.from(row).reverse().join(''));
 
 class WolfFace {
   constructor(THREE) {
     this.canvas = document.createElement('canvas');
-    this.canvas.width = GRID * CELL;
-    this.canvas.height = GRID * CELL;
+    this.canvas.width = COLS * CELL;
+    this.canvas.height = ROWS * CELL;
     this.ctx = this.canvas.getContext('2d');
     this.texture = new THREE.CanvasTexture(this.canvas);
     this.texture.colorSpace = THREE.SRGBColorSpace;
@@ -217,9 +217,9 @@ class WolfFace {
     this.key = '';
   }
 
-  /** Redraws only when something changed. blink: 0 open, 1 half, 2 shut. twitch: 0, 1 left ear, 2 right ear. */
-  draw({ expr, dx, dy, blink, talk, twitch }) {
-    const key = [expr, dx, dy, blink, talk, twitch].join();
+  /** Redraws only when something changed. blink: 0 open, 1 half, 2 shut. */
+  draw({ expr, dx, dy, blink, talk }) {
+    const key = [expr, dx, dy, blink, talk].join();
     if (key === this.key) return;
     this.key = key;
 
@@ -231,16 +231,13 @@ class WolfFace {
     };
     const at = (pattern, cx, cy) => put(pattern, Math.round(cx - pattern[0].length / 2), Math.round(cy - pattern.length / 2));
 
-    // Ears droop while sleepy and flick now and then
-    const droop = expr === 'sleepy' ? 1 : 0;
-    put(PAT.ear, 1, droop + (twitch === 1 ? 1 : 0));
-    put(mirror(PAT.ear), GRID - 1 - PAT.ear[0].length, droop + (twitch === 2 ? 1 : 0));
-
-    // Eyes follow the gaze (dx, dy); the snout follows at half the distance
-    const lx = 7 + dx;
-    const rx = 17 + dx;
-    const ey = 10.5 + dy;
+    // Eyes follow the gaze (dx, dy); the forehead blaze and snout follow at half the distance
+    const mid = COLS / 2;
+    const lx = mid - 4.5 + dx;
+    const rx = mid + 4.5 + dx;
+    const ey = 6 + dy;
     const snout = Math.round(dx / 2);
+    at(PAT.blaze, mid + snout, 1.5 + Math.min(0, dy));
     let mouth = talk ? PAT.mouthTalk : PAT.mouthSmile;
     if (expr === 'love') {
       at(PAT.heart, lx - 0.5, ey);
@@ -258,7 +255,7 @@ class WolfFace {
       at(mirror(PAT.eyeSleep), rx, ey + 1);
       mouth = PAT.mouthFlat;
     } else if (expr === 'cool') {
-      at(PAT.shades, 12, ey);
+      at(PAT.shades, mid, ey);
       mouth = PAT.mouthSmirk;
     } else if (expr === 'dizzy') {
       at(PAT.cross, lx, ey);
@@ -275,20 +272,20 @@ class WolfFace {
         at(mirror(eye), rx, ey + shift);
       }
     }
-    put(PAT.cheek, 0, 13 + dy);
-    put(mirror(PAT.cheek), GRID - PAT.cheek[0].length, 13 + dy);
-    at(PAT.nose, 12 + snout, 16);
-    at(mouth, 12 + snout, 19 + (mouth.length > 2 ? 0.5 : 0));
+    put(PAT.cheek, 1, 6 + dy);
+    put(mirror(PAT.cheek), COLS - 1 - PAT.cheek[0].length, 6 + dy);
+    at(PAT.nose, mid + snout, 10);
+    at(mouth, mid + snout, 13 + (mouth.length > 2 ? 0.5 : 0));
 
     const c = this.ctx;
     c.fillStyle = LED.screen;
     c.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    for (let y = 0; y < GRID; y++) {
-      for (let x = 0; x < GRID; x++) {
+    for (let y = 0; y < ROWS; y++) {
+      for (let x = 0; x < COLS; x++) {
         const ch = cells.get(`${x},${y}`);
         const lit = ch === '#' || ch === '*';
         c.beginPath();
-        c.arc(x * CELL + CELL / 2, y * CELL + CELL / 2, lit ? 8 : ch === '+' ? 6.6 : 5.2, 0, Math.PI * 2);
+        c.arc(x * CELL + CELL / 2, y * CELL + CELL / 2, lit ? 8 : ch === '+' ? 6.6 : 5, 0, Math.PI * 2);
         if (ch === '#') { c.shadowColor = LED.glow; c.shadowBlur = 18; c.fillStyle = LED.on; }
         else if (ch === '*') { c.shadowColor = LED.heartGlow; c.shadowBlur = 20; c.fillStyle = LED.heart; }
         else if (ch === '+') { c.shadowBlur = 0; c.fillStyle = LED.dim; }
@@ -302,12 +299,14 @@ class WolfFace {
 }
 
 /* ------------------------------------------------------------------------------------------------
- * Engine: three.js scene around the glTF robot (thruster flames, wobbling antennas, swinging cables)
+ * Engine: Max's robot body, built from primitives: a helmet head with a curved LED visor and wolf
+ * ears, a floating neck ring, an egg-shaped body with a pulsing core, paw hands, a segmented tail,
+ * a hover thruster that sheds sparks, twin back boosters, and a holographic orbit ring
  * ---------------------------------------------------------------------------------------------- */
 
-const MODEL_HEIGHT = 3.4;
-// Light intensities for three r155+ (physical units)
-const LIGHTS = { hemi: 1.6, key: 2.6, fill: 0.9, rim: 40 };
+const EMERALD = 0x34d399;
+const PURPLE = 0xa855f7;
+const SPARKS = 48;
 
 function glowTexture(T, rgb, elongated) {
   const canvas = document.createElement('canvas');
@@ -336,35 +335,13 @@ const glowSprite = (T, map, opacity) => new T.Sprite(new T.SpriteMaterial({
   map, transparent: true, opacity, blending: T.AdditiveBlending, depthWrite: false, toneMapped: false,
 }));
 
-/** Rebuilds the screen's UVs from its camera-facing projection so the face always fills it upright. */
-function remapScreenUVs(T, mesh) {
-  const pos = mesh.geometry.attributes.position;
-  const v = new T.Vector3();
-  const xs = new Float32Array(pos.count);
-  const ys = new Float32Array(pos.count);
-  let x0 = Infinity; let x1 = -Infinity; let y0 = Infinity; let y1 = -Infinity;
-  for (let i = 0; i < pos.count; i++) {
-    v.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld);
-    xs[i] = v.x;
-    ys[i] = v.y;
-    x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y);
-  }
-  const pad = 0.04;
-  const uv = new Float32Array(pos.count * 2);
-  for (let i = 0; i < pos.count; i++) {
-    uv[i * 2] = pad + (1 - 2 * pad) * (xs[i] - x0) / (x1 - x0 || 1);
-    uv[i * 2 + 1] = pad + (1 - 2 * pad) * (ys[i] - y0) / (y1 - y0 || 1);
-  }
-  mesh.geometry.setAttribute('uv', new T.BufferAttribute(uv, 2));
-}
-
 function cssColor(name) {
   const parts = getComputedStyle(root).getPropertyValue(name).trim().split(/\s+/);
   return parts.length >= 3 ? `hsl(${parts[0]}, ${parts[1]}, ${parts[2]})` : null;
 }
 
 class Engine {
-  constructor(THREE, gltf, canvas, size) {
+  constructor(THREE, RoomEnvironment, canvas, size) {
     const T = THREE;
     this.T = T;
     this.renderer = new T.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
@@ -374,220 +351,459 @@ class Engine {
     this.setSize(size);
 
     this.scene = new T.Scene();
+    const pmrem = new T.PMREMGenerator(this.renderer);
+    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    pmrem.dispose();
     this.camera = new T.PerspectiveCamera(30, 1, 0.1, 100);
-    this.camera.position.set(0, 0.35, 11);
-    this.camera.lookAt(0, -0.15, 0);
-    this.scene.add(new T.HemisphereLight(0xf0eeff, 0x1e293b, LIGHTS.hemi));
-    const key = new T.DirectionalLight(0xffffff, LIGHTS.key);
+    this.camera.position.set(0, 0.55, 11);
+    this.camera.lookAt(0, 0.2, 0);
+
+    this.scene.add(new T.HemisphereLight(0xf0f4ff, 0x1e293b, 0.9));
+    const key = new T.DirectionalLight(0xffffff, 1.8);
     key.position.set(3, 4, 6);
-    const fill = new T.DirectionalLight(0xc9c4ff, LIGHTS.fill);
+    const fill = new T.DirectionalLight(0xc7d2fe, 0.5);
     fill.position.set(-4, 1, 3);
-    this.rim = new T.PointLight(0xa855f7, LIGHTS.rim, 16, 2);
+    this.rim = new T.PointLight(PURPLE, 36, 16, 2);
     this.rim.position.set(-3, 2.5, -2.5);
-    this.rim2 = new T.PointLight(0x34d399, LIGHTS.rim * 0.6, 16, 2);
-    this.rim2.position.set(3, 1.5, -2.5);
+    this.rim2 = new T.PointLight(EMERALD, 26, 16, 2);
+    this.rim2.position.set(3, 1.2, -2.5);
     this.scene.add(key, fill, this.rim, this.rim2);
 
-    this.pivot = new T.Group();
-    this.scene.add(this.pivot);
     this.face = new WolfFace(T);
-
-    // Thruster flames: glow + elongated flame + bright core per jet, placed in world space each frame
-    const flameTex = glowTexture(T, '110, 231, 183', true);
-    const dotTex = glowTexture(T, '110, 231, 183', false);
-    this.flames = [0, 1].map(() => {
-      const glow = glowSprite(T, dotTex, 0.5);
-      const flame = glowSprite(T, flameTex, 0.95);
-      const core = glowSprite(T, dotTex, 1);
-      flame.center.set(0.5, 0.92);
-      [glow, flame, core].forEach((s) => { s.visible = false; this.scene.add(s); });
-      return { glow, flame, core };
-    });
-    this.jets = [];
-    this.wobblers = [];
-    this.st = { y: 0, p: 0, r: 0, blinkAt: 0, twitchAt: 0, twitchSide: 1, prevY: 0, prevYaw: 0, sw: 0, swV: 0 };
+    this.dotTex = glowTexture(T, '110, 231, 183', false);
+    this.purpleDotTex = glowTexture(T, '192, 132, 252', false);
+    this.flameTex = glowTexture(T, '110, 231, 183', true);
+    this.purpleFlameTex = glowTexture(T, '192, 132, 252', true);
+    this.st = { y: 0, p: 0, r: 0, blinkAt: 0, twitchAt: 0, twitchSide: 0, sw: 0, swV: 0, prevYaw: 0, sparkAt: 0 };
     this.tmp = new T.Vector3();
+    this.tmp2 = new T.Vector3();
     this.camDir = new T.Vector3();
-    this.dirW = new T.Vector3();
-    this.q = new T.Quaternion();
-    this.eu = new T.Euler();
-    this.mount(gltf);
+    this.mainPos = new T.Vector3();
+    this.mainDir = new T.Vector3();
+    this.mainPower = 0;
+    this.emerald = new T.Color(EMERALD);
+    this.build();
   }
 
   setSize(size) {
     this.renderer.setSize(size, size, false);
   }
 
-  /** Center and size the robot, turn its screen to the camera, put the wolf face on it, find the jets. */
-  mount(gltf) {
+  build() {
     const T = this.T;
-    const holder = new T.Group();
-    const inner = new T.Group();
-    holder.add(inner);
-    inner.add(gltf.scene);
-    this.pivot.add(holder);
+    const M = {
+      shell: new T.MeshPhysicalMaterial({ color: 0xe8edf5, roughness: 0.32, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.14 }),
+      metal: new T.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.85 }),
+      green: new T.MeshStandardMaterial({ color: EMERALD, emissive: EMERALD, emissiveIntensity: 2.2, toneMapped: false }),
+      purple: new T.MeshStandardMaterial({ color: PURPLE, emissive: PURPLE, emissiveIntensity: 2.4, toneMapped: false }),
+      core: new T.MeshStandardMaterial({ color: PURPLE, emissive: PURPLE, emissiveIntensity: 2.6, toneMapped: false }),
+      visor: new T.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffff, emissiveMap: this.face.texture, emissiveIntensity: 1.3, roughness: 0.32, metalness: 0.3, envMapIntensity: 0.3 }),
+      holo: new T.MeshBasicMaterial({ color: EMERALD, transparent: true, opacity: 0.32, depthWrite: false, toneMapped: false }),
+    };
+    this.M = M;
+    const lathe = (points, segments = 48) => new T.LatheGeometry(points.map(([r, y]) => new T.Vector2(r, y)), segments);
+    const mesh = (geometry, material) => new T.Mesh(geometry, material);
 
-    const meshes = [];
-    gltf.scene.traverse((o) => { if (o.isMesh) meshes.push(o); });
-    const name = (m) => `${m.name} ${m.parent ? m.parent.name : ''}`;
+    this.pivot = new T.Group();
+    this.scene.add(this.pivot);
 
-    const screen = meshes.find((m) => /screen|plane.?001/i.test(name(m)));
-    holder.updateMatrixWorld(true);
-    let box = new T.Box3().setFromObject(inner);
-    if (screen) {
-      const screenCenter = new T.Box3().setFromObject(screen).getCenter(new T.Vector3());
-      if (screenCenter.z < box.getCenter(new T.Vector3()).z) inner.rotation.y = Math.PI;
-    }
-    holder.updateMatrixWorld(true);
-    box = new T.Box3().setFromObject(inner);
-    const size = box.getSize(new T.Vector3());
-    const scale = MODEL_HEIGHT / size.y;
-    holder.scale.setScalar(scale);
-    holder.position.copy(box.getCenter(new T.Vector3())).multiplyScalar(-scale);
-    holder.updateMatrixWorld(true);
-
-    if (screen) {
-      screen.geometry = screen.geometry.clone();
-      remapScreenUVs(T, screen);
-      screen.material = new T.MeshBasicMaterial({ map: this.face.texture, toneMapped: false });
-      screen.geometry.computeBoundingBox();
-      this.screen = screen;
-      this.screenCenter = screen.geometry.boundingBox.getCenter(new T.Vector3());
-    }
-
-    // Jet points: the back face of the left and right thruster vertex clusters
-    const clusters = [[], []];
-    const v = new T.Vector3();
-    meshes.filter((m) => /thruster|cylinder.?0(08|09|10|11)/i.test(name(m))).forEach((m) => {
-      const pos = m.geometry.attributes.position;
-      for (let i = 0; i < pos.count; i++) {
-        v.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld);
-        clusters[v.x < 0 ? 0 : 1].push(v.clone());
-      }
+    // ---- Head: helmet shell, curved LED visor, wolf ears ----
+    const head = new T.Group();
+    head.position.y = 1.02;
+    this.pivot.add(head);
+    this.head = head;
+    head.add(mesh(lathe([[0, -0.66], [0.4, -0.64], [0.62, -0.54], [0.78, -0.38], [0.86, -0.18], [0.885, 0.02], [0.86, 0.22], [0.78, 0.42], [0.62, 0.58], [0.38, 0.69], [0, 0.73]]), M.shell));
+    // Visor: a band of a sphere that hugs the helmet; its width/height matches the LED grid
+    const VISOR_R = 0.905;
+    const VISOR_ARC = 1.5;
+    const VISOR_TILT = VISOR_ARC / (COLS / ROWS);
+    this.visor = mesh(new T.SphereGeometry(VISOR_R, 48, 24, Math.PI / 2 - VISOR_ARC / 2, VISOR_ARC, Math.PI / 2 - VISOR_TILT / 2, VISOR_TILT), M.visor);
+    head.add(this.visor);
+    // Trim: glowing rails along the top and bottom edges, metal ribs at the ends
+    [-1, 1].forEach((side) => {
+      const ringR = VISOR_R * Math.cos(VISOR_TILT / 2);
+      const turn = new T.Group();
+      turn.rotation.y = -(Math.PI / 2 - VISOR_ARC / 2 - 0.03);
+      turn.position.y = side * VISOR_R * Math.sin(VISOR_TILT / 2);
+      const rail = mesh(new T.TorusGeometry(ringR + 0.006, 0.022, 8, 48, VISOR_ARC + 0.06), M.green);
+      rail.rotation.x = Math.PI / 2;
+      turn.add(rail);
+      head.add(turn);
+      const meridian = new T.Group();
+      meridian.rotation.y = -(Math.PI / 2 - (side * VISOR_ARC) / 2);
+      const rib = mesh(new T.TorusGeometry(VISOR_R + 0.006, 0.03, 8, 16, VISOR_TILT), M.metal);
+      rib.rotation.z = -VISOR_TILT / 2;
+      meridian.add(rib);
+      head.add(meridian);
     });
-    clusters.forEach((points) => {
-      if (!points.length) return;
-      const minZ = points.reduce((m, p) => Math.min(m, p.z), Infinity);
-      const near = points.filter((p) => p.z < minZ + 0.06 * MODEL_HEIGHT);
-      const cx = near.reduce((a, p) => a + p.x, 0) / near.length;
-      const cy = near.reduce((a, p) => a + p.y, 0) / near.length;
-      const jet = new T.Object3D();
-      holder.add(jet);
-      jet.position.copy(holder.worldToLocal(new T.Vector3(cx, cy, minZ)));
-      this.jets.push(jet);
+    // Ears: extruded triangles with a glowing inner ear, pivoting from their base
+    const earShape = new T.Shape();
+    earShape.moveTo(-0.22, 0);
+    earShape.quadraticCurveTo(-0.16, 0.42, -0.02, 0.78);
+    earShape.quadraticCurveTo(0, 0.82, 0.02, 0.78);
+    earShape.quadraticCurveTo(0.14, 0.4, 0.22, 0);
+    earShape.closePath();
+    const innerShape = new T.Shape();
+    innerShape.moveTo(-0.11, 0.08);
+    innerShape.quadraticCurveTo(-0.07, 0.34, 0, 0.56);
+    innerShape.quadraticCurveTo(0.06, 0.32, 0.11, 0.08);
+    innerShape.closePath();
+    const earGeo = new T.ExtrudeGeometry(earShape, { depth: 0.1, bevelEnabled: true, bevelThickness: 0.035, bevelSize: 0.03, bevelSegments: 3, curveSegments: 6 });
+    earGeo.translate(0, 0, -0.05);
+    const innerGeo = new T.ExtrudeGeometry(innerShape, { depth: 0.02, bevelEnabled: false });
+    this.ears = [-1, 1].map((side) => {
+      const ear = new T.Group();
+      ear.position.set(side * 0.38, 0.46, -0.04);
+      ear.rotation.set(-0.1, 0, -side * 0.26);
+      ear.add(mesh(earGeo, M.shell));
+      const inner = mesh(innerGeo, M.green);
+      inner.position.z = 0.09;
+      ear.add(inner);
+      head.add(ear);
+      return { group: ear, side, rest: ear.rotation.clone() };
+    });
+    // Little sensor studs where a wolf's cheeks would be
+    [-1, 1].forEach((side) => {
+      const stud = mesh(new T.CylinderGeometry(0.09, 0.11, 0.06, 20), M.metal);
+      stud.rotation.z = Math.PI / 2;
+      stud.position.set(side * 0.88, -0.05, 0);
+      head.add(stud);
+      const lamp = mesh(new T.CircleGeometry(0.055, 20), M.purple);
+      lamp.position.set(side * 0.915, -0.05, 0);
+      lamp.rotation.y = (side * Math.PI) / 2;
+      head.add(lamp);
     });
 
-    // Antennas wobble from their base, cables swing from their top
-    const wobble = (pattern, top) => meshes.filter((m) => pattern.test(name(m))).forEach((m) => {
-      const bb = new T.Box3().setFromObject(m);
-      const bc = bb.getCenter(new T.Vector3());
-      const group = new T.Group();
-      group.position.copy(holder.worldToLocal(new T.Vector3(bc.x, top ? bb.min.y : bb.max.y, bc.z)));
-      holder.add(group);
-      group.updateMatrixWorld(true);
-      group.attach(m);
-      this.wobblers.push({ group, top, phase: Math.random() * 6, rest: group.quaternion.clone() });
+    // ---- Neck: a floating energy ring (the head hovers above the body) ----
+    this.neck = mesh(new T.TorusGeometry(0.3, 0.035, 10, 40), M.green);
+    this.neck.rotation.x = Math.PI / 2;
+    this.neck.position.y = 0.3;
+    this.pivot.add(this.neck);
+
+    // ---- Body: egg-shaped shell with a belt line, a pulsing core, and the thrusters ----
+    const body = new T.Group();
+    this.pivot.add(body);
+    this.body = body;
+    body.add(mesh(lathe([[0.638, -0.05], [0.62, 0], [0.5, 0.12], [0.3, 0.19], [0, 0.2]]), M.shell));
+    body.add(mesh(lathe([[0.24, -1.0], [0.27, -0.98], [0.4, -0.88], [0.56, -0.7], [0.665, -0.45], [0.68, -0.2], [0.638, -0.05]]), M.metal));
+    // Glowing vents around the lower body (leaving the chest core clear)
+    [-2.5, -1.75, -1.0, 1.0, 1.75, 2.5].forEach((angle) => {
+      const vent = mesh(new T.BoxGeometry(0.035, 0.2, 0.03), M.green);
+      vent.position.set(Math.sin(angle) * 0.6, -0.62, Math.cos(angle) * 0.6);
+      vent.rotation.set(0.4, angle, 0, 'YXZ'); // follow the body's slope
+      body.add(vent);
     });
-    wobble(/antennatop|cylinder.?01(2|3)/i, true);
-    wobble(/cable|bezier|antenna(a|b)\b/i, false);
+    const belt = mesh(new T.TorusGeometry(0.638, 0.018, 8, 64), M.purple);
+    belt.rotation.x = Math.PI / 2;
+    belt.position.y = -0.05;
+    body.add(belt);
+    const bezel = mesh(new T.TorusGeometry(0.16, 0.035, 12, 32), M.shell);
+    bezel.position.set(0, -0.3, 0.64);
+    body.add(bezel);
+    this.core = mesh(new T.SphereGeometry(0.13, 24, 16), M.core);
+    this.core.position.set(0, -0.3, 0.62);
+    body.add(this.core);
+    // Reactor ring spinning around the core
+    this.reactor = mesh(new T.TorusGeometry(0.235, 0.012, 6, 40, Math.PI * 1.5), M.green);
+    this.reactor.position.set(0, -0.3, 0.63);
+    body.add(this.reactor);
+    this.coreGlow = glowSprite(T, this.purpleDotTex, 0.75);
+    this.coreGlow.position.set(0, -0.3, 0.72);
+    this.coreGlow.scale.setScalar(0.62);
+    body.add(this.coreGlow);
+
+    // Hover thruster underneath
+    const nozzle = mesh(new T.CylinderGeometry(0.26, 0.2, 0.2, 32), M.metal);
+    nozzle.position.y = -1.08;
+    body.add(nozzle);
+    const ring = mesh(new T.TorusGeometry(0.2, 0.04, 10, 40), M.green);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = -1.18;
+    body.add(ring);
+    const disc = mesh(new T.CircleGeometry(0.17, 32), M.green);
+    disc.rotation.x = Math.PI / 2;
+    disc.position.y = -1.17;
+    body.add(disc);
+
+    // Jets: each has a nozzle point whose local -Y is the exhaust direction
+    this.jets = [];
+    const addJet = (parent, position, size, main) => {
+      const point = new T.Object3D();
+      point.position.copy(position);
+      parent.add(point);
+      const glow = glowSprite(T, main ? this.dotTex : this.purpleDotTex, 0.55);
+      const flame = glowSprite(T, main ? this.flameTex : this.purpleFlameTex, 0.95);
+      const core = glowSprite(T, main ? this.dotTex : this.purpleDotTex, 1);
+      flame.center.set(0.5, 0.92);
+      [glow, flame, core].forEach((s) => this.scene.add(s));
+      this.jets.push({ point, size, main, glow, flame, core });
+    };
+    addJet(body, new T.Vector3(0, -1.2, 0), 0.34, true);
+    // Twin back boosters, angled back and down, that fire up when Max moves fast
+    [-1, 1].forEach((side) => {
+      const pod = new T.Group();
+      pod.position.set(side * 0.38, -0.3, -0.56);
+      pod.rotation.set(1.23, 0, side * 0.22);
+      pod.add(mesh(new T.CylinderGeometry(0.085, 0.12, 0.36, 20), M.metal));
+      const cap = mesh(new T.SphereGeometry(0.085, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), M.shell);
+      cap.position.y = 0.18;
+      pod.add(cap);
+      const podRing = mesh(new T.TorusGeometry(0.12, 0.022, 8, 28), M.purple);
+      podRing.rotation.x = Math.PI / 2;
+      podRing.position.y = -0.18;
+      pod.add(podRing);
+      body.add(pod);
+      addJet(pod, new T.Vector3(0, -0.2, 0), 0.2, false);
+    });
+
+    // ---- Paws: floating hands with glowing pads ----
+    this.paws = [-1, 1].map((side) => {
+      const paw = new T.Group();
+      const palm = mesh(new T.SphereGeometry(0.15, 24, 16), M.shell);
+      palm.scale.set(1, 0.92, 0.86);
+      paw.add(palm);
+      const cuff = mesh(new T.TorusGeometry(0.115, 0.02, 8, 24), M.green);
+      cuff.rotation.x = Math.PI / 2;
+      cuff.position.y = 0.06;
+      paw.add(cuff);
+      [-0.06, 0, 0.06].forEach((x, i) => {
+        const pad = mesh(new T.SphereGeometry(0.03, 10, 8), M.green);
+        pad.position.set(x, -0.05 + (i === 1 ? -0.015 : 0), 0.12);
+        paw.add(pad);
+      });
+      paw.position.set(side * 0.98, -0.32, 0.12);
+      this.pivot.add(paw);
+      return { group: paw, side };
+    });
+
+    // ---- Tail: a chain of segments that sways and trails behind ----
+    this.tail = [0.11, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05].map((radius, i) => {
+      const seg = mesh(new T.SphereGeometry(radius, 16, 12), i % 2 ? M.metal : M.shell);
+      this.pivot.add(seg);
+      return seg;
+    });
+    this.tailTip = glowSprite(T, this.purpleDotTex, 0.9);
+    this.tailTip.scale.setScalar(0.3);
+    this.pivot.add(this.tailTip);
+
+    // ---- Holographic orbit ring with three satellites ----
+    const orbit = new T.Group();
+    orbit.position.y = -0.3;
+    orbit.rotation.set(0.32, 0, 0.18);
+    const orbitRing = mesh(new T.TorusGeometry(1.22, 0.007, 6, 96), M.holo);
+    orbitRing.rotation.x = Math.PI / 2;
+    orbit.add(orbitRing);
+    this.satellites = [0, 1, 2].map(() => {
+      const dot = mesh(new T.SphereGeometry(0.035, 10, 8), M.green);
+      const halo = glowSprite(T, this.dotTex, 0.6);
+      halo.scale.setScalar(0.22);
+      dot.add(halo);
+      orbit.add(dot);
+      return dot;
+    });
+    this.pivot.add(orbit);
+    this.orbit = orbit;
+
+    // ---- Sparks shed by the hover thruster ----
+    const positions = new Float32Array(SPARKS * 3);
+    const colors = new Float32Array(SPARKS * 3);
+    const geo = new T.BufferGeometry();
+    geo.setAttribute('position', new T.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new T.BufferAttribute(colors, 3));
+    this.sparks = new T.Points(geo, new T.PointsMaterial({
+      size: 0.09, map: this.dotTex, vertexColors: true, transparent: true, depthWrite: false, blending: T.AdditiveBlending, toneMapped: false,
+    }));
+    this.sparks.frustumCulled = false;
+    this.scene.add(this.sparks);
+    this.sparkState = Array.from({ length: SPARKS }, () => ({ life: 0, max: 1, v: new T.Vector3() }));
+    this.sparkNext = 0;
   }
 
   applyTheme() {
+    const light = root.getAttribute('data-theme') === 'light';
     const accent = cssColor('--accent');
     const primary = cssColor('--primary');
     if (accent) this.rim.color.setStyle(accent);
     if (primary) this.rim2.color.setStyle(primary);
+    this.M.shell.color.set(light ? 0xdde4ee : 0xe8edf5);
+    this.M.holo.opacity = light ? 0.5 : 0.32;
+    this.sparks.visible = !light; // additive sparks read as grey specks on a light page
   }
 
-  /** Where the face screen is on the page, for the speech bubble (canvas = `box` px centered at cx, cy). */
+  /** Where the visor is on the page, for the speech bubble (canvas = `box` px centered at cx, cy). */
   headOnPage(cx, cy, box) {
-    if (!this.screen) return { x: cx, y: cy - box * 0.12 };
-    const p = this.screen.localToWorld(this.tmp.copy(this.screenCenter)).project(this.camera);
+    const p = this.head.localToWorld(this.tmp.set(0, 0, 0.905)).project(this.camera);
     return { x: cx + (p.x * box) / 2, y: cy - (p.y * box) / 2 };
   }
 
   /**
    * Pose and draw one frame. t and dt are in ms. p: lookX/lookY (-1..1), vx/vy (px per frame),
-   * expr, talk, nod, hop, spin (0..1, -1 none), sleepy, boost, towing, scale (pop in/out), still.
+   * expr, talk, nod, hop, spin (0..1, -1 none), wave, sleepy, boost, towing, scale (pop in/out), still.
    */
   frame(t, dt, p) {
     const k = dt / 16;
+    const sec = dt / 1000;
     const st = this.st;
     const s = p.still ? 0 : 1;
+    const ease = Math.min(1, 0.1 * k);
 
+    // Body leans and turns; the head turns further, so he really looks at things
     let ty = p.sleepy ? 0 : p.lookX * 0.55;
-    let tp = p.sleepy ? 0.35 : p.lookY * 0.25;
-    const tr = clamp(-p.vx * 0.03, -0.35, 0.35);
-    if (p.towing) ty = -0.6;
-    if (p.nod) tp += Math.sin(t / 110) * 0.22 * s;
-    st.y += (ty - st.y) * Math.min(1, 0.1 * k);
-    st.p += (tp - st.p) * Math.min(1, 0.1 * k);
-    st.r += (tr - st.r) * Math.min(1, 0.1 * k);
-
+    let tp = p.sleepy ? 0.3 : p.lookY * 0.3;
+    if (p.towing) ty = -0.7;
+    if (p.nod) tp += Math.sin(t / 110) * 0.25 * s;
+    st.y += (ty - st.y) * ease;
+    st.p += (tp - st.p) * ease;
+    st.r += (clamp(-p.vx * 0.03, -0.35, 0.35) - st.r) * ease;
     const spin = p.spin >= 0 ? easeInOut(p.spin) * Math.PI * 2 : 0;
     const hop = p.hop >= 0 ? Math.sin(p.hop * Math.PI) * 0.45 : 0;
     this.pivot.scale.setScalar(Math.max(0.001, p.scale));
-    this.pivot.position.y = s * (Math.sin(t / (p.sleepy ? 1100 : 650)) * 0.12 + hop) - (p.sleepy ? 0.2 : 0);
-    this.pivot.rotation.set(st.p, st.y + spin, st.r + s * Math.sin(t / 1100) * 0.03);
+    this.pivot.position.y = s * (Math.sin(t / (p.sleepy ? 1100 : 650)) * 0.12 + hop) - (p.sleepy ? 0.18 : 0);
+    this.pivot.rotation.set(st.p * 0.45, st.y * 0.6 + spin, st.r + s * Math.sin(t / 1100) * 0.03);
+    this.head.rotation.set(st.p * 0.7, st.y * 0.6, 0);
+    this.head.position.y = 1.02 + s * Math.sin(t / 650 - 0.7) * 0.035 - (p.sleepy ? 0.06 : 0);
+    this.neck.scale.setScalar(1 + s * Math.sin(t / 300) * 0.04);
 
-    // Cables and antennas react to movement
-    const vy = p.vy * 0.01 + this.pivot.position.y - st.prevY;
-    const vyaw = st.y + spin - st.prevYaw;
-    st.prevY = this.pivot.position.y;
-    st.prevYaw = st.y + spin;
-    st.swV += (-st.sw * 0.08 - vy * 3 - vyaw * 2 - p.vx * 0.004) * k;
-    st.swV *= 0.9;
-    st.sw += st.swV * 0.12 * k;
-    this.wobblers.forEach((w) => {
-      const a = w.top ? s * Math.sin(t / 430 + w.phase) * 0.1 + st.sw * 0.35 : s * Math.sin(t / 700 + w.phase) * 0.12 + st.sw * 0.6;
-      this.eu.set(w.top ? st.sw * 0.2 : a * 0.6, 0, w.top ? a : a * 0.5 + (p.sleepy ? 0.15 : 0));
-      this.q.setFromEuler(this.eu);
-      w.group.quaternion.copy(w.rest).multiply(this.q);
+    // Ears: flick now and then, perk up when surprised, fold back when sleepy
+    if (t > st.twitchAt) {
+      st.twitchAt = t + 3200 + Math.random() * 4500;
+      st.twitchSide = Math.random() < 0.5 ? -1 : 1;
+    }
+    const twitching = !p.still && !p.sleepy && st.twitchAt - t > 3200 - 200;
+    this.ears.forEach((ear) => {
+      let rx = ear.rest.x;
+      let rz = ear.rest.z;
+      if (p.sleepy) { rx += 0.55; rz -= ear.side * 0.25; }
+      if (p.expr === 'surprised') rx -= 0.2;
+      if (twitching && ear.side === st.twitchSide) rx -= 0.45;
+      ear.group.rotation.x += (rx - ear.group.rotation.x) * Math.min(1, 0.25 * k);
+      ear.group.rotation.z += (rz - ear.group.rotation.z) * Math.min(1, 0.25 * k);
     });
 
-    // Face: blinks, an ear flick now and then, gaze from lookX/lookY
+    // Paws bob beside the body; the right paw waves hello
+    this.paws.forEach((paw, i) => {
+      const g = paw.group;
+      const phase = t / 600 + i * 1.7;
+      let x = paw.side * 0.98;
+      let y = -0.32 + s * Math.sin(phase) * 0.07;
+      let z = 0.12;
+      let roll = 0;
+      if (p.wave && paw.side === 1) {
+        x = 0.95;
+        y = 0.45;
+        z = 0.3;
+        roll = Math.sin(t / 120) * 0.5;
+      } else if (p.sleepy) {
+        y = -0.5;
+      }
+      g.position.x += (x - g.position.x) * Math.min(1, 0.18 * k);
+      g.position.y += (y - g.position.y) * Math.min(1, 0.18 * k);
+      g.position.z += (z - g.position.z) * Math.min(1, 0.18 * k);
+      g.rotation.z = roll - paw.side * 0.15 - st.r * 0.6;
+    });
+
+    // Tail sways with movement and turning
+    const yaw = st.y * 0.6 + spin;
+    st.swV += (-st.sw * 0.08 - (yaw - st.prevYaw) * 2 - p.vx * 0.004) * k;
+    st.swV *= 0.9;
+    st.sw += st.swV * 0.12 * k;
+    st.prevYaw = yaw;
+    let tx = 0;
+    let ty2 = -0.62;
+    let tz = -0.58;
+    let up = 0.15;
+    const wag = s * Math.sin(t / (p.expr === 'happy' || p.expr === 'love' ? 140 : 420)) * (p.expr === 'happy' || p.expr === 'love' ? 0.35 : 0.15) + st.sw * 0.8;
+    this.tail.forEach((seg, i) => {
+      seg.position.set(tx, ty2, tz);
+      const step = 0.12;
+      up += p.sleepy ? -0.05 : 0.16;
+      const side = wag * (i + 1) * 0.12;
+      tx += Math.sin(side) * step;
+      ty2 += Math.sin(up) * step;
+      tz -= Math.cos(up) * Math.cos(side) * step;
+    });
+    this.tailTip.position.set(tx, ty2, tz);
+
+    // Core pulses between purple and emerald; orbit ring spins
+    const pulse = 0.5 + 0.5 * Math.sin(t / 700);
+    this.M.core.emissive.setHex(PURPLE).lerp(this.emerald, pulse * 0.6);
+    this.M.core.emissiveIntensity = p.sleepy ? 1 : 2.2 + pulse;
+    this.coreGlow.material.opacity = p.sleepy ? 0.35 : 0.55 + pulse * 0.35;
+    this.orbit.rotation.y += sec * (p.sleepy ? 0.15 : 0.6) * s;
+    this.reactor.rotation.z -= sec * (p.sleepy ? 0.6 : 2.4) * s;
+    this.satellites.forEach((dot, i) => {
+      const a = t / 1400 * s + (i * Math.PI * 2) / 3;
+      dot.position.set(Math.cos(a) * 1.22, 0, Math.sin(a) * 1.22);
+    });
+
+    // Face
     if (t > st.blinkAt) st.blinkAt = t + 2200 + Math.random() * 2600;
     const bt = st.blinkAt - t;
-    const blink = p.still ? 0 : bt < 170 ? (bt > 120 || bt < 40 ? 1 : 2) : 0;
-    if (t > st.twitchAt) {
-      st.twitchAt = t + 3500 + Math.random() * 4500;
-      st.twitchSide = Math.random() < 0.5 ? 1 : 2;
-    }
-    const twitch = !p.still && !p.sleepy && st.twitchAt - t > 3500 - 180 ? st.twitchSide : 0;
     this.face.draw({
       expr: p.expr,
       dx: Math.round(p.lookX * 2),
       dy: Math.round(p.lookY * 1.5),
-      blink,
+      blink: p.still ? 0 : bt < 170 ? (bt > 120 || bt < 40 ? 1 : 2) : 0,
       talk: p.talk,
-      twitch,
     });
 
-    // Flames: oriented along the jets' backward direction as seen by the camera
+    // Thruster flames, oriented along each nozzle's exhaust direction as seen by the camera
     this.pivot.updateMatrixWorld(true);
     this.camera.getWorldDirection(this.camDir);
-    this.dirW.set(0, -0.25, -1).normalize().applyQuaternion(this.pivot.quaternion);
     const speed = Math.hypot(p.vx, p.vy);
-    this.flames.forEach((f, i) => {
-      const jet = this.jets[i];
-      const visible = !!jet && p.scale > 0.05;
-      f.glow.visible = f.flame.visible = f.core.visible = visible;
-      if (!visible) return;
-      jet.getWorldPosition(this.tmp);
-      const a = this.tmp.clone().project(this.camera);
-      const b = this.tmp.clone().add(this.dirW).project(this.camera);
+    const boosters = clamp((speed - 4) * 0.08, 0, 1) + (p.towing ? 0.8 : 0);
+    this.jets.forEach((jet) => {
+      const pos = jet.point.getWorldPosition(this.tmp);
+      const dir = this.tmp2.set(0, -1, 0).transformDirection(jet.point.matrixWorld);
+      const a = pos.clone().project(this.camera);
+      const b = pos.clone().add(dir).project(this.camera);
       const angle = Math.atan2(b.y - a.y, b.x - a.x);
-      const fore = Math.sqrt(Math.max(0.1, 1 - Math.pow(this.dirW.dot(this.camDir), 2)));
-      const flicker = (p.sleepy ? 0.4 : p.boost * (1 + Math.min(0.5, speed * 0.04))) * (p.still ? 1 : 0.82 + Math.random() * 0.3);
-      const w = 0.18 * p.scale;
-      f.glow.position.copy(this.tmp);
-      f.flame.position.copy(this.tmp);
-      f.core.position.copy(this.tmp);
-      f.flame.material.rotation = angle + Math.PI / 2;
-      f.flame.scale.set(w, w * 4 * fore * flicker, 1);
-      f.glow.scale.setScalar(w * 2 * (p.sleepy ? 0.6 : 1));
-      f.core.scale.setScalar(w * 0.7);
+      const fore = Math.sqrt(Math.max(0.12, 1 - Math.pow(dir.dot(this.camDir), 2)));
+      const power = jet.main
+        ? (p.sleepy ? 0.45 : p.boost * (1 + Math.min(0.6, speed * 0.04)))
+        : boosters;
+      const flicker = power * (p.still ? 1 : 0.82 + Math.random() * 0.3);
+      const w = jet.size * p.scale;
+      const visible = p.scale > 0.05 && power > 0.02;
+      jet.glow.visible = jet.flame.visible = jet.core.visible = visible;
+      if (!visible) return;
+      jet.glow.position.copy(pos);
+      jet.flame.position.copy(pos);
+      jet.core.position.copy(pos);
+      jet.flame.material.rotation = angle + Math.PI / 2;
+      jet.flame.scale.set(w, w * 4 * fore * flicker, 1);
+      jet.glow.scale.setScalar(w * 2.2 * Math.min(1, 0.4 + power));
+      jet.core.scale.setScalar(w * 0.75);
+      if (jet.main) {
+        this.mainPos.copy(pos);
+        this.mainDir.copy(dir);
+        this.mainPower = power;
+      }
     });
+
+    // Sparks: emitted from the hover thruster, falling and fading
+    const posAttr = this.sparks.geometry.attributes.position;
+    const colAttr = this.sparks.geometry.attributes.color;
+    if (!p.still && t > st.sparkAt && this.mainPower > 0.3 && p.scale > 0.5) {
+      st.sparkAt = t + 70 / this.mainPower;
+      const i = this.sparkNext;
+      const spark = this.sparkState[i];
+      this.sparkNext = (i + 1) % SPARKS;
+      spark.life = spark.max = 0.45 + Math.random() * 0.35;
+      spark.v.copy(this.mainDir).multiplyScalar(1.4 + Math.random()).add(this.tmp2.set((Math.random() - 0.5) * 0.9, 0, (Math.random() - 0.5) * 0.9));
+      posAttr.setXYZ(i, this.mainPos.x, this.mainPos.y, this.mainPos.z);
+    }
+    this.sparkState.forEach((spark, i) => {
+      if (spark.life <= 0) { colAttr.setXYZ(i, 0, 0, 0); return; }
+      spark.life -= sec;
+      spark.v.y -= sec * 1.5;
+      posAttr.setXYZ(i, posAttr.getX(i) + spark.v.x * sec, posAttr.getY(i) + spark.v.y * sec, posAttr.getZ(i) + spark.v.z * sec);
+      const f = Math.max(0, spark.life / spark.max);
+      colAttr.setXYZ(i, 0.43 * f, 0.9 * f, 0.72 * f);
+    });
+    posAttr.needsUpdate = true;
+    colAttr.needsUpdate = true;
+    this.sparks.material.size = 0.09 * Math.max(0.2, p.scale);
 
     this.renderer.render(this.scene, this.camera);
   }
@@ -598,7 +814,7 @@ class Engine {
  * ---------------------------------------------------------------------------------------------- */
 
 class Max {
-  constructor(THREE, gltf) {
+  constructor(THREE, RoomEnvironment) {
     this.layer = document.createElement('div');
     this.layer.className = 'bot-layer is-hidden';
     this.layer.setAttribute('aria-hidden', 'true');
@@ -623,13 +839,13 @@ class Max {
     this.R = this.compact ? 150 : 300;
     this.layer.classList.toggle('is-compact', this.compact);
     this.body.style.width = this.body.style.height = `${this.R}px`;
-    this.engine = new Engine(THREE, gltf, this.canvas, this.R);
+    this.engine = new Engine(THREE, RoomEnvironment, this.canvas, this.R);
     this.engine.applyTheme();
 
     const now = performance.now();
     this.s = {
       cx: -this.R, cy: window.innerHeight * 0.4, vx: 0, vy: 0, scale: 0.6, pop: 0,
-      expr: 'idle', exprUntil: 0, spinFrom: -1e9, hopFrom: -1e9, nodUntil: 0,
+      expr: 'idle', exprUntil: 0, spinFrom: -1e9, hopFrom: -1e9, nodUntil: 0, waveUntil: 0,
       cursor: null, cursorMovedAt: -1e9, lastInput: now, sleeping: false, sleptAt: 0,
       pokes: 0, pokeAt: 0,
     };
@@ -678,10 +894,12 @@ class Max {
     s.pop = reducedMotion ? 1 : 0;
     this.start();
     if (greet) {
-      // Heart eyes the moment he appears on the opening screen
+      // Heart eyes and a wave the moment he appears on the opening screen
       this.setExpr('love', 4200);
+      s.waveUntil = performance.now() + 3000;
       setTimeout(() => this.greet(), reducedMotion ? 200 : 700);
     } else {
+      s.waveUntil = performance.now() + 1600;
       this.say(pick(LINES.show, 'show'), { prio: 3, expr: 'happy' });
     }
   }
@@ -1150,6 +1368,7 @@ class Max {
       expr,
       talk: this.typing && (expr === 'idle' || expr === 'happy') && Math.floor(now / 110) % 2 === 0,
       nod: now < s.nodUntil,
+      wave: !reducedMotion && now < s.waveUntil,
       hop: hopP <= 1 ? hopP : -1,
       spin: spinP <= 1 ? spinP : -1,
       sleepy: s.sleeping,
@@ -1212,16 +1431,11 @@ function whenIdle() {
 }
 
 async function loadMax() {
-  const [THREE, { GLTFLoader }, { DRACOLoader }] = await Promise.all([
+  const [THREE, { RoomEnvironment }] = await Promise.all([
     import('three'),
-    import('three/addons/loaders/GLTFLoader.js'),
-    import('three/addons/loaders/DRACOLoader.js'),
+    import('three/addons/environments/RoomEnvironment.js'),
   ]);
-  const draco = new DRACOLoader().setDecoderPath(DRACO_PATH);
-  const loader = new GLTFLoader().setDRACOLoader(draco);
-  const gltf = await loader.loadAsync(MODEL_URL);
-  draco.dispose();
-  return new Max(THREE, gltf);
+  return new Max(THREE, RoomEnvironment);
 }
 
 (function boot() {

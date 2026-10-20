@@ -28,7 +28,7 @@ A modern, high-performance personal developer portfolio showcasing software engi
 - **🗂️ Pinned Horizontal Project Showcase**: On desktop, featured projects scroll sideways inside a pinned viewport with a progress rail; tablets and phones get stacked cards. Category filters (*All*, *High Concurrency*, *Cloud & DevOps*, *Security & APIs*) keep their live counts.
 - **🔎 Project Detail Modals**: Each card opens a detail view with key metrics, highlights, tech stack, and source/live links.
 - **💼 Experience**: The Software Engineering & QA internship at Compass (HeyCompass) with dates, key numbers (50 merged commits, 25+ QA-reported defects), and highlights taken from the resume.
-- **🤖 Max, the Robot Guide with a Wolf Face**: The reference design's floating robot, rendered with three.js (`js/max-bot.js`), with an LED dot-matrix wolf face on its screen: pointed ears, slanted eyes, fur tufts, and a snout. His eyes turn into hearts when he greets you on page load. He flies alongside your cursor and turns his body and eyes to look at it, flies to each section heading as it scrolls in to introduce it, hovers by the hero terminal, leads the section-transition curtain, perches at the screen edge while you read, and reacts to project filters, skill tabs, theme changes, copied email, and pokes (blinks, ear flicks, thruster flames, wobbling antennas, and a nap with floating "zzz" when you go idle). On phones and narrow windows he hovers in the navbar so he never covers content. The robot button (bottom-left) hides/shows him and the choice is remembered. Lazy-loaded after the intro, skipped without WebGL, and still for reduced-motion users.
+- **🤖 Max, the Hovering Robo-Wolf**: An original robot built entirely in code with three.js (`js/max-bot.js`, no model files): a helmet head with metal wolf ears and a curved LED visor showing a wolf face, a floating neck ring, a two-tone armored body with glowing vents and a pulsing reactor core, paw hands, a segmented tail, a hover thruster that sheds sparks, twin back boosters that fire when he moves fast, and a holographic orbit ring. His eyes turn into hearts and he waves when he greets you on page load. He flies alongside your cursor and turns his head and eyes to look at it, flies to each section heading as it scrolls in to introduce it, hovers by the hero terminal, leads the section-transition curtain, perches at the screen edge while you read, and reacts to project filters, skill tabs, theme changes, copied email, and pokes (blinks, ear flicks, tail wags, and a nap with floating "zzz" when you go idle). On phones and narrow windows he hovers in the navbar so he never covers content. The robot button (bottom-left) hides/shows him and the choice is remembered. Lazy-loaded after the intro, skipped without WebGL, and still for reduced-motion users.
 - **🎬 Section Transitions**: Jumping to a section (navbar, logo, mobile menu, or `Ctrl+K`) slides a full-screen curtain in with the section's number and name, moves the page while it is covered, then wipes it away. Reduced-motion users get an instant jump.
 - **📊 Code-Only Language Breakdown**: A native card that sums bytes per language across public, non-fork repositories (excluding HTML/CSS markup and notebooks), refreshed live from the GitHub API with a day-long cache and a bundled snapshot fallback.
 - **🏛️ System Architecture Deep Dive**: Interactive architecture modal detailing the Event Booking Engine's high-concurrency lifecycle, `@Version` optimistic locking, Redis TTL locks, and STOMP WebSocket broadcasting.
@@ -54,7 +54,7 @@ A modern, high-performance personal developer portfolio showcasing software engi
 - **CSS Utility Engine**: Tailwind CSS
 - **Design System & Typography**: Google Fonts (*Space Grotesk* display, *Syne* body, *JetBrains Mono* labels) & FontAwesome 6
 - **Animation & Physics Libraries**: GSAP, AOS, Lenis Scroll, Vanilla-Tilt.js
-- **3D**: three.js (r160, ES module via import map) with GLTFLoader + DRACOLoader for Max, the robot guide; his wolf face is a canvas texture drawn at runtime
+- **3D**: three.js (r160, ES module via import map) with RoomEnvironment reflections; Max is modeled from three.js primitives and his wolf face is a canvas texture drawn at runtime
 
 ---
 
@@ -102,7 +102,7 @@ Tested and optimized for modern evergreen browsers including Google Chrome, Micr
      python -m http.server 8000
      ```
    - Navigate to `http://localhost:8000`.
-   - Use a local server rather than opening the file directly if you want to see Max, the robot guide: browsers block ES modules and model files on `file://` URLs (the rest of the site works either way).
+   - Use a local server rather than opening the file directly if you want to see Max, the robot guide: browsers block ES modules on `file://` URLs (the rest of the site works either way).
 
 ---
 
@@ -119,10 +119,6 @@ Tested and optimized for modern evergreen browsers including Google Chrome, Micr
 
 This project is open-source and available under the [MIT License](LICENSE).
 
-### Credits
-
-- Max's 3D model: ["Flying Robot 07"](https://sketchfab.com/3d-models/flying-robot-07-07-b31dff5e3b344aa1a6f2a3c8454ad440) by [Konstantin_Dem](https://sketchfab.com/Konstantin_Dem), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The bundled file is Draco-compressed and lightly modified (helper nodes, screen material); the wolf LED face is drawn at runtime. The model is not covered by this repository's MIT license.
-
 ---
 
 ## 🏗️ Project Architecture & File Structure
@@ -130,8 +126,7 @@ This project is open-source and available under the [MIT License](LICENSE).
 ```
 Portfolio-main/
 ├── index.html              # Single-page application (all HTML, CSS, JS)
-├── js/max-bot.js           # Max, the 3D robot guide with a wolf LED face (lazy-loaded ES module)
-├── assets/models/max-robot.glb  # Max's 3D model (CC BY 4.0, see Credits)
+├── js/max-bot.js           # Max, the hovering 3D robo-wolf guide, modeled in code (lazy-loaded ES module)
 ├── 404.html                # Custom GitHub Pages 404 error page
 ├── Kritagya_Yadav_Resume.pdf  # Downloadable resume asset
 ├── robots.txt              # SEO crawler directives

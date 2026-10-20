@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.6.0] - 2026-10-20
+
+### Changed
+- Max is now an **original robot designed and modeled in code** (no third-party model): a helmet head with metal wolf ears and a curved LED visor showing the wolf face, a floating neck ring, a two-tone armored body with glowing vents and a reactor core whose ring spins, paw hands, a segmented tail that sways and wags, a hover thruster that sheds sparks, twin back boosters that fire up at speed, and a holographic orbit ring with satellites
+- His head turns further than his body when he looks at the cursor; ears flick, fold back while napping, and perk up when surprised; he waves when he says hello
+- The LED face uses a 26×16 grid with larger dots so it reads at small sizes, plus a forehead blaze
+
+### Removed
+- The "Flying Robot 07" model (`assets/models/max-robot.glb`), its Draco loader, and its footer and README credits
+
+---
+
 ## [3.5.0] - 2026-10-20
 
 ### Added
