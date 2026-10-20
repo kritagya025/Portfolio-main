@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.17.0] - 2026-10-20
+
+### Changed
+- Sound effects are now **on by default** (a visitor who mutes them stays muted; the choice is remembered). Audio starts as early as the browser allows: on a reload or a return visit, Chrome usually plays the intro with sound from the start; on a first visit, browsers hold audio until the first click, tap, or key press, and the intro's speaker button pulses "Sound: tap to start" until then (tapping it starts the sound without skipping the intro). The intro's hum starts the moment audio unlocks
+
+---
+
 ## [3.16.1] - 2026-10-20
 
 ### Fixed

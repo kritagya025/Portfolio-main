@@ -1,10 +1,11 @@
 /**
  * Sound effects for Kritagya Yadav's portfolio, synthesized with the Web Audio API (no audio files).
  *
- * - Off by default. The speaker buttons (navbar, intro) and the Ctrl+K palette turn it on or off, and
+ * - On by default. The speaker buttons (navbar, intro) and the Ctrl+K palette turn it off or on, and
  *   the choice is remembered.
- * - Browsers only allow audio after a click, tap, or key press, so nothing plays until then; sounds
- *   requested earlier are skipped rather than queued.
+ * - Browsers usually allow audio only after a click, tap, or key press, so on a first visit sound starts
+ *   at the first one (sounds requested earlier are skipped rather than queued). Where the browser already
+ *   allows it (e.g. Chrome on a reload or a return visit), sound plays from the very start of the intro.
  * - window.KYSound: play(name), voice(mood) for Bella's babble, drone.start/level/stop for the intro
  *   hum, toggle()/setEnabled(), and a 'ky:soundchange' event.
  */
@@ -12,8 +13,8 @@
   'use strict';
 
   const KEY = 'ky-sound';
-  let enabled = false;
-  try { enabled = localStorage.getItem(KEY) === 'on'; } catch (e) { /* storage unavailable */ }
+  let enabled = true; // on unless this visitor turned it off
+  try { enabled = localStorage.getItem(KEY) !== 'off'; } catch (e) { /* storage unavailable */ }
 
   let ctx = null;
   let master = null;
@@ -30,7 +31,11 @@
       const limiter = ctx.createDynamicsCompressor();
       master.connect(limiter);
       limiter.connect(ctx.destination);
-      ctx.onstatechange = () => syncButtons();
+      ctx.onstatechange = () => {
+        syncButtons();
+        // Audio just unlocked: let the intro start its hum
+        if (ctx.state === 'running' && enabled) document.dispatchEvent(new CustomEvent('ky:soundchange', { detail: { enabled } }));
+      };
       noiseBuffer = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
       const data = noiseBuffer.getChannelData(0);
       for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
@@ -206,6 +211,7 @@
       const label = btn.querySelector('[data-sound-label]');
       const running = ctx && ctx.state === 'running';
       if (label) label.textContent = !enabled ? 'Sound: off' : running ? 'Sound: on' : 'Sound: tap to start';
+      btn.toggleAttribute('data-locked', enabled && !running); // the intro button pulses until audio starts
     });
   }
 
@@ -249,13 +255,15 @@
     if (!btn) return;
     e.stopPropagation(); // in the intro, the speaker button must not count as "skip"
     if (enabled && lockedAtGesture) {
-      // Sound was on but the browser had it locked: this click just started it
+      // Sound was on but the browser had it locked: this click just started it (see onstatechange)
       audio();
-      setTimeout(() => { syncButtons(); document.dispatchEvent(new CustomEvent('ky:soundchange', { detail: { enabled } })); }, 60);
       return;
     }
     setEnabled(!enabled);
   }, true);
+
+  // Start audio right away where the browser allows it; elsewhere it waits, suspended, for the first gesture
+  if (enabled) audio();
+  syncButtons(); // the speaker buttons are already on the page (this script loads at the end of <body>)
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', syncButtons);
-  else syncButtons();
 })();

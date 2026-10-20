@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 3.16.1 -->
+<!-- Portfolio Version: 3.17.0 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
@@ -596,6 +596,17 @@
     }
     .preloader-sound:hover, .preloader-sound[aria-pressed="true"] { border-color: hsl(var(--primary)); box-shadow: 0 0 18px -4px hsl(var(--primary) / 0.7); }
     .preloader-sound i { color: hsl(var(--primary)); }
+    /* Sound is on but the browser is waiting for a tap: a ring pings out from the button (GPU-only) */
+    .preloader-sound[data-locked]::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      border: 1px solid hsl(var(--primary));
+      pointer-events: none;
+      animation: sound-ping 1.6s ease-out infinite;
+    }
+    @keyframes sound-ping { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.25, 1.7); opacity: 0; } }
     /* Corner readouts with little HUD brackets */
     .preloader-hud {
       position: absolute;
@@ -1629,7 +1640,7 @@
   <p class="preloader-hud is-tl"><b>KY</b>://system.boot</p>
   <p class="preloader-hud is-tr" id="preloader-clock">Noida, IN</p>
   <p class="preloader-skip">Click to skip</p>
-  <button type="button" class="preloader-sound sound-toggle" aria-pressed="false"><i class="fas fa-volume-xmark text-sm" aria-hidden="true"></i><span data-sound-label>Sound: off</span></button>
+  <button type="button" class="preloader-sound sound-toggle" aria-pressed="true" data-locked><i class="fas fa-volume-high text-sm" aria-hidden="true"></i><span data-sound-label>Sound: tap to start</span></button>
 </div>
 
 <!-- Scroll Progress Bar -->
@@ -1677,8 +1688,8 @@
           <i class="fas fa-magnifying-glass text-[10px]"></i>
           <span>Ctrl</span><span>K</span>
         </button>
-        <button type="button" class="sound-toggle icon-btn" aria-label="Turn sound effects on" aria-pressed="false" title="Sound off">
-          <i class="fas fa-volume-xmark text-sm" aria-hidden="true"></i>
+        <button type="button" class="sound-toggle icon-btn" aria-label="Turn sound effects off" aria-pressed="true" title="Sound on">
+          <i class="fas fa-volume-high text-sm" aria-hidden="true"></i>
         </button>
         <button type="button" class="theme-toggle icon-btn" aria-label="Switch to light theme" title="Toggle theme">
           <i class="fas fa-sun text-sm" aria-hidden="true"></i>
