@@ -1,19 +1,20 @@
 /**
- * Max: the floating robot guide for Kritagya Yadav's portfolio.
+ * Max: the flying mech-wolf guide for Kritagya Yadav's portfolio.
  *
- * - Lazy-loads three.js (mapped by the import map in index.html) after the page intro finishes,
- *   and only when the browser supports WebGL.
- * - Model: "Flying Robot 07" by Konstantin_Dem (Sketchfab), CC BY 4.0, optimized/modified.
- *   Credited in the site footer. An LED-matrix face is drawn onto the robot's screen.
- * - Floats beside the hero, hovers above each section heading as it scrolls into view, docks in
- *   the bottom-left corner while you read, and tows the section-transition curtain when you jump
- *   to a section. Talks about what is on screen and reacts to the page.
- * - The robot button in the bottom-left corner hides or shows Max; the choice is remembered.
- * - Honours prefers-reduced-motion: Max stays docked, does not fly, spin, or type letter by letter.
+ * - Lazy-loads three.js (mapped by the import map in index.html) and his model after the page
+ *   intro finishes, and only when the browser supports WebGL.
+ * - Model: "Wolf" by Quaternius, CC0 1.0 (public domain); trimmed to the clips used here and
+ *   meshopt-compressed. Turned into a machine at runtime: chrome armour, glowing circuit lines
+ *   (a wireframe skinned to the same skeleton), emerald eyes, a thruster jetpack, and an antenna.
+ * - Flies alongside the cursor while it moves and turns his head to look at it; flies to each
+ *   section heading as it scrolls into view to introduce it; hovers by the hero terminal; leads the
+ *   section-transition curtain; naps in the corner when you go idle.
+ * - On touch screens and narrow windows he hovers in the empty middle of the navbar instead.
+ * - The paw button in the bottom-left corner hides or shows Max; the choice is remembered.
+ * - Honours prefers-reduced-motion: Max holds still, does not chase the cursor, and does not type letter by letter.
  */
 
-const MODEL_URL = 'assets/models/max-robot.glb';
-const DRACO_PATH = 'https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/gltf/';
+const MODEL_URL = 'assets/models/max-wolf.glb';
 const HIDDEN_KEY = 'ky-bot-hidden';
 const root = document.documentElement;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -25,11 +26,14 @@ const HOVER_COOLDOWN = 25000;  // per-target cooldown for hover comments
 const SKILL_COOLDOWN = 7000;
 const SLEEP_AFTER = 40000;
 const IDLE_CHAT_AFTER = 32000;
+const FOLLOW_IDLE = 4500;      // stop chasing the cursor once it has been still this long
+const PRESENT_MS = 4800;       // how long Max stays at a new section heading to introduce it
 const NAV_CLEARANCE = 84;      // keep clear of the fixed navbar
+const EMERALD = '#34d399';
+const PURPLE = '#a855f7';
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const damp = (current, target, lambda, dt) => target + (current - target) * Math.exp(-lambda * dt);
-const easeInOut = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
 
 function webglAvailable() {
   try {
@@ -61,9 +65,9 @@ function timeOfDay() {
 }
 
 const LINES = {
-  greet: () => `Good ${timeOfDay()}! I'm Max, Kritagya's robot guide.`,
-  greetFollow: ["Scroll down and I'll show you around.", 'Psst: Ctrl+K jumps anywhere on this page.'],
-  curtain: (label) => [`Next stop: ${label}!`, `Hold on tight, ${label} coming up!`, `This way to ${label}!`],
+  greet: () => `Good ${timeOfDay()}! I'm Max, Kritagya's robo-wolf guide.`,
+  greetFollow: ["I'll fly along with your cursor. Lead the way!", 'Psst: Ctrl+K jumps anywhere on this page.'],
+  curtain: (label) => [`Next stop: ${label}!`, `Thrusters on, heading to ${label}!`, `Hold tight, flying to ${label}!`],
   sections: {
     about: [
       "This is the 'who is Kritagya' part. Short version: Java, Spring Boot, lots of tests.",
@@ -76,7 +80,7 @@ const LINES = {
     projects: ['Three backend builds. Click any card for the full breakdown.'],
     learning: ["What he's studying next: microservices, Kafka and Kubernetes."],
     education: ['B.Tech CSE at KCC ITM, CGPA 7.58. Plus two certifications.'],
-    'github-activity': ['Live numbers straight from GitHub. Java leads the code.'],
+    'github-activity': ['Live numbers straight from GitHub. Java leads the pack.'],
     contact: [
       "Here's how to reach him. Email is fastest; there's a copy button.",
       "He's open to backend roles and internships.",
@@ -86,7 +90,7 @@ const LINES = {
     architecture: ['The diagram lives in here. Concurrency, explained.'],
     copy: ['Copy it, paste it, say hi.'],
     resume: ['One page, all signal.', 'The PDF version of everything here.'],
-    theme: () => (root.getAttribute('data-theme') === 'light' ? ['Back to the dark side?'] : ['Light mode? Bold choice.']),
+    theme: () => (root.getAttribute('data-theme') === 'light' ? ['Back to night mode? Wolf hours.'] : ['Light mode? My night vision objects.']),
     palette: ['Psst: Ctrl+K works from anywhere.'],
     hire: ['Good call.', 'That button leads straight to his inbox.'],
     github: ['Where the source code lives.'],
@@ -96,8 +100,8 @@ const LINES = {
     linkpulse: ["This one's live on Render. The demo works."],
     keyvault: ['Small service, clean layers.'],
     code: ['That @Version line? It is the whole trick.'],
-    terminal: ['A terminal with good taste.'],
-    languages: ['Bytes of code, not opinions. Java wins.'],
+    terminal: ['Nice landing pad, this terminal.'],
+    languages: ['Bytes of code, not opinions. Java leads the pack.'],
   },
   skills: {
     languages: 'Java first. Always.',
@@ -110,26 +114,26 @@ const LINES = {
     core: 'The theory underneath the code.',
   },
   filters: {
-    all: 'All three projects, back on stage.',
+    all: 'All three projects, back with the pack.',
     concurrency: "High concurrency: that's the Event Booking System.",
     devops: 'Cloud & DevOps: LinkPulse ships itself to Render.',
     security: 'Security & APIs: Event Booking and KeyVault.',
   },
-  copied: ['Copied! Your clipboard knows his email now.'],
-  themeLight: ['Ooh, bright.'],
-  themeDark: ['Ahh. Easier on my LEDs.'],
+  copied: ['Fetched! His email is on your clipboard.'],
+  themeLight: ['Too bright! Wolves are night people.'],
+  themeDark: ['Ahh, night mode. Much better.'],
   poke: [
-    'Beep! That tickles.',
+    'Beep-awoo! That tickles.',
     'Tip: press Ctrl+K to jump anywhere.',
     'Tip: press ? for keyboard shortcuts.',
-    'I run on coffee. Java, obviously.',
-    'Still here. Still floating.',
+    'Lone wolf? Nah. Team player.',
+    'Running on Java and jet fuel.',
   ],
-  dizzy: ["Okay, okay. I'm dizzy now."],
-  idle: ['Still there? The projects are worth a look.', 'Psst: the Contact section has a copy-email button.'],
-  wake: ["Oh! I'm up, I'm up."],
-  hide: ["Okay, I'll hide. The robot button brings me back."],
-  show: ["Max is back!"],
+  dizzy: ['Okay, okay! Engines overheating.'],
+  idle: ['Still there? The projects are worth a sniff.', 'Psst: the Contact section has a copy-email button.'],
+  wake: ['Rebooting... I was just resting my eyes.'],
+  hide: ['Powering down. The paw button wakes me up.'],
+  show: ['Systems online. Max is back!'],
 };
 
 const lastPicked = new Map();
@@ -161,277 +165,353 @@ const HOVER_TARGETS = [
 ];
 
 /* ------------------------------------------------------------------------------------------------
- * Face: an LED matrix drawn to a canvas texture, sized to the robot's screen
+ * Engine: three.js scene around the rigged wolf, rebuilt as a flying machine
  * ---------------------------------------------------------------------------------------------- */
 
-const CELL = 16;
-const LED = '#7df9e8';
+const ONE_SHOTS = ['Idle_2', 'Idle_HitReact_Left', 'Idle_HitReact_Right', 'Jump_ToIdle', 'Gallop_Jump'];
 
-const EYES = {
-  open: ['.##.', '####', '####', '.##.'],
-  happy: ['.##.', '#..#', '....', '....'],
-  wide: ['.##.', '#..#', '#..#', '.##.'],
-  closed: ['....', '....', '####', '....'],
-  cross: ['#..#', '.##.', '.##.', '#..#'],
-  shades: ['####', '####', '.##.', '....'],
-};
-const MOUTHS = {
-  smile: ['......', '#....#', '.####.'],
-  grin: ['#....#', '######', '.####.'],
-  flat: ['......', '.####.', '......'],
-  open: ['.####.', '#....#', '.####.'],
-  o: ['..##..', '.#..#.', '..##..'],
-  wave: ['......', '.#.#.#', '#.#.#.'],
-  smirk: ['......', '....##', '.####.'],
-};
-const ZZZ = ['###', '.#.', '###'];
-const EXPRESSIONS = {
-  neutral: { left: 'open', right: 'open', mouth: 'smile' },
-  happy: { left: 'happy', right: 'happy', mouth: 'grin' },
-  surprised: { left: 'wide', right: 'wide', mouth: 'o' },
-  wink: { left: 'open', right: 'closed', mouth: 'grin' },
-  sleepy: { left: 'closed', right: 'closed', mouth: 'flat' },
-  dizzy: { left: 'cross', right: 'cross', mouth: 'wave' },
-  cool: { left: 'shades', right: 'shades', mouth: 'smirk' },
-};
-
-function roundedRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
+function gradientTexture(T, stops, { width = 16, height = 128, radial = false } = {}) {
+  const canvas = document.createElement('canvas');
+  canvas.width = radial ? 64 : width;
+  canvas.height = radial ? 64 : height;
+  const ctx = canvas.getContext('2d');
+  const g = radial
+    ? ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
+    : ctx.createLinearGradient(0, canvas.height, 0, 0); // bottom of the canvas = v 0
+  stops.forEach(([at, color]) => g.addColorStop(at, color));
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const texture = new T.CanvasTexture(canvas);
+  texture.colorSpace = T.SRGBColorSpace;
+  return texture;
 }
-
-class Face {
-  constructor(THREE, aspect) {
-    this.cols = 16;
-    this.rows = clamp(Math.round(this.cols / aspect), 12, 20);
-    this.canvas = document.createElement('canvas');
-    this.canvas.width = this.cols * CELL;
-    this.canvas.height = this.rows * CELL;
-    this.ctx = this.canvas.getContext('2d');
-    this.texture = new THREE.CanvasTexture(this.canvas);
-    this.texture.colorSpace = THREE.SRGBColorSpace;
-    this.texture.generateMipmaps = false;
-    this.texture.minFilter = THREE.LinearFilter;
-    this.top = Math.floor((this.rows - 10) / 2); // the face patterns span 10 rows
-    this.key = '';
-  }
-
-  draw({ expr, blink, mouthOpen, lx, ly, zzz }) {
-    const key = `${expr}|${blink}|${mouthOpen}|${lx}|${ly}|${zzz}`;
-    if (key === this.key) return;
-    this.key = key;
-
-    const e = EXPRESSIONS[expr] || EXPRESSIONS.neutral;
-    const lit = new Set();
-    const stamp = (pattern, col, row) => {
-      pattern.forEach((line, r) => {
-        Array.from(line).forEach((ch, c) => { if (ch === '#') lit.add(`${col + c},${row + r}`); });
-      });
-    };
-    const t = this.top;
-    stamp(blink ? EYES.closed : EYES[e.left], 3 + lx, t + ly);
-    stamp(blink ? EYES.closed : EYES[e.right], 9 + lx, t + ly);
-    stamp(mouthOpen ? MOUTHS.open : MOUTHS[e.mouth], 5, t + 6);
-    if (zzz) stamp(ZZZ, 13, Math.max(0, t - 2));
-
-    const { ctx, canvas } = this;
-    const W = canvas.width;
-    const H = canvas.height;
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#07060d';
-    ctx.fillRect(0, 0, W, H);
-    for (let r = 0; r < this.rows; r++) {
-      for (let c = 0; c < this.cols; c++) {
-        const on = lit.has(`${c},${r}`);
-        ctx.shadowBlur = on ? 14 : 0;
-        ctx.shadowColor = LED;
-        ctx.fillStyle = on ? LED : 'rgba(255, 255, 255, 0.05)';
-        roundedRect(ctx, c * CELL + 2.5, r * CELL + 2.5, CELL - 5, CELL - 5, 3);
-        ctx.fill();
-      }
-    }
-    ctx.shadowBlur = 0;
-    const sheen = ctx.createLinearGradient(0, 0, W, H);
-    sheen.addColorStop(0, 'rgba(255, 255, 255, 0.12)');
-    sheen.addColorStop(0.45, 'rgba(255, 255, 255, 0)');
-    ctx.fillStyle = sheen;
-    ctx.fillRect(0, 0, W, H);
-    this.texture.needsUpdate = true;
-  }
-}
-
-/* ------------------------------------------------------------------------------------------------
- * Engine: three.js scene around the glTF robot
- * ---------------------------------------------------------------------------------------------- */
 
 class Engine {
-  constructor(THREE, gltf, canvas, size) {
+  constructor(THREE, RoomEnvironment, gltf, canvas, size) {
     this.T = THREE;
     this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.setClearColor(0x000000, 0);
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.setSize(size);
 
     this.scene = new THREE.Scene();
+    const pmrem = new THREE.PMREMGenerator(this.renderer);
+    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    pmrem.dispose();
+
     this.camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-    this.camera.position.set(0, 0.3, 10);
-    this.camera.lookAt(0, -0.45, 0);
+    this.camera.position.set(0, 0.9, 10);
+    this.camera.lookAt(0, 0, 0);
 
-    this.scene.add(new THREE.HemisphereLight(0xffffff, 0x2a1f45, 1.6));
-    const key = new THREE.DirectionalLight(0xffffff, 2.6);
-    key.position.set(3, 4, 6);
-    const fill = new THREE.DirectionalLight(0xc9c4ff, 0.9);
-    fill.position.set(-4, 1, 3);
-    this.rim = new THREE.PointLight(0x8b5cf6, 28, 16, 2);
-    this.rim.position.set(-3, 2.5, -2.5);
-    this.scene.add(key, fill, this.rim);
+    this.scene.add(new THREE.HemisphereLight(0xdbeafe, 0x0f172a, 0.7));
+    const key = new THREE.DirectionalLight(0xffffff, 1.6);
+    key.position.set(3, 5, 6);
+    this.rim = new THREE.DirectionalLight(EMERALD, 2.2);
+    this.rim.position.set(-4, 2, -5);
+    this.backRim = new THREE.DirectionalLight(PURPLE, 1.6);
+    this.backRim.position.set(4, 1, -4);
+    this.scene.add(key, this.rim, this.backRim);
 
-    this.pivot = new THREE.Group();
-    this.scene.add(this.pivot);
-    this.mount(gltf.scene);
+    this.turn = new THREE.Group(); // facing (y), tilt (z), bob (position.y)
+    this.scene.add(this.turn);
+    this.mount(gltf);
+    this.lookCorrection = new THREE.Quaternion();
   }
 
   setSize(size) {
     this.renderer.setSize(size, size, false);
   }
 
-  /** Centre and scale the model, turn its screen towards the camera, and put the LED face on it. */
-  mount(model) {
+  /** Point the nose at +Z, centre and scale the wolf, then armour him up and set up animations. */
+  mount(gltf) {
     const T = this.T;
+    const model = gltf.scene;
+    const orient = new T.Group();
+    orient.add(model);
     const holder = new T.Group();
-    holder.add(model);
-    this.pivot.add(holder);
+    holder.add(orient);
+    this.turn.add(holder);
 
-    const screen = model.getObjectByName('Screen');
     model.updateMatrixWorld(true);
-    let box = new T.Box3().setFromObject(model);
-    if (screen) {
-      const screenCenter = new T.Box3().setFromObject(screen).getCenter(new T.Vector3());
-      if (screenCenter.z < box.getCenter(new T.Vector3()).z) {
-        model.rotation.y += Math.PI;
-        model.updateMatrixWorld(true);
-        box = new T.Box3().setFromObject(model);
-      }
+    const rawBox = new T.Box3().setFromObject(model);
+    this.head = model.getObjectByName('Head');
+    if (this.head) {
+      const nose = this.head.getWorldPosition(new T.Vector3()).sub(rawBox.getCenter(new T.Vector3()));
+      orient.rotation.y = -Math.atan2(nose.x, nose.z);
     }
+    orient.updateMatrixWorld(true);
+    const box = new T.Box3().setFromObject(orient);
     const size = box.getSize(new T.Vector3());
-    const scale = 3.9 / Math.max(size.x, size.y);
+    const scale = 3.3 / Math.max(size.z, size.x, size.y * 1.4);
     holder.scale.setScalar(scale);
     holder.position.copy(box.getCenter(new T.Vector3())).multiplyScalar(-scale);
-    holder.updateMatrixWorld(true);
+    this.turn.updateMatrixWorld(true);
+    this.height = size.y * scale;
+    this.length = Math.max(size.z, size.x) * scale;
 
-    this.face = new Face(T, screen ? this.projectScreenUVs(screen) : 1);
-    if (screen) screen.material = new T.MeshBasicMaterial({ map: this.face.texture, toneMapped: false, side: T.DoubleSide });
+    this.armour(model);
+    this.buildJetpack(model);
+    this.buildAntenna();
 
-    // Thruster flames: under the jets' left/right positions, starting at the bottom of the model so the
-    // body never hides them (falls back to the bottom corners when the jets are missing)
-    const jets = ['JetL', 'JetR'].map((name) => model.getObjectByName(name)).filter(Boolean);
-    const fitted = new T.Box3().setFromObject(holder);
-    const bottom = fitted.min.y + 0.1;
-    const front = fitted.max.z * 0.2;
-    const points = jets.length
-      ? jets.map((jet) => {
-        const p = this.pivot.worldToLocal(jet.getWorldPosition(new T.Vector3()));
-        return new T.Vector3(p.x * 0.85, bottom, front);
-      })
-      : [-0.3, 0.3].map((side) => new T.Vector3(side * (fitted.max.x - fitted.min.x), bottom, front));
-    const flameTexture = this.flameTexture();
-    this.flames = points.map((p) => {
-      const sprite = new T.Sprite(new T.SpriteMaterial({ map: flameTexture, transparent: true, depthWrite: false, toneMapped: false }));
-      sprite.userData.base = p.clone();
-      this.pivot.add(sprite);
-      return sprite;
+    // Anti-gravity glow under the belly
+    this.glow = new T.Sprite(new T.SpriteMaterial({
+      map: gradientTexture(T, [[0, 'rgba(52, 211, 153, 0.85)'], [0.45, 'rgba(52, 211, 153, 0.25)'], [1, 'rgba(52, 211, 153, 0)']], { radial: true }),
+      transparent: true, depthWrite: false, blending: T.AdditiveBlending, toneMapped: false,
+    }));
+    this.glow.position.set(0, -this.height * 0.62, 0);
+    this.glow.scale.set(this.length * 0.7, this.length * 0.22, 1);
+    this.turn.add(this.glow);
+
+    // The head looks along +Z at rest; remember that axis in the head's own frame for gaze tracking
+    if (this.head) {
+      const headQuat = this.head.getWorldQuaternion(new T.Quaternion());
+      this.headForward = new T.Vector3(0, 0, 1).applyQuaternion(headQuat.invert());
+    }
+
+    // Animations: one looping base clip plus short one-shots on top
+    this.mixer = new T.AnimationMixer(model);
+    this.actions = {};
+    gltf.animations.forEach((clip) => { this.actions[clip.name] = this.mixer.clipAction(clip); });
+    ONE_SHOTS.forEach((name) => {
+      const action = this.actions[name];
+      if (!action) return;
+      action.setLoop(T.LoopOnce, 1);
+      action.clampWhenFinished = true;
+    });
+    // "Glide": a held mid-leap frame (legs stretched out) for fast flight
+    const leap = gltf.animations.find((clip) => clip.name === 'Gallop_Jump');
+    if (leap) {
+      const glideClip = leap.clone();
+      glideClip.name = 'Glide';
+      const glide = this.mixer.clipAction(glideClip);
+      glide.time = leap.duration * 0.42;
+      glide.setEffectiveTimeScale(0);
+      this.actions.Glide = glide;
+    }
+    this.base = null;
+    this.baseAction = null;
+    this.oneShot = null;
+    this.mixer.addEventListener('finished', (e) => {
+      if (e.action !== this.oneShot) return;
+      this.oneShot.fadeOut(0.3);
+      this.oneShot = null;
+      if (this.baseAction) this.startBase(this.baseAction, 0.3);
+    });
+    this.setBase('Idle');
+  }
+
+  /** (Re)start a looping base action; the Glide pose is a held frame, so pin its time. */
+  startBase(action, fade) {
+    action.reset();
+    if (action.getClip().name === 'Glide') action.time = action.getClip().duration * 0.42;
+    action.setEffectiveWeight(1).fadeIn(fade).play();
+  }
+
+  /** Swap the fur for metal and lay a glowing wireframe (skinned to the same bones) over it. */
+  armour(model) {
+    const T = this.T;
+    this.armourMat = new T.MeshStandardMaterial({
+      color: '#334155', metalness: 0.85, roughness: 0.32, flatShading: true,
+      polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
+    });
+    this.plateMat = new T.MeshStandardMaterial({
+      color: '#cbd5e1', metalness: 0.9, roughness: 0.22, flatShading: true,
+      polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
+    });
+    this.eyeMat = new T.MeshStandardMaterial({ color: EMERALD, emissive: EMERALD, emissiveIntensity: 2.6, toneMapped: false });
+    this.noseMat = new T.MeshStandardMaterial({ color: '#0b1220', metalness: 0.6, roughness: 0.4 });
+    this.wireMat = new T.MeshBasicMaterial({
+      color: EMERALD, wireframe: true, transparent: true, opacity: 0.12, depthWrite: false, toneMapped: false,
+    });
+    const swaps = { Main: this.armourMat, Main_Light: this.plateMat, Eyes_Black: this.eyeMat, Nose: this.noseMat };
+    const meshes = [];
+    model.traverse((obj) => { if (obj.isMesh) meshes.push(obj); });
+    meshes.forEach((mesh) => {
+      mesh.frustumCulled = false; // skinned + animated: the bind-pose bounds are not reliable
+      const swap = swaps[mesh.material && mesh.material.name];
+      if (swap) mesh.material = swap;
+      if (mesh.isSkinnedMesh && (swap === this.armourMat || swap === this.plateMat)) {
+        const wire = new T.SkinnedMesh(mesh.geometry, this.wireMat);
+        wire.bind(mesh.skeleton, mesh.bindMatrix);
+        wire.position.copy(mesh.position);
+        wire.quaternion.copy(mesh.quaternion);
+        wire.scale.copy(mesh.scale);
+        wire.frustumCulled = false;
+        mesh.parent.add(wire);
+      }
     });
   }
 
-  /**
-   * Give the screen planar UVs from how it faces the camera (horizontal = world X, vertical = world Y),
-   * so the face texture always fills it upright. Returns the screen's width / height.
-   */
-  projectScreenUVs(screen) {
+  /** Attach an object (built in model-space units, upright) so it rides on a bone, offset from it. */
+  attach(bone, object, offset) {
     const T = this.T;
-    const geometry = screen.geometry;
-    const pos = geometry.attributes.position;
-    const rotation = new T.Matrix4().extractRotation(screen.matrixWorld);
-    const axes = [new T.Vector3(1, 0, 0), new T.Vector3(0, 1, 0), new T.Vector3(0, 0, 1)].map((a) => a.applyMatrix4(rotation));
-    const hIdx = [0, 1, 2].reduce((best, i) => (Math.abs(axes[i].x) > Math.abs(axes[best].x) ? i : best), 0);
-    const vIdx = [0, 1, 2].filter((i) => i !== hIdx).reduce((best, i) => (Math.abs(axes[i].y) > Math.abs(axes[best].y) ? i : best));
-    const hSign = Math.sign(axes[hIdx].x) || 1;
-    const vSign = Math.sign(axes[vIdx].y) || 1;
-    const coord = (i, idx) => (idx === 0 ? pos.getX(i) : idx === 1 ? pos.getY(i) : pos.getZ(i));
-    let minH = Infinity; let maxH = -Infinity; let minV = Infinity; let maxV = -Infinity;
-    for (let i = 0; i < pos.count; i++) {
-      const h = coord(i, hIdx) * hSign;
-      const v = coord(i, vIdx) * vSign;
-      minH = Math.min(minH, h); maxH = Math.max(maxH, h);
-      minV = Math.min(minV, v); maxV = Math.max(maxV, v);
-    }
-    const uv = new Float32Array(pos.count * 2);
-    for (let i = 0; i < pos.count; i++) {
-      uv[i * 2] = (coord(i, hIdx) * hSign - minH) / (maxH - minH || 1);
-      uv[i * 2 + 1] = (coord(i, vIdx) * vSign - minV) / (maxV - minV || 1);
-    }
-    geometry.setAttribute('uv', new T.BufferAttribute(uv, 2));
-    return (maxH - minH) / (maxV - minV || 1);
+    const position = bone.getWorldPosition(new T.Vector3()).add(offset);
+    const worldScale = bone.getWorldScale(new T.Vector3());
+    bone.add(object);
+    object.position.copy(bone.worldToLocal(position));
+    object.quaternion.copy(bone.getWorldQuaternion(new T.Quaternion()).invert());
+    object.scale.setScalar(1 / worldScale.x);
   }
 
-  flameTexture() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 32;
-    canvas.height = 128;
-    const ctx = canvas.getContext('2d');
-    const g = ctx.createLinearGradient(0, 0, 0, 128);
-    g.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    g.addColorStop(0.18, 'rgba(125, 249, 232, 0.95)');
-    g.addColorStop(0.55, 'rgba(153, 90, 242, 0.45)');
-    g.addColorStop(1, 'rgba(153, 90, 242, 0)');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.moveTo(4, 0);
-    ctx.quadraticCurveTo(16, 4, 28, 0);
-    ctx.quadraticCurveTo(22, 70, 16, 128);
-    ctx.quadraticCurveTo(10, 70, 4, 0);
-    ctx.fill();
-    const texture = new this.T.CanvasTexture(canvas);
-    texture.colorSpace = this.T.SRGBColorSpace;
-    return texture;
+  buildJetpack(model) {
+    const T = this.T;
+    const torso = model.getObjectByName('Torso2') || model.getObjectByName('Torso');
+    if (!torso) return;
+    const metal = new T.MeshStandardMaterial({ color: '#1e293b', metalness: 0.9, roughness: 0.25 });
+    this.trimMat = new T.MeshStandardMaterial({ color: EMERALD, emissive: EMERALD, emissiveIntensity: 2, toneMapped: false });
+    const flameTex = gradientTexture(T, [
+      [0, 'rgba(240, 253, 250, 1)'], [0.2, 'rgba(110, 231, 183, 0.95)'], [0.6, 'rgba(168, 85, 247, 0.45)'], [1, 'rgba(168, 85, 247, 0)'],
+    ]);
+    const flameMat = new T.MeshBasicMaterial({
+      map: flameTex, transparent: true, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide, toneMapped: false,
+    });
+
+    const pack = new T.Group();
+    const L = this.length;
+    const body = new T.Mesh(new T.BoxGeometry(L * 0.17, L * 0.06, L * 0.22), metal);
+    pack.add(body);
+    const stripe = new T.Mesh(new T.BoxGeometry(L * 0.172, L * 0.012, L * 0.12), this.trimMat);
+    stripe.position.y = L * 0.031;
+    pack.add(stripe);
+
+    this.flames = [];
+    [-1, 1].forEach((side) => {
+      const pod = new T.Group();
+      pod.position.set(side * L * 0.11, -L * 0.005, -L * 0.03);
+      pod.rotation.x = -0.35; // nozzles aim back and slightly down
+      const tube = new T.Mesh(new T.CylinderGeometry(L * 0.04, L * 0.034, L * 0.2, 14), metal);
+      tube.rotation.x = Math.PI / 2;
+      pod.add(tube);
+      const ring = new T.Mesh(new T.TorusGeometry(L * 0.041, L * 0.008, 8, 20), this.trimMat);
+      ring.position.z = L * 0.05;
+      pod.add(ring);
+      const flame = new T.Mesh(new T.ConeGeometry(L * 0.032, L * 0.24, 14, 1, true), flameMat);
+      flame.rotation.x = -Math.PI / 2; // tip points backwards (-Z)
+      flame.userData = { nozzleZ: -L * 0.1, halfLength: L * 0.12 };
+      flame.position.z = -L * 0.22;
+      pod.add(flame);
+      this.flames.push(flame);
+      // Little fin on the outside of each thruster
+      const fin = new T.Mesh(new T.BoxGeometry(L * 0.1, L * 0.008, L * 0.07), metal);
+      fin.position.set(side * L * 0.06, L * 0.012, -L * 0.02);
+      fin.rotation.z = side * -0.4;
+      pod.add(fin);
+      pack.add(pod);
+    });
+    this.attach(torso, pack, new T.Vector3(0, this.height * 0.2, 0));
+  }
+
+  buildAntenna() {
+    const T = this.T;
+    if (!this.head) return;
+    const L = this.length;
+    const antenna = new T.Group();
+    const stalk = new T.Mesh(
+      new T.CylinderGeometry(L * 0.006, L * 0.008, L * 0.12, 8),
+      new T.MeshStandardMaterial({ color: '#94a3b8', metalness: 0.9, roughness: 0.3 })
+    );
+    stalk.position.y = L * 0.06;
+    antenna.add(stalk);
+    this.antennaTip = new T.Mesh(
+      new T.SphereGeometry(L * 0.018, 16, 12),
+      new T.MeshStandardMaterial({ color: PURPLE, emissive: PURPLE, emissiveIntensity: 2.4, toneMapped: false })
+    );
+    this.antennaTip.position.y = L * 0.125;
+    antenna.add(this.antennaTip);
+    antenna.rotation.z = -0.25;
+    this.attach(this.head, antenna, new T.Vector3(0, this.height * 0.12, -this.length * 0.02));
+  }
+
+  setBase(name, timeScale = 1) {
+    const action = this.actions[name];
+    if (!action) return;
+    if (name !== 'Glide') action.setEffectiveTimeScale(timeScale);
+    if (name === this.base) return;
+    const previous = this.baseAction;
+    this.base = name;
+    this.baseAction = action;
+    if (this.oneShot) return; // the new base fades in when the one-shot finishes
+    this.startBase(action, 0.3);
+    if (previous) previous.fadeOut(0.3);
+  }
+
+  playOnce(name) {
+    const action = this.actions[name];
+    if (!action || reducedMotion) return;
+    if (this.oneShot) this.oneShot.fadeOut(0.15);
+    else if (this.baseAction) this.baseAction.fadeOut(0.15);
+    action.reset().setEffectiveTimeScale(1).setEffectiveWeight(1).fadeIn(0.15).play();
+    this.oneShot = action;
   }
 
   applyTheme() {
-    const parts = getComputedStyle(root).getPropertyValue('--primary').trim().split(/\s+/);
-    if (parts.length >= 3) this.rim.color.setStyle(`hsl(${parts[0]}, ${parts[1]}, ${parts[2]})`);
+    const light = root.getAttribute('data-theme') === 'light';
+    this.wireMat.color.setStyle(light ? '#059669' : EMERALD);
+    this.wireMat.opacity = light ? 0.22 : 0.12;
+    this.armourMat.color.setStyle(light ? '#475569' : '#334155');
   }
 
-  /** Animate the model. `st` comes from the controller: motion, gaze, and one-off gestures. */
+  /**
+   * Screen-space helpers: the canvas is a box of `box` px centred at (cx, cy) on the page.
+   * pageToWorld() casts the page point onto a plane just in front of Max.
+   */
+  pageToWorld(x, y, cx, cy, box) {
+    const T = this.T;
+    const ndc = new T.Vector3((x - cx) / (box / 2), -(y - cy) / (box / 2), 0.5).unproject(this.camera);
+    const dir = ndc.sub(this.camera.position).normalize();
+    const t = (2.2 - this.camera.position.z) / dir.z; // plane z = 2.2
+    return this.camera.position.clone().add(dir.multiplyScalar(t));
+  }
+
+  headOnPage(cx, cy, box) {
+    if (!this.head) return { x: cx, y: cy - box * 0.15 };
+    const p = this.head.getWorldPosition(new this.T.Vector3()).project(this.camera);
+    return { x: cx + (p.x * box) / 2, y: cy - (p.y * box) / 2 };
+  }
+
+  /** Advance animations and pose. `st` comes from the controller. */
   update(dt, t, st) {
-    const p = this.pivot;
-    const bob = st.still ? 0 : Math.sin(t * 2.1) * 0.08;
-    const hop = st.hopP >= 0 && st.hopP <= 1 ? Math.sin(st.hopP * Math.PI) * 0.45 : 0;
-    p.position.y = bob + hop;
-    const wiggle = st.waving ? Math.sin(t * 14) * 0.14 : 0;
-    p.rotation.z = damp(p.rotation.z, st.bank + wiggle, 8, dt);
-    p.rotation.x = damp(p.rotation.x, st.lookY * 0.18, 6, dt);
-    if (st.spinP >= 0 && st.spinP <= 1) {
-      p.rotation.y = easeInOut(st.spinP) * Math.PI * 2;
-    } else {
-      p.rotation.y = damp(p.rotation.y % (Math.PI * 2), st.yaw + st.lookX * 0.4, 5, dt);
+    const T = this.T;
+    this.mixer.update(reducedMotion ? 0 : dt);
+    const bob = st.still ? 0 : Math.sin(t * 2.3) * 0.09;
+    this.turn.position.y = bob;
+    this.turn.rotation.y = damp(this.turn.rotation.y, st.facing, 6, dt);
+    this.turn.rotation.z = damp(this.turn.rotation.z, st.tilt, 5, dt);
+    this.turn.rotation.x = damp(this.turn.rotation.x, st.pitch, 5, dt);
+    this.turn.updateMatrixWorld(true);
+
+    // Head tracking: turn the head bone towards the look target (on top of the animation)
+    if (this.head && this.headForward) {
+      let correction = new T.Quaternion();
+      if (st.lookTarget) {
+        const headPos = this.head.getWorldPosition(new T.Vector3());
+        const headQuat = this.head.getWorldQuaternion(new T.Quaternion());
+        const forward = this.headForward.clone().applyQuaternion(headQuat).normalize();
+        const wanted = st.lookTarget.clone().sub(headPos).normalize();
+        correction.setFromUnitVectors(forward, wanted);
+        const angle = 2 * Math.acos(clamp(correction.w, -1, 1));
+        const maxAngle = 0.75;
+        if (angle > maxAngle) correction = new T.Quaternion().slerp(correction, maxAngle / angle);
+      }
+      this.lookCorrection.slerp(correction, 1 - Math.exp(-8 * dt));
+      const parentQuat = this.head.parent.getWorldQuaternion(new T.Quaternion());
+      const headWorld = this.head.getWorldQuaternion(new T.Quaternion());
+      const corrected = this.lookCorrection.clone().multiply(headWorld);
+      this.head.quaternion.copy(parentQuat.invert().multiply(corrected));
+      this.head.updateMatrixWorld(true);
     }
 
-    const flicker = st.still ? 0 : Math.sin(t * 33) * 0.06;
-    const thrust = (st.sleeping ? 0.55 : 0.9) + st.speed * 0.6 + flicker;
-    this.flames.forEach((flame) => {
-      const base = flame.userData.base;
-      const length = 1.05 * thrust;
-      flame.scale.set(0.42 + st.speed * 0.1, length, 1);
-      flame.position.set(base.x, base.y - length / 2, base.z);
-      flame.material.opacity = st.sleeping ? 0.5 : 0.95;
+    // Thrusters, glow and antenna pulse with speed
+    const thrust = (st.sleeping ? 0.45 : 0.85) + st.speed * 0.9 + (st.still ? 0 : Math.sin(t * 34) * 0.08);
+    (this.flames || []).forEach((flame) => {
+      // Stretch the flame while keeping its base on the nozzle
+      flame.scale.set(1, thrust, 1);
+      flame.position.z = flame.userData.nozzleZ - flame.userData.halfLength * thrust;
     });
-
-    this.face.draw(st.face);
+    this.glow.material.opacity = st.sleeping ? 0.35 : 0.65 + Math.sin(t * 3) * 0.2;
+    if (this.antennaTip) this.antennaTip.material.emissiveIntensity = st.sleeping ? 0.6 : 2 + Math.sin(t * 4) * 0.8;
+    this.eyeMat.emissiveIntensity = st.sleeping ? 0.5 : 2.6;
   }
 
   render() {
@@ -444,7 +524,7 @@ class Engine {
  * ---------------------------------------------------------------------------------------------- */
 
 class Max {
-  constructor(THREE, gltf) {
+  constructor(THREE, RoomEnvironment, gltf) {
     this.layer = document.createElement('div');
     this.layer.className = 'bot-layer is-hidden';
     this.layer.setAttribute('aria-hidden', 'true');
@@ -452,42 +532,45 @@ class Max {
     this.bubble.className = 'bot-bubble tail-left';
     this.bubbleText = document.createElement('span');
     this.bubble.appendChild(this.bubbleText);
+    this.zzz = document.createElement('div');
+    this.zzz.className = 'bot-zzz';
+    this.zzz.innerHTML = '<span>z</span><span>z</span><span>z</span>';
     this.body = document.createElement('div');
     this.body.className = 'bot-body';
     this.canvas = document.createElement('canvas');
-    // Only the robot itself is clickable, not the transparent corners of its canvas
+    // Only Max himself is clickable, not the transparent space around him
     this.hit = document.createElement('div');
     this.hit.className = 'bot-hit';
     this.body.append(this.canvas, this.hit);
-    this.layer.append(this.bubble, this.body);
+    this.layer.append(this.bubble, this.zzz, this.body);
     document.body.appendChild(this.layer);
 
     this.compact = this.isCompact();
-    this.R = this.compact ? 150 : 260;
+    this.R = this.compact ? 150 : 300;
     this.layer.classList.toggle('is-compact', this.compact);
     this.body.style.width = this.body.style.height = `${this.R}px`;
-    this.engine = new Engine(THREE, gltf, this.canvas, this.R);
+    this.engine = new Engine(THREE, RoomEnvironment, gltf, this.canvas, this.R);
     this.engine.applyTheme();
 
-    const vh = window.innerHeight;
+    const now = performance.now();
     this.s = {
-      cx: 60, cy: vh + 160, vx: 0, vy: 0, scale: 0.5,
-      expr: 'happy', exprUntil: 0,
-      blinkAt: performance.now() + 2500, blinkUntil: 0,
-      spinFrom: -1e9, hopFrom: -1e9, waveUntil: 0,
-      cursor: null, lastInput: performance.now(), sleeping: false, sleptAt: 0,
-      pokes: 0, pokeAt: 0,
+      cx: -this.R, cy: window.innerHeight * 0.4, vx: 0, vy: 0, scale: 0.6, dir: 1,
+      cursor: null, cursorMovedAt: -1e9, lastInput: now, sleeping: false, sleptAt: 0,
+      pokes: 0, pokeAt: 0, nextFidget: now + 9000,
     };
+    this.T = THREE;
     this.target = null;
-    this.mode = 'dock';
-    this.curtain = null;          // 'tow' while pulling the section curtain in, 'hold' while it covers the page
+    this.mode = 'hero';
+    this.presenting = null;       // { section, until, said } while introducing a heading
+    this.curtain = null;          // 'tow' while flying the section curtain in, 'hold' while it covers the page
+    this.petting = false;         // pointer is over Max: hold still so he can be clicked
     this.hidden = true;
     this.dialogOpen = false;
     this.speaking = false;
     this.typing = false;
     this.speakingPrio = 0;
     this.lastUnprompted = -1e9;
-    this.lastTalk = performance.now();
+    this.lastTalk = now;
     this.idleChats = 0;
     this.introduced = new Set();
     this.hoverCooldowns = new Map();
@@ -496,7 +579,7 @@ class Max {
     this.bubbleH = 0;
     this.frame = 0;
     this.t = 0;
-    this.last = performance.now();
+    this.last = now;
     this.raf = 0;
     this.loop = this.loop.bind(this);
     this.bind();
@@ -512,24 +595,22 @@ class Max {
     clearTimeout(this.hideTimeout);
     this.hidden = false;
     this.layer.classList.remove('is-hidden');
-    this.target = this.computeTarget();
-    const vh = window.innerHeight;
-    // Rise in from below the target (or appear in place for reduced motion)
-    this.s.cx = this.target.cx;
-    this.s.cy = reducedMotion ? this.target.cy : vh + this.R * 0.6;
+    this.target = this.computeTarget(performance.now());
+    // Fly in from the left edge (or appear in place for reduced motion / on small screens)
+    this.s.cx = reducedMotion || this.compact ? this.target.cx : -this.R * 0.3;
+    this.s.cy = this.target.cy;
     this.s.scale = this.target.scale;
     this.s.vx = this.s.vy = 0;
-    this.s.waveUntil = performance.now() + 1400;
     this.start();
     if (greet) {
-      setTimeout(() => this.greet(), reducedMotion ? 200 : 900);
+      setTimeout(() => this.greet(), reducedMotion ? 200 : 1400);
     } else {
-      this.say(pick(LINES.show, 'show'), { prio: 3, expr: 'happy' });
+      this.say(pick(LINES.show, 'show'), { prio: 3 });
     }
   }
 
   hide() {
-    this.say(pick(LINES.hide, 'hide'), { prio: 3, expr: 'wink' });
+    this.say(pick(LINES.hide, 'hide'), { prio: 3 });
     clearTimeout(this.hideTimeout);
     this.hideTimeout = setTimeout(() => {
       this.hidden = true;
@@ -552,10 +633,12 @@ class Max {
 
   greet() {
     const greeting = LINES.greet();
-    this.say(greeting, { prio: 2, expr: 'happy' });
+    this.engine.playOnce('Idle_2');
+    this.say(greeting, { prio: 2 });
     const followDelay = (reducedMotion ? 0 : greeting.length * 24) + 2600;
     setTimeout(() => {
-      if (this.mode === 'hero' || this.compact) this.say(pick(LINES.greetFollow, 'greetFollow'), { prio: 2, expr: 'neutral' });
+      if (this.compact) this.say(LINES.greetFollow[1], { prio: 2 });
+      else if (this.mode === 'hero' || this.mode === 'follow') this.say(pick(LINES.greetFollow, 'greetFollow'), { prio: 2 });
     }, followDelay);
   }
 
@@ -567,15 +650,21 @@ class Max {
       const now = performance.now();
       if (s.sleeping) {
         s.sleeping = false;
-        if (now - s.sleptAt > 5000) this.say(pick(LINES.wake, 'wake'), { prio: 2, expr: 'surprised' });
+        if (now - s.sleptAt > 5000) {
+          this.engine.playOnce('Jump_ToIdle');
+          this.say(pick(LINES.wake, 'wake'), { prio: 2 });
+        }
       }
       s.lastInput = now;
     };
 
     window.addEventListener('pointermove', (e) => {
-      this.s.cursor = { x: e.clientX, y: e.clientY };
+      const s = this.s;
+      if (!s.cursor || Math.abs(e.clientX - s.cursor.x) + Math.abs(e.clientY - s.cursor.y) > 3) s.cursorMovedAt = performance.now();
+      s.cursor = { x: e.clientX, y: e.clientY };
       markInput();
     }, { passive: true });
+    document.documentElement.addEventListener('pointerleave', () => { this.s.cursorMovedAt = -1e9; });
     window.addEventListener('scroll', markInput, { passive: true });
     window.addEventListener('keydown', markInput);
     window.addEventListener('touchstart', markInput, { passive: true });
@@ -584,7 +673,7 @@ class Max {
       const compact = this.isCompact();
       if (compact === this.compact) return;
       this.compact = compact;
-      this.R = compact ? 150 : 260;
+      this.R = compact ? 150 : 300;
       this.layer.classList.toggle('is-compact', compact);
       this.body.style.width = this.body.style.height = `${this.R}px`;
       this.engine.setSize(this.R);
@@ -595,9 +684,10 @@ class Max {
       else if (!this.hidden) this.start();
     });
 
-    // Poke Max
+    // Pat Max: he holds still while the pointer is on him
+    this.hit.addEventListener('pointerenter', () => { this.petting = true; });
+    this.hit.addEventListener('pointerleave', () => { this.petting = false; });
     this.hit.addEventListener('click', () => this.poke());
-    this.hit.addEventListener('pointerenter', () => { if (!this.speaking) this.setExpr('happy', 1200); });
 
     // Hover commentary
     let hoverTimer = 0;
@@ -612,9 +702,7 @@ class Max {
         const last = this.hoverCooldowns.get(match.key) || 0;
         if (performance.now() - last < HOVER_COOLDOWN) return;
         const source = typeof LINES.hover[match.key] === 'function' ? LINES.hover[match.key]() : LINES.hover[match.key];
-        if (this.say(pick(source, `hover-${match.key}`), { prio: 1, expr: 'happy' })) {
-          this.hoverCooldowns.set(match.key, performance.now());
-        }
+        if (this.say(pick(source, `hover-${match.key}`), { prio: 1 })) this.hoverCooldowns.set(match.key, performance.now());
       }, HOVER_DWELL);
     });
     document.addEventListener('pointerout', (e) => {
@@ -623,19 +711,20 @@ class Max {
       clearTimeout(hoverTimer);
     });
 
-    // Section transitions: tow the curtain in, wait while it covers the page, then fly on
+    // Section transitions: fly the curtain in, wait while it covers the page, then carry on
     document.addEventListener('ky:curtain', (e) => {
       if (this.hidden || this.compact) return;
       const { phase, label, id } = e.detail;
       if (phase === 'start') {
         this.curtain = 'tow';
+        this.presenting = null;
         this.s.sleeping = false;
-        this.say(pick(LINES.curtain(label), 'curtain'), { prio: 3, expr: 'cool' });
+        this.say(pick(LINES.curtain(label), 'curtain'), { prio: 3 });
       } else if (phase === 'covered') {
         this.curtain = 'hold';
-        this.setExpr('happy', 1200);
+        this.engine.playOnce('Idle_2');
       } else if ((phase === 'reveal' || phase === 'end') && this.curtain) {
-        // Take off as the curtain wipes away, then introduce the section he just delivered you to
+        // Take off as the curtain wipes away, then introduce the section he just led you to
         this.curtain = null;
         this.hideBubble();
         if (id) this.introduced.delete(id);
@@ -645,23 +734,24 @@ class Max {
 
     // Reactions to the page
     document.addEventListener('ky:filter', (e) => {
-      const line = LINES.filters[e.detail.filter] || `Showing ${e.detail.label}.`;
-      this.say(line, { prio: 2, expr: 'surprised', exprMs: 900, then: 'happy' });
+      this.engine.playOnce('Idle_2');
+      this.say(LINES.filters[e.detail.filter] || `Showing ${e.detail.label}.`, { prio: 2 });
     });
     document.addEventListener('ky:skill', (e) => {
       const now = performance.now();
       if (now - this.lastSkillAt < SKILL_COOLDOWN) return;
       const line = LINES.skills[e.detail.id];
-      if (line && this.say(line, { prio: 2, expr: 'happy' })) this.lastSkillAt = now;
+      if (line && this.say(line, { prio: 2 })) this.lastSkillAt = now;
     });
     document.addEventListener('ky:copy-email', () => {
-      this.s.waveUntil = performance.now() + 1200;
-      this.say(pick(LINES.copied, 'copied'), { prio: 2, expr: 'happy' });
+      this.engine.playOnce('Jump_ToIdle');
+      this.say(pick(LINES.copied, 'copied'), { prio: 2 });
     });
     document.addEventListener('ky:themechange', (e) => {
       this.engine.applyTheme();
+      this.engine.playOnce('Idle_2');
       const light = e.detail && e.detail.theme === 'light';
-      this.say(pick(light ? LINES.themeLight : LINES.themeDark, 'theme'), { prio: 2, expr: light ? 'surprised' : 'happy' });
+      this.say(pick(light ? LINES.themeLight : LINES.themeDark, 'theme'), { prio: 2 });
     });
     document.addEventListener('ky:dialog', () => {
       this.dialogOpen = !!document.querySelector('dialog[open]');
@@ -685,30 +775,23 @@ class Max {
     s.sleeping = false;
     s.pokes = now - s.pokeAt < 2500 ? s.pokes + 1 : 1;
     s.pokeAt = now;
-    if (!reducedMotion) {
-      s.hopFrom = now;
-      if (s.pokes % 2 === 1) s.spinFrom = now;
-    }
     if (s.pokes >= 4) {
       s.pokes = 0;
-      this.say(pick(LINES.dizzy, 'dizzy'), { prio: 2, expr: 'dizzy', exprMs: 2200 });
+      this.engine.playOnce('Gallop_Jump');
+      this.say(pick(LINES.dizzy, 'dizzy'), { prio: 2 });
     } else {
-      this.say(pick(LINES.poke, 'poke'), { prio: 2, expr: Math.random() < 0.4 ? 'wink' : 'happy' });
+      this.engine.playOnce(s.pokes % 2 ? 'Idle_HitReact_Left' : 'Idle_HitReact_Right');
+      this.say(pick(LINES.poke, 'poke'), { prio: 2 });
     }
   }
 
   /* ---- speech ---- */
 
-  setExpr(expr, ms) {
-    this.s.expr = expr;
-    this.s.exprUntil = performance.now() + ms;
-  }
-
   /**
    * Show a speech bubble. prio 1 = unprompted (sections, hovers, idle), 2 = reactions, 3 = show/hide/curtain.
    * Returns false when the line was skipped (cooldown, a more important line is playing, or hidden).
    */
-  say(text, { prio = 1, expr = 'happy', exprMs, then } = {}) {
+  say(text, { prio = 1 } = {}) {
     if (!text) return false;
     if (this.hidden && prio < 3) return false;
     if (this.dialogOpen) return false;
@@ -722,12 +805,9 @@ class Max {
 
     clearInterval(this.typeTimer);
     clearTimeout(this.hideTimer);
-    clearTimeout(this.exprTimer);
     this.speaking = true;
     this.speakingPrio = prio;
     const hold = clamp(text.length * 55, 2600, 6500);
-    this.setExpr(expr, exprMs || hold + 600);
-    if (then) this.exprTimer = setTimeout(() => this.setExpr(then, hold), exprMs);
 
     // Measure the full line first so the bubble does not resize while typing
     this.bubble.style.width = '';
@@ -770,85 +850,86 @@ class Max {
 
   /* ---- placement ---- */
 
-  /** Where Max should be right now: towing the curtain, beside the hero, above a heading, or docked. */
-  computeTarget() {
+  /**
+   * Where Max should fly right now, in priority order: leading the curtain, introducing a new
+   * section heading, following the moving cursor, hovering by the hero terminal, napping in the
+   * corner, or simply hovering where he is.
+   */
+  computeTarget(now) {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const R = this.R;
+    const s = this.s;
 
-    // Section curtain: ride its leading edge in, then wait at the left while the page changes
     if (this.curtain) {
       const scale = 0.72;
       const box = R * scale;
-      const rest = box * 0.36 + 12;
+      const rest = box * 0.42 + 12;
       if (this.curtain === 'tow') {
         const curtainEl = document.getElementById('section-curtain');
         const left = curtainEl ? curtainEl.getBoundingClientRect().left : 0;
-        return { mode: 'tow', scale, cx: Math.max(rest, left - box * 0.1), cy: vh * 0.5, snap: true };
+        return { mode: 'tow', scale, cx: Math.max(rest, left - box * 0.1), cy: vh * 0.55, snap: true };
       }
-      return { mode: 'hold', scale, cx: rest, cy: vh * 0.5 };
+      return { mode: 'hold', scale, cx: rest, cy: vh * 0.55 };
     }
 
-    const dock = () => {
-      if (this.compact) {
-        // Touch / small screens: sit small beside the robot toggle at the bottom edge so Max rarely covers content
-        const scale = 0.5;
-        const box = R * scale;
-        return { mode: 'dock', scale, cx: 64 + box * 0.3, cy: vh - 30 - box * 0.12, section: this.visibleSection() };
+    if (this.compact) {
+      // Phones / small windows: hover in the empty middle of the navbar so content stays clear
+      const nav = document.getElementById('nav-inner');
+      const nr = nav ? nav.getBoundingClientRect() : null;
+      const scale = 0.62;
+      if (nr && nr.width > 0) {
+        return { mode: 'dock', scale, cx: nr.left + nr.width * 0.45, cy: nr.top + nr.height * 0.5, section: this.visibleSection(), free: true };
       }
-      const scale = 0.42;
-      const box = R * scale;
-      return { mode: 'dock', scale, cx: 18 + box * 0.32, cy: vh - 58 - box * 0.42, section: this.visibleSection() };
-    };
-    if (this.compact) return dock();
+      return { mode: 'dock', scale, cx: 90, cy: vh - 50, section: this.visibleSection() };
+    }
 
-    // Hero: lean on the terminal card on wide screens, otherwise float in the open space on the right
+    // A section heading just scrolled into view: fly over and introduce it
+    const heading = this.presentableEyebrow(R * 0.62, vh);
+    if (!this.presenting && heading && LINES.sections[heading.section] && !this.introduced.has(heading.section) && !s.sleeping) {
+      this.presenting = { section: heading.section, until: now + PRESENT_MS, said: false };
+    }
+    if (this.presenting) {
+      if (now > this.presenting.until || !heading || heading.section !== this.presenting.section) {
+        this.introduced.add(this.presenting.section);
+        this.presenting = null;
+      } else {
+        const scale = 0.62;
+        const box = R * scale;
+        return { mode: 'present', scale, cx: heading.rect.right + box * 0.38, cy: heading.rect.top - box * 0.02, section: heading.section };
+      }
+    }
+
+    // Follow the cursor while it is moving (and hold still while it is on Max, so he can be patted)
+    if (s.cursor && !s.sleeping && (this.petting || now - s.cursorMovedAt < FOLLOW_IDLE)) {
+      const scale = 0.72;
+      if (this.petting) return { mode: 'follow', scale, cx: s.cx, cy: s.cy };
+      const box = R * scale;
+      const gap = box * 0.36 + 34;
+      const side = s.cursor.x + gap + box * 0.3 < vw - 8 ? 1 : -1;
+      return { mode: 'follow', scale, cx: s.cursor.x + side * gap, cy: s.cursor.y - box * 0.1 };
+    }
+
+    // Hero, cursor at rest: hover beside the terminal (or in the open space on the right)
     const hero = document.getElementById('top');
     const heroRect = hero ? hero.getBoundingClientRect() : null;
-    if (heroRect && heroRect.bottom > vh * 0.55 && vw >= 1024) {
+    if (heroRect && heroRect.bottom > vh * 0.55) {
       const terminal = document.querySelector('.hero-terminal');
       const tr = terminal ? terminal.getBoundingClientRect() : null;
       if (tr && tr.width > 0) {
-        const scale = 0.9;
-        return { mode: 'hero', scale, cx: tr.left - R * scale * 0.12, cy: tr.top + tr.height * 0.3, section: 'top' };
+        return { mode: 'hero', scale: 0.9, cx: tr.left + tr.width * 0.12, cy: tr.top - R * 0.9 * 0.12 };
       }
-      return { mode: 'hero', scale: 1, cx: vw - Math.max(170, vw * 0.17), cy: vh * 0.4 + heroRect.top * 0.6, section: 'top' };
+      return { mode: 'hero', scale: 0.95, cx: vw - Math.max(180, vw * 0.18), cy: vh * 0.45 + heroRect.top * 0.6 };
     }
 
-    // Pinned project showcase: hover in the gutter beside the active card
-    const pin = document.getElementById('projects-pin');
-    if (pin && pin.classList.contains('is-pinned')) {
-      const pr = pin.getBoundingClientRect();
-      if (pr.top <= 1 && pr.bottom >= vh - 1) {
-        const card = this.centeredProjectCard(vw);
-        if (card) {
-          const scale = 0.5;
-          const gutter = vw - card.right;
-          if (gutter >= R * scale * 0.7) {
-            return { mode: 'anchor', scale, cx: card.right + gutter / 2, cy: card.top + R * scale * 0.4, section: 'projects' };
-          }
-        }
-      }
-    }
-
-    // Section headings: hover just above the end of the numbered eyebrow label
-    const heading = this.presentableEyebrow(R * 0.5, vh);
-    if (heading) {
+    // Napping: settle in the bottom-left corner beside the paw button
+    if (s.sleeping) {
       const scale = 0.5;
-      const box = R * scale;
-      return { mode: 'anchor', scale, cx: heading.rect.right - box * 0.04, cy: heading.rect.top - box * 0.38, section: heading.section };
+      return { mode: 'dock', scale, cx: 64 + R * scale * 0.34, cy: vh - 24 - R * scale * 0.3 };
     }
-    return dock();
-  }
 
-  centeredProjectCard(vw) {
-    let best = null;
-    document.querySelectorAll('.project-slot:not(.is-filtered-out) .project-card').forEach((card) => {
-      const r = card.getBoundingClientRect();
-      const distance = Math.abs(r.left + r.width / 2 - vw / 2);
-      if (!best || distance < best.distance) best = { rect: r, distance };
-    });
-    return best && best.distance < vw * 0.25 ? best.rect : null;
+    // Otherwise keep hovering where he is
+    return { mode: 'rest', scale: Math.max(0.55, Math.min(s.scale, 0.7)), cx: s.cx, cy: s.cy };
   }
 
   eyebrowRect(eyebrow) {
@@ -862,8 +943,8 @@ class Max {
     let best = null;
     document.querySelectorAll('main section[id] .eyebrow').forEach((eyebrow) => {
       const rect = this.eyebrowRect(eyebrow);
-      if (rect.top < NAV_CLEARANCE + box * 0.8 || rect.top > vh * 0.86) return;
-      const score = Math.abs(rect.top - vh * 0.55);
+      if (rect.top < NAV_CLEARANCE + box * 0.4 || rect.top > vh * 0.82) return;
+      const score = Math.abs(rect.top - vh * 0.5);
       if (!best || score < best.score) best = { rect, score, section: eyebrow.closest('section').id };
     });
     return best;
@@ -889,112 +970,124 @@ class Max {
     const s = this.s;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
+    const engine = this.engine;
 
-    if (!this.target || this.curtain || this.frame % 3 === 0) this.target = this.computeTarget();
+    if (!this.target || this.curtain || this.frame % 2 === 0) this.target = this.computeTarget(now);
     const tg = this.target;
     this.mode = tg.mode;
 
-    // Introduce each section once, the first time Max presents it
-    const section = tg.section;
-    if (section && LINES.sections[section] && !this.introduced.has(section) && this.frame % 15 === 0) {
-      if (this.say(pick(LINES.sections[section], `section-${section}`), { prio: 1, expr: 'happy' })) {
-        this.introduced.add(section);
-      }
-    }
-
-    // Spring towards the target, ride the curtain edge exactly, or snap for reduced motion
+    // Fly: ride the curtain edge exactly, otherwise a soft spring (looser while following the cursor)
     const box = this.R * s.scale;
-    const tx = tg.snap ? tg.cx : clamp(tg.cx, box * 0.3 + 8, vw - box * 0.3 - 8);
-    const ty = tg.snap ? tg.cy : clamp(tg.cy, NAV_CLEARANCE + box * 0.3, vh - box * 0.4);
+    const tx = tg.snap || tg.free ? tg.cx : clamp(tg.cx, box * 0.32 + 8, vw - box * 0.32 - 8);
+    const ty = tg.free ? tg.cy : clamp(tg.cy, NAV_CLEARANCE + box * 0.3, vh - box * 0.36);
     if (reducedMotion) {
       s.cx = tx;
       s.cy = ty;
       s.scale = tg.scale;
+      s.vx = s.vy = 0;
     } else if (tg.snap) {
       s.vx = (tx - s.cx) / dt;
       s.vy = damp(s.vy, 0, 10, dt);
       s.cx = tx;
-      s.cy = damp(s.cy, ty, 9, dt);
-      s.scale = damp(s.scale, tg.scale, 9, dt);
+      s.cy = damp(s.cy, ty, 8, dt);
+      s.scale = damp(s.scale, tg.scale, 8, dt);
     } else {
-      const k = 26;
-      const c = 2 * Math.sqrt(k) * 0.85;
+      const k = tg.mode === 'follow' ? 12 : 18;
+      const c = 2 * Math.sqrt(k) * 0.95;
       s.vx += (k * (tx - s.cx) - c * s.vx) * dt;
       s.vy += (k * (ty - s.cy) - c * s.vy) * dt;
       s.cx += s.vx * dt;
       s.cy += s.vy * dt;
-      s.scale = damp(s.scale, tg.scale, 6, dt);
+      s.scale = damp(s.scale, tg.scale, 5, dt);
     }
     const R = this.R;
     this.body.style.transform = `translate3d(${(s.cx - R / 2).toFixed(1)}px, ${(s.cy - R / 2).toFixed(1)}px, 0) scale(${s.scale.toFixed(3)})`;
 
-    // Mood: sleep after a long idle, chat a little when the visitor has been quiet
+    // Introduce the section once he has arrived at its heading
+    if (this.presenting && !this.presenting.said && tg.mode === 'present' && Math.hypot(tx - s.cx, ty - s.cy) < 60) {
+      if (this.say(pick(LINES.sections[this.presenting.section], `section-${this.presenting.section}`), { prio: 2 })) {
+        this.presenting.said = true;
+        this.introduced.add(this.presenting.section);
+      }
+    }
+    // On small screens Max stays in the navbar, so introduce sections as they come into view
+    if (this.compact && tg.section && LINES.sections[tg.section] && !this.introduced.has(tg.section) && this.frame % 15 === 0) {
+      if (this.say(pick(LINES.sections[tg.section], `section-${tg.section}`), { prio: 1 })) this.introduced.add(tg.section);
+    }
+
+    // Mood: nap after a long idle, chat a little when the visitor has been quiet, fidget now and then
+    const speed = Math.hypot(s.vx, s.vy);
     const idleFor = now - s.lastInput;
-    if (!s.sleeping && idleFor > SLEEP_AFTER && !this.speaking && !this.curtain) {
+    if (!s.sleeping && idleFor > SLEEP_AFTER && !this.speaking && !this.curtain && !this.presenting) {
       s.sleeping = true;
       s.sleptAt = now;
     }
     if (!s.sleeping && !this.speaking && !this.curtain && now - this.lastTalk > IDLE_CHAT_AFTER && this.idleChats < 2) {
-      if (this.say(pick(LINES.idle, 'idle'), { prio: 1, expr: 'neutral' })) this.idleChats += 1;
+      if (this.say(pick(LINES.idle, 'idle'), { prio: 1 })) this.idleChats += 1;
     }
-    if (now > s.blinkAt) {
-      s.blinkUntil = now + 130;
-      s.blinkAt = now + 2200 + Math.random() * 3200;
+    if (speed < 60 && !s.sleeping && now > s.nextFidget) {
+      engine.playOnce('Idle_2');
+      s.nextFidget = now + 9000 + Math.random() * 7000;
     }
 
-    // Gaze: follow the cursor when there is one, otherwise glance around slowly
-    const headX = s.cx;
-    const headY = s.cy - this.R * s.scale * 0.08;
-    let lookX;
-    let lookY;
-    if (this.curtain === 'tow') {
-      lookX = -0.8;
-      lookY = 0;
-    } else if (s.cursor && finePointer) {
-      lookX = clamp((s.cursor.x - headX) / (vw * 0.35), -1, 1);
-      lookY = clamp((s.cursor.y - headY) / (vh * 0.35), -1, 1);
+    // Flight pose from speed
+    if (Math.abs(s.vx) > 40) s.dir = Math.sign(s.vx);
+    if (this.curtain === 'tow') s.dir = -1;
+    if (this.curtain === 'tow' || speed > 650) engine.setBase('Glide');
+    else if (speed > 160) engine.setBase('Gallop', clamp(speed / 900, 0.45, 0.9));
+    else if (s.sleeping) engine.setBase('Idle_2_HeadLow', 0.6);
+    else engine.setBase('Idle');
+
+    // Facing: profile into fast flight; otherwise turn towards the cursor (or the page centre)
+    let facing;
+    const lookAtX = s.cursor && finePointer ? s.cursor.x : vw / 2;
+    if (this.curtain === 'tow' || speed > 260) {
+      facing = s.dir * 1.25;
     } else {
-      lookX = Math.sin(this.t * 0.35) * 0.4;
-      lookY = Math.sin(this.t * 0.23) * 0.2;
+      facing = clamp((lookAtX - s.cx) / 90, -1, 1) * 0.95;
+      if (s.sleeping) facing = (s.cx < vw / 2 ? 1 : -1) * 0.5;
     }
-    if (s.sleeping) { lookX = 0; lookY = 0.3; }
+    const tilt = reducedMotion ? 0 : clamp(-s.vx * 0.00035, -0.3, 0.3);
+    const pitch = reducedMotion ? 0 : clamp(s.vy * 0.00025, -0.2, 0.2);
 
-    const expr = s.sleeping ? 'sleepy' : now < s.exprUntil ? s.expr : 'neutral';
-    const spinP = reducedMotion ? -1 : (now - s.spinFrom) / 800;
-    const hopP = reducedMotion ? -1 : (now - s.hopFrom) / 520;
-    const speed = clamp(Math.hypot(s.vx, s.vy) / 900, 0, 1);
-    this.engine.update(dt, this.t, {
-      still: reducedMotion || s.sleeping,
-      bank: reducedMotion ? 0 : clamp(-s.vx * 0.0004, -0.35, 0.35),
-      yaw: reducedMotion ? 0 : clamp(s.vx * 0.0005, -0.45, 0.45),
-      lookX,
-      lookY,
-      spinP: spinP <= 1 ? spinP : -1,
-      hopP: hopP <= 1 ? hopP : -1,
-      waving: now < s.waveUntil,
+    // Head tracking target: the cursor projected in front of Max (or straight at the viewer)
+    let lookTarget = null;
+    if (!s.sleeping && s.cursor && finePointer && !reducedMotion) {
+      lookTarget = engine.pageToWorld(s.cursor.x, s.cursor.y, s.cx, s.cy, box);
+    } else if (!s.sleeping) {
+      lookTarget = engine.camera.position.clone();
+    }
+
+    engine.update(dt, this.t, {
+      still: reducedMotion,
+      facing,
+      tilt,
+      pitch,
+      lookTarget,
       sleeping: s.sleeping,
-      speed,
-      face: {
-        expr,
-        blink: now < s.blinkUntil && !s.sleeping && expr !== 'dizzy' && expr !== 'cool',
-        mouthOpen: this.typing && Math.floor(this.t * 9) % 2 === 0,
-        lx: Math.round(clamp(lookX * 1.3, -1, 1)),
-        ly: Math.round(clamp(lookY * 1.3, -1, 1)),
-        zzz: s.sleeping && Math.floor(this.t * 1.5) % 2 === 0,
-      },
+      speed: clamp(speed / 900, 0, 1),
     });
-    this.engine.render();
+    engine.render();
 
-    if (this.bubble.classList.contains('is-visible')) this.placeBubble(headX, headY, this.R * s.scale, vw, vh);
+    // Speech bubble beside his head, and "zzz" while he naps
+    const head = engine.headOnPage(s.cx, s.cy, box);
+    if (this.bubble.classList.contains('is-visible')) this.placeBubble(head.x, head.y, box, vw, vh);
+    this.zzz.classList.toggle('is-visible', s.sleeping && !this.hidden);
+    if (s.sleeping) this.zzz.style.transform = `translate3d(${(head.x + box * 0.08).toFixed(1)}px, ${(head.y - box * 0.18).toFixed(1)}px, 0)`;
   }
 
   placeBubble(headX, headY, box, vw, vh) {
-    const half = box * 0.3;
+    const half = box * 0.22;
     const bw = this.bubbleW;
     const bh = this.bubbleH;
     let left;
     let tail;
-    if (headX + half + 12 + bw <= vw - 8) {
+    // Keep the bubble on the side away from the cursor so it never sits under the pointer
+    const cursorLeft = this.s.cursor && this.s.cursor.x < headX;
+    const preferRight = !cursorLeft || this.compact;
+    const fitsRight = headX + half + 12 + bw <= vw - 8;
+    const fitsLeft = headX - half - 12 - bw >= 8;
+    if ((preferRight && fitsRight) || !fitsLeft) {
       left = headX + half + 10;
       tail = 'tail-left';
     } else {
@@ -1030,16 +1123,15 @@ function whenIdle() {
 }
 
 async function loadMax() {
-  const [THREE, { GLTFLoader }, { DRACOLoader }] = await Promise.all([
+  const [THREE, { GLTFLoader }, { MeshoptDecoder }, { RoomEnvironment }] = await Promise.all([
     import('three'),
     import('three/addons/loaders/GLTFLoader.js'),
-    import('three/addons/loaders/DRACOLoader.js'),
+    import('three/addons/libs/meshopt_decoder.module.js'),
+    import('three/addons/environments/RoomEnvironment.js'),
   ]);
-  const draco = new DRACOLoader().setDecoderPath(DRACO_PATH);
-  const loader = new GLTFLoader().setDRACOLoader(draco);
+  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const gltf = await loader.loadAsync(MODEL_URL);
-  draco.dispose();
-  return new Max(THREE, gltf);
+  return new Max(THREE, RoomEnvironment, gltf);
 }
 
 (function boot() {
@@ -1052,10 +1144,10 @@ async function loadMax() {
   const toggle = document.createElement('button');
   toggle.type = 'button';
   toggle.className = 'bot-toggle glass-card';
-  toggle.innerHTML = '<i class="fas fa-robot text-sm" aria-hidden="true"></i>';
+  toggle.innerHTML = '<i class="fas fa-paw text-sm" aria-hidden="true"></i>';
   const syncToggle = () => {
     toggle.setAttribute('aria-pressed', hidden ? 'false' : 'true');
-    toggle.setAttribute('aria-label', hidden ? 'Show Max, the robot guide' : 'Hide Max, the robot guide');
+    toggle.setAttribute('aria-label', hidden ? 'Show Max, the robo-wolf guide' : 'Hide Max, the robo-wolf guide');
     toggle.title = hidden ? 'Show Max' : 'Hide Max';
   };
   syncToggle();

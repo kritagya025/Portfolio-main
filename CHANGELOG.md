@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.4.0] - 2026-10-20
+
+### Changed
+- New colour theme: monochromatic dark slate (`#0F172A`) with neon emerald and purple highlights (light theme retuned to match); buttons use dark text on emerald; favicon, 404 page, web manifest, GitHub stat cards, and theme-color updated
+- Max is now a **flying mech-wolf**: chrome armour with environment reflections, glowing emerald circuit lines skinned to his skeleton, emerald eyes, a two-thruster jetpack with flames that stretch with speed, a purple-tipped antenna, and an anti-gravity glow; he hovers and banks instead of walking
+- Max follows the cursor while it moves (and holds still when you move onto him so he can be patted), and his head bone now tracks the cursor
+- Max flies to each new section heading to introduce it, then returns to following you; he hovers by the hero terminal when the cursor is at rest
+- Section transitions are slower and easier to read: 1.1 s slide-in, 0.75 s hold on the section name, 0.95 s wipe-out
+- Location updated to Noida, India
+
+---
+
+## [3.3.0] - 2026-10-20
+
+### Changed
+- Max is now a **wolf**: the rigged, animated "Wolf" by Quaternius (CC0) replaces the robot model (`assets/models/max-wolf.glb`, trimmed to 9 clips and meshopt-compressed, 313 KB), recoloured to the site palette with glowing eyes
+- Movement uses real gaits: idle, walk, and gallop chosen from his speed, facing the direction of travel, with a ground shadow; a three-quarter view towards the cursor while standing
+- Max stands on ledges: the top of the hero terminal, the line beside each section label, and the top edge of the active project card; he gallops ahead of the section curtain
+- Reactions are animations: hit-react on pats, a hop on copy-email and when the curtain lands, a look-around on filters/theme changes and as an occasional fidget, and a head-down nap with floating "zzz" when idle
+- On phones and windows narrower than 1024px Max rides in the empty middle of the navbar and never intercepts taps
+- Paw icon for the show/hide button; lines rewritten for a wolf; footer and README credits updated
+
+### Removed
+- The robot model (`assets/models/max-robot.glb`) and its LED-face renderer
+
+---
+
 ## [3.2.0] - 2026-10-20
 
 ### Added

@@ -6,7 +6,7 @@
 [![Redis](https://img.shields.io/badge/Redis-Cache-red.svg?style=for-the-badge&logo=redis)](https://redis.io/)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-cyan.svg?style=for-the-badge&logo=docker)](https://www.docker.com/)
 
-A modern, high-performance personal developer portfolio showcasing software engineering projects, backend architecture experience, technical skills, education, and credentials. Built around an editorial dark/light design system — oversized display typography, violet → magenta → teal gradients, glass cards, numbered sections, a pinned horizontal project showcase, and optimized SEO metadata.
+A modern, high-performance personal developer portfolio showcasing software engineering projects, backend architecture experience, technical skills, education, and credentials. Built around a monochromatic dark design system — a dark slate (`#0F172A`) canvas with neon emerald and purple highlights, oversized display typography, glass cards, numbered sections, a pinned horizontal project showcase, and optimized SEO metadata.
 
 ---
 
@@ -27,7 +27,7 @@ A modern, high-performance personal developer portfolio showcasing software engi
 - **🟢 Live Availability & Local Time**: Real-time hiring availability badge paired with dynamic Indian Standard Time (IST &middot; UTC+5:30) clock widget in the Hero and Contact sections.
 - **🗂️ Pinned Horizontal Project Showcase**: On desktop, featured projects scroll sideways inside a pinned viewport with a progress rail; tablets and phones get stacked cards. Category filters (*All*, *High Concurrency*, *Cloud & DevOps*, *Security & APIs*) keep their live counts.
 - **🔎 Project Detail Modals**: Each card opens a detail view with key metrics, highlights, tech stack, and source/live links.
-- **🤖 Max, the Floating Robot Guide**: A three.js robot (`js/max-bot.js`) with an animated LED-matrix face drawn onto his screen. He floats beside the hero, hovers above each section heading as it scrolls in, docks in the corner while you read, follows the cursor with his eyes, tows the section-transition curtain, and reacts to project filters, skill tabs, theme changes, copied email, and pokes. The robot button (bottom-left) hides/shows him and the choice is remembered. Lazy-loaded after the intro, skipped without WebGL, and docked/still on touch screens and for reduced-motion users.
+- **🐺 Max, the Flying Mech-Wolf Guide**: A rigged, animated wolf rendered with three.js (`js/max-bot.js`) and rebuilt as a machine at runtime: chrome armour with environment reflections, glowing emerald circuit lines skinned to the same skeleton, emerald eyes, a two-thruster jetpack with live flames, and an antenna. He flies alongside your cursor and turns his head to look at it, flies to each section heading as it scrolls in to introduce it, hovers by the hero terminal, leads the section-transition curtain, and reacts to project filters, skill tabs, theme changes, copied email, and pats (he holds still when you move onto him, and naps with floating "zzz" when you go idle). On phones and narrow windows he hovers in the navbar so he never covers content. The paw button (bottom-left) hides/shows him and the choice is remembered. Lazy-loaded after the intro, skipped without WebGL, and still for reduced-motion users.
 - **🎬 Section Transitions**: Jumping to a section (navbar, logo, mobile menu, or `Ctrl+K`) slides a full-screen curtain in with the section's number and name, moves the page while it is covered, then wipes it away. Reduced-motion users get an instant jump.
 - **📊 Code-Only Language Breakdown**: A native card that sums bytes per language across public, non-fork repositories (excluding HTML/CSS markup and notebooks), refreshed live from the GitHub API with a day-long cache and a bundled snapshot fallback.
 - **🏛️ System Architecture Deep Dive**: Interactive architecture modal detailing the Event Booking Engine's high-concurrency lifecycle, `@Version` optimistic locking, Redis TTL locks, and STOMP WebSocket broadcasting.
@@ -53,7 +53,7 @@ A modern, high-performance personal developer portfolio showcasing software engi
 - **CSS Utility Engine**: Tailwind CSS
 - **Design System & Typography**: Google Fonts (*Space Grotesk* display, *Syne* body, *JetBrains Mono* labels) & FontAwesome 6
 - **Animation & Physics Libraries**: GSAP, AOS, Lenis Scroll, Vanilla-Tilt.js
-- **3D**: three.js (r160, ES module via import map) with GLTFLoader + DRACOLoader for the Max robot guide
+- **3D**: three.js (r160, ES module via import map) with GLTFLoader + MeshoptDecoder, RoomEnvironment reflections, and AnimationMixer for the Max mech-wolf guide
 
 ---
 
@@ -93,7 +93,7 @@ Tested and optimized for modern evergreen browsers including Google Chrome, Micr
      python -m http.server 8000
      ```
    - Navigate to `http://localhost:8000`.
-   - Use a local server rather than opening the file directly if you want to see Max, the robot guide: browsers block ES modules and model files on `file://` URLs (the rest of the site works either way).
+   - Use a local server rather than opening the file directly if you want to see Max, the mech-wolf guide: browsers block ES modules and model files on `file://` URLs (the rest of the site works either way).
 
 ---
 
@@ -112,7 +112,7 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 ### Credits
 
-- Max's 3D model: ["Flying Robot 07"](https://sketchfab.com/3d-models/flying-robot-07-07-b31dff5e3b344aa1a6f2a3c8454ad440) by [Konstantin_Dem](https://sketchfab.com/Konstantin_Dem), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The bundled file is Draco-compressed and lightly modified (helper nodes, screen material); the LED face is drawn at runtime. The model is not covered by this repository's MIT license.
+- Max's 3D model: ["Wolf"](https://poly.pizza/m/P1gU3Qkr9r) by [Quaternius](https://quaternius.com), released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (public domain). The bundled file keeps 9 of the original animation clips and is meshopt-compressed (987 KB → 313 KB); the armour, circuit lines, jetpack, and antenna are added at runtime.
 
 ---
 
@@ -121,8 +121,8 @@ This project is open-source and available under the [MIT License](LICENSE).
 ```
 Portfolio-main/
 ├── index.html              # Single-page application (all HTML, CSS, JS)
-├── js/max-bot.js           # Max, the floating 3D robot guide (lazy-loaded ES module)
-├── assets/models/max-robot.glb  # Max's 3D model (CC BY 4.0, see Credits)
+├── js/max-bot.js           # Max, the flying 3D mech-wolf guide (lazy-loaded ES module)
+├── assets/models/max-wolf.glb   # Max's 3D model (CC0, see Credits)
 ├── 404.html                # Custom GitHub Pages 404 error page
 ├── Kritagya_Yadav_Resume.pdf  # Downloadable resume asset
 ├── robots.txt              # SEO crawler directives
@@ -143,7 +143,7 @@ Portfolio-main/
 
 | Decision | Rationale |
 |---|---|
-| **Single HTML file** | Zero build step, instant deployment via GitHub Pages, no framework overhead (the optional robot guide lives in one lazy-loaded module) |
+| **Single HTML file** | Zero build step, instant deployment via GitHub Pages, no framework overhead (the optional mech-wolf guide lives in one lazy-loaded module) |
 | **CDN-loaded libraries** | Avoids `node_modules` bloat; leverages browser caching from shared CDNs |
 | **JSON-LD structured data** | Improves search engine rich snippet rendering (Person schema) |
 | **Intersection Observer** | Efficient scroll-based nav highlighting without costly scroll listeners |
