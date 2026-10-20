@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 3.9.0 -->
+<!-- Portfolio Version: 3.10.0 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
@@ -1227,6 +1227,7 @@
     /* top/bottom are set from the model's measured height in JS */
     .bot-hit { position: absolute; inset: 20% 31% 22% 31%; border-radius: 38%; pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .bot-layer.is-compact .bot-hit { pointer-events: none; } /* touch / small screens: never swallow taps meant for the page */
+    .bot-layer.is-compact.is-docked .bot-hit { pointer-events: auto; } /* parked in the empty middle of the navbar: tap to poke */
     .bot-zzz {
       position: absolute;
       left: 0;
@@ -1264,7 +1265,8 @@
       transition: opacity 0.18s ease;
       will-change: transform;
     }
-    .bot-bubble.is-visible { opacity: 1; }
+    .bot-bubble.is-visible { opacity: 1; pointer-events: auto; cursor: pointer; } /* tap or click to dismiss */
+    .bot-layer.is-compact .bot-bubble { max-width: min(280px, calc(100vw - 24px)); font-size: 12.5px; }
     .bot-bubble::before {
       content: '';
       position: absolute;

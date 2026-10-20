@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.10.0] - 2026-10-20
+
+### Changed
+- Max is optimized per device:
+  - **Phones, tablets, and weaker hardware** (4 or fewer CPU cores or 4 GB or less memory) get a lighter build: about 40% fewer polygons, half the sparks, no antialiasing, and a pixel ratio capped at 1.5
+  - **Battery**: rendering is capped at 30 fps on phones and tablets and 20 fps while he naps, and pauses while a dialog covers the page
+  - **Slow devices**: if frames keep running slow, he drops to a lower render resolution
+  - **Screen sizes**: on desktops he scales to the viewport (smaller on short laptop screens, slightly bigger on large monitors); on phones his ears stay on screen when the navbar shrinks
+  - **Data**: on data-saver or 2G connections three.js is not downloaded until the visitor taps the robot button; on phones and tablets the download waits for the page's own assets
+- Phones and tablets: tap Max while he is parked in the navbar to poke him; small talk is less frequent; flick-scrolling no longer counts as speed-reading; the speech bubble is a little smaller
+- Any speech bubble can be tapped or clicked to dismiss it
+- Keyboard users get Max's explanations when they Tab to something
+
+---
+
 ## [3.9.0] - 2026-10-20
 
 ### Added

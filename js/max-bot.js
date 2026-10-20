@@ -19,6 +19,10 @@ const HIDDEN_KEY = 'ky-bot-hidden';
 const root = document.documentElement;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+// Device profile: weaker hardware gets a lighter Max; data-saver connections don't download him unasked
+const lowPower = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
+const connection = navigator.connection || {};
+const saveData = !!connection.saveData || /(^|-)2g$/.test(connection.effectiveType || '');
 
 const UNPROMPTED_GAP = 3500;   // minimum gap between lines Max starts on his own
 const HOVER_DWELL = 450;       // how long the pointer must rest on something before Max explains it
@@ -30,6 +34,7 @@ const FOLLOW_IDLE = 4500;      // stop chasing the cursor once it has been still
 const PRESENT_MS = 4800;       // how long Max stays at a new section heading to introduce it
 const NAV_CLEARANCE = 84;      // keep clear of the fixed navbar
 const BOX = { desktop: 360, compact: 170 }; // size of Max's canvas in px (his on-screen scale multiplies it)
+const FPS = { compact: 30, sleeping: 20 };   // frame-rate caps that save battery (desktop runs at the display rate)
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const damp = (current, target, lambda, dt) => target + (current - target) * Math.exp(-lambda * dt);
@@ -566,7 +571,6 @@ class WolfFace {
 
 const EMERALD = 0x34d399;
 const PURPLE = 0xa855f7;
-const SPARKS = 48;
 
 function glowTexture(T, rgb, elongated) {
   const canvas = document.createElement('canvas');
@@ -601,11 +605,15 @@ function cssColor(name) {
 }
 
 class Engine {
-  constructor(THREE, RoomEnvironment, canvas, size) {
+  /** quality.low: fewer polygons and sparks, no antialiasing, and a lower pixel ratio (phones, weak hardware). */
+  constructor(THREE, RoomEnvironment, canvas, size, quality = { low: false }) {
     const T = THREE;
     this.T = T;
-    this.renderer = new T.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.quality = quality;
+    this.sparkCount = quality.low ? 24 : 48;
+    this.renderer = new T.WebGLRenderer({ canvas, alpha: true, antialias: !quality.low, powerPreference: 'low-power' });
+    this.pixelRatio = Math.min(window.devicePixelRatio || 1, quality.low ? 1.5 : 2);
+    this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.toneMapping = T.ACESFilmicToneMapping;
     this.setSize(size);
@@ -647,7 +655,17 @@ class Engine {
   }
 
   setSize(size) {
+    this.size = size;
     this.renderer.setSize(size, size, false);
+  }
+
+  /** Drop the render resolution when frames run slow. */
+  lowerResolution() {
+    if (this.pixelRatio <= 1) return false;
+    this.pixelRatio = 1;
+    this.renderer.setPixelRatio(1);
+    this.renderer.setSize(this.size, this.size, false);
+    return true;
   }
 
   build() {
@@ -662,7 +680,9 @@ class Engine {
       holo: new T.MeshBasicMaterial({ color: EMERALD, transparent: true, opacity: 0.32, depthWrite: false, toneMapped: false }),
     };
     this.M = M;
-    const lathe = (points, segments = 48) => new T.LatheGeometry(points.map(([r, y]) => new T.Vector2(r, y)), segments);
+    // Fewer segments on the low-quality profile; the silhouette barely changes at that size
+    const seg = (n) => (this.quality.low ? Math.max(6, Math.round(n * 0.6)) : n);
+    const lathe = (points, segments = 48) => new T.LatheGeometry(points.map(([r, y]) => new T.Vector2(r, y)), seg(segments));
     const mesh = (geometry, material) => new T.Mesh(geometry, material);
 
     this.pivot = new T.Group();
@@ -678,7 +698,7 @@ class Engine {
     const VISOR_R = 0.905;
     const VISOR_ARC = 1.5;
     const VISOR_TILT = VISOR_ARC / (COLS / ROWS);
-    this.visor = mesh(new T.SphereGeometry(VISOR_R, 48, 24, Math.PI / 2 - VISOR_ARC / 2, VISOR_ARC, Math.PI / 2 - VISOR_TILT / 2, VISOR_TILT), M.visor);
+    this.visor = mesh(new T.SphereGeometry(VISOR_R, seg(48), seg(24), Math.PI / 2 - VISOR_ARC / 2, VISOR_ARC, Math.PI / 2 - VISOR_TILT / 2, VISOR_TILT), M.visor);
     head.add(this.visor);
     // Trim: glowing rails along the top and bottom edges, metal ribs at the ends
     [-1, 1].forEach((side) => {
@@ -754,7 +774,7 @@ class Engine {
       vent.rotation.set(0.4, angle, 0, 'YXZ'); // follow the body's slope
       body.add(vent);
     });
-    const belt = mesh(new T.TorusGeometry(0.638, 0.018, 8, 64), M.purple);
+    const belt = mesh(new T.TorusGeometry(0.638, 0.018, 8, seg(64)), M.purple);
     belt.rotation.x = Math.PI / 2;
     belt.position.y = -0.05;
     body.add(belt);
@@ -820,7 +840,7 @@ class Engine {
     // ---- Paws: floating hands with glowing pads ----
     this.paws = [-1, 1].map((side) => {
       const paw = new T.Group();
-      const palm = mesh(new T.SphereGeometry(0.15, 24, 16), M.shell);
+      const palm = mesh(new T.SphereGeometry(0.15, seg(24), seg(16)), M.shell);
       palm.scale.set(1, 0.92, 0.86);
       paw.add(palm);
       const cuff = mesh(new T.TorusGeometry(0.115, 0.02, 8, 24), M.green);
@@ -851,7 +871,7 @@ class Engine {
     const orbit = new T.Group();
     orbit.position.y = -0.3;
     orbit.rotation.set(0.32, 0, 0.18);
-    const orbitRing = mesh(new T.TorusGeometry(1.22, 0.007, 6, 96), M.holo);
+    const orbitRing = mesh(new T.TorusGeometry(1.22, 0.007, 6, seg(96)), M.holo);
     orbitRing.rotation.x = Math.PI / 2;
     orbit.add(orbitRing);
     this.satellites = [0, 1, 2].map(() => {
@@ -866,8 +886,8 @@ class Engine {
     this.orbit = orbit;
 
     // ---- Sparks shed by the hover thruster ----
-    const positions = new Float32Array(SPARKS * 3);
-    const colors = new Float32Array(SPARKS * 3);
+    const positions = new Float32Array(this.sparkCount * 3);
+    const colors = new Float32Array(this.sparkCount * 3);
     const geo = new T.BufferGeometry();
     geo.setAttribute('position', new T.BufferAttribute(positions, 3));
     geo.setAttribute('color', new T.BufferAttribute(colors, 3));
@@ -876,7 +896,7 @@ class Engine {
     }));
     this.sparks.frustumCulled = false;
     this.scene.add(this.sparks);
-    this.sparkState = Array.from({ length: SPARKS }, () => ({ life: 0, max: 1, v: new T.Vector3() }));
+    this.sparkState = Array.from({ length: this.sparkCount }, () => ({ life: 0, max: 1, v: new T.Vector3() }));
     this.sparkNext = 0;
   }
 
@@ -1055,7 +1075,7 @@ class Engine {
       this.burstCount -= 1;
       const i = this.sparkNext;
       const spark = this.sparkState[i];
-      this.sparkNext = (i + 1) % SPARKS;
+      this.sparkNext = (i + 1) % this.sparkCount;
       spark.life = spark.max = 0.5 + Math.random() * 0.45;
       const a = Math.random() * Math.PI * 2;
       spark.v.set(Math.cos(a) * (1.4 + Math.random()), -0.3 - Math.random() * 0.9, Math.sin(a) * (1.4 + Math.random()));
@@ -1065,7 +1085,7 @@ class Engine {
       st.sparkAt = t + 70 / this.mainPower;
       const i = this.sparkNext;
       const spark = this.sparkState[i];
-      this.sparkNext = (i + 1) % SPARKS;
+      this.sparkNext = (i + 1) % this.sparkCount;
       spark.life = spark.max = 0.45 + Math.random() * 0.35;
       spark.v.copy(this.mainDir).multiplyScalar(1.4 + Math.random()).add(this.tmp2.set((Math.random() - 0.5) * 0.9, 0, (Math.random() - 0.5) * 0.9));
       posAttr.setXYZ(i, this.mainPos.x, this.mainPos.y, this.mainPos.z);
@@ -1097,6 +1117,8 @@ class Max {
     this.layer.setAttribute('aria-hidden', 'true');
     this.bubble = document.createElement('div');
     this.bubble.className = 'bot-bubble tail-left';
+    this.bubble.title = 'Tap to dismiss';
+    this.bubble.addEventListener('click', () => this.hideBubble());
     this.bubbleText = document.createElement('span');
     this.bubble.appendChild(this.bubbleText);
     this.zzz = document.createElement('div');
@@ -1116,7 +1138,10 @@ class Max {
     this.R = this.compact ? BOX.compact : BOX.desktop;
     this.layer.classList.toggle('is-compact', this.compact);
     this.body.style.width = this.body.style.height = `${this.R}px`;
-    this.engine = new Engine(THREE, RoomEnvironment, this.canvas, this.R);
+    this.engine = new Engine(THREE, RoomEnvironment, this.canvas, this.R, { low: lowPower || this.compact });
+    this.perf = { frames: 0, time: 0, checks: 0 };
+    this.lastRender = 0;
+    this.docked = false;
     this.engine.applyTheme();
 
     const now = performance.now();
@@ -1304,7 +1329,7 @@ class Max {
       const speed = Math.abs(window.scrollY - lastScrollY) / Math.max(8, now - lastScrollAt) * 1000;
       lastScrollY = window.scrollY;
       lastScrollAt = now;
-      fastScrolls = speed > 4500 && !this.portal ? fastScrolls + 1 : 0;
+      fastScrolls = speed > (this.compact ? 7500 : 4500) && !this.portal ? fastScrolls + 1 : 0;
       if (fastScrolls > 5) {
         fastScrolls = 0;
         react('scrollFast', 40000);
@@ -1393,6 +1418,15 @@ class Max {
       hoverEl = match.el;
       clearTimeout(hoverTimer);
       hoverTimer = setTimeout(() => explain(match), HOVER_DWELL);
+    });
+    document.addEventListener('focusin', (e) => {
+      if (!(e.target instanceof Element) || !e.target.matches(':focus-visible')) return;
+      const match = this.matchTalk(e.target);
+      if (match) {
+        hoverEl = match.el;
+        clearTimeout(hoverTimer);
+        hoverTimer = setTimeout(() => explain(match), HOVER_DWELL);
+      }
     });
     document.addEventListener('pointerup', (e) => {
       if (e.pointerType !== 'touch') return;
@@ -1598,7 +1632,18 @@ class Max {
    * section heading, following the moving cursor, hovering by the hero terminal, napping in the
    * corner, or perching at the nearest screen edge while you read.
    */
+  /** Desktop scale factor for the viewport: smaller on short laptop screens, slightly bigger on large ones. */
+  fit() {
+    return clamp(Math.min(window.innerWidth / 1500, window.innerHeight / 860), 0.7, 1.12);
+  }
+
   computeTarget(now) {
+    const target = this.placeTarget(now);
+    if (!this.compact) target.scale *= this.fit();
+    return target;
+  }
+
+  placeTarget(now) {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const R = this.R;
@@ -1615,7 +1660,7 @@ class Max {
       const nr = nav ? nav.getBoundingClientRect() : null;
       const scale = 0.72;
       if (nr && nr.width > 0) {
-        return { mode: 'dock', scale, cx: nr.left + nr.width * 0.47, cy: nr.top + nr.height * 0.5, section: this.visibleSection(), free: true };
+        return { mode: 'dock', scale, cx: nr.left + nr.width * 0.47, cy: Math.max(nr.top + nr.height * 0.5, R * scale * 0.38), section: this.visibleSection(), free: true };
       }
       return { mode: 'dock', scale, cx: 90, cy: vh - 50, section: this.visibleSection() };
     }
@@ -1706,6 +1751,11 @@ class Max {
 
   loop(now) {
     this.raf = requestAnimationFrame(this.loop);
+    if (this.dialogOpen && !this.entry) return;
+    const cap = this.s.sleeping ? FPS.sleeping : this.compact ? FPS.compact : 0;
+    if (cap && now - this.lastRender < 1000 / cap - 2) return;
+    this.lastRender = now;
+    this.trackPerformance(now - this.last, cap);
     const dtMs = Math.min(50, Math.max(1, now - this.last));
     const dt = dtMs / 1000;
     this.last = now;
@@ -1762,6 +1812,11 @@ class Max {
     s.pop = damp(s.pop, 1, 7, dt);
     const R = this.R;
     this.body.style.transform = `translate3d(${(s.cx - R / 2).toFixed(1)}px, ${(s.cy - R / 2).toFixed(1)}px, 0) scale(${s.scale.toFixed(3)})`;
+    const docked = this.compact && !this.entry && tg.mode === 'dock';
+    if (docked !== this.docked) {
+      this.docked = docked;
+      this.layer.classList.toggle('is-docked', docked);
+    }
 
     // Introduce the section once he has arrived at its heading (with a nod)
     if (this.presenting && !this.presenting.said && tg.mode === 'present' && Math.hypot(tx - s.cx, ty - s.cy) < 60) {
@@ -1784,7 +1839,7 @@ class Max {
     }
     // Small talk when it has been quiet for a while, but only while someone is around to hear it
     if (!s.sleeping && !this.speaking && !this.portal && !this.entry && !this.presenting
-      && now - Math.max(this.lastTalk, this.speechEnd) > IDLE_CHAT_AFTER && now - s.lastInput < 30000) {
+      && now - Math.max(this.lastTalk, this.speechEnd) > IDLE_CHAT_AFTER * (this.compact ? 2.2 : 1) && now - s.lastInput < 30000) {
       this.say(resolveLine(LINES.chatter, 'chatter'), { prio: 1 });
       this.lastTalk = now;
     }
@@ -1839,6 +1894,20 @@ class Max {
     if (this.bubble.classList.contains('is-visible')) this.placeBubble(head.x, head.y, box, vw, vh);
     this.zzz.classList.toggle('is-visible', s.sleeping && !this.hidden);
     if (s.sleeping) this.zzz.style.transform = `translate3d(${(head.x + box * 0.12).toFixed(1)}px, ${(head.y - box * 0.3).toFixed(1)}px, 0)`;
+  }
+
+  /** If frames keep coming in slow, render at a lower resolution (checked a few times, then left alone). */
+  trackPerformance(interval, cap) {
+    const p = this.perf;
+    if (p.checks >= 4 || interval > 200) return;
+    p.frames += 1;
+    p.time += interval;
+    if (p.frames < 90) return;
+    const budget = cap ? 1000 / cap : 1000 / 60;
+    if (p.time / p.frames > budget * 1.6) this.engine.lowerResolution();
+    p.frames = 0;
+    p.time = 0;
+    p.checks += 1;
   }
 
   placeBubble(headX, headY, box, vw, vh) {
@@ -1932,9 +2001,20 @@ async function loadMax() {
     ensureMax().then((m) => { if (m) m.show(); });
   });
 
-  if (hidden) return;
-  // Build Max while the intro plays, so he flies in (with heart eyes) the moment the page is ready
-  const building = ensureMax();
+  // Data-saver or 2G connections: skip the three.js download until the visitor asks for Max
+  if (hidden || saveData) {
+    if (saveData && !hidden) {
+      hidden = true;
+      syncToggle();
+    }
+    return;
+  }
+  // Build Max while the intro plays, so he flies in (with heart eyes) the moment the page is ready. On phones
+  // and tablets, wait for the page's own assets first so he never slows down the first paint.
+  const pageLoaded = document.readyState === 'complete' || !window.matchMedia('(pointer: coarse)').matches
+    ? Promise.resolve()
+    : new Promise((resolve) => window.addEventListener('load', resolve, { once: true }));
+  const building = pageLoaded.then(ensureMax);
   whenPageReady()
     .then(() => building)
     .then((m) => { if (m && !hidden) m.show({ greet: true }); });
