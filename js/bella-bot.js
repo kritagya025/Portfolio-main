@@ -37,6 +37,11 @@ const BOX = { desktop: 360, compact: 170 }; // size of Bella's canvas in px (the
 const FPS = { compact: 30, sleeping: 20 };   // frame-rate caps that save battery (desktop runs at the display rate)
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+// Sound effects (js/sound.js; silent unless the visitor turned sound on)
+const sfx = (name, opts) => { if (window.KYSound) window.KYSound.play(name, opts); };
+const babble = (mood) => { if (window.KYSound) window.KYSound.voice(mood); };
+// A little sting when Bella's face changes to one of these
+const STINGS = { love: ['love', 2500], wow: ['sparkle', 2500], surprised: ['pop', 1500], cry: ['sob', 4000], sad: ['sad', 3000], dizzy: ['dizzy', 2000] };
 const damp = (current, target, lambda, dt) => target + (current - target) * Math.exp(-lambda * dt);
 const easeInOut = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
 const bezier = (a, b, c, d, u) => {
@@ -1366,6 +1371,7 @@ class Bella {
     s.cy = this.entry.from.y;
     s.scale = this.entry.scale0;
     s.spinFrom = now + this.entry.dur * 0.2;
+    sfx('jet');
     if (greet) {
       // Heart eyes from launch, and the hello starts mid-flight
       this.setExpr('love', this.entry.dur + 4000);
@@ -1380,6 +1386,7 @@ class Bella {
     const s = this.s;
     if (!reducedMotion) s.hopFrom = now;
     this.engine.burst(20);
+    sfx('land');
     if (this.greetOnArrival) {
       s.waveUntil = now + 2400;
       if (reducedMotion) this.greet();
@@ -1398,6 +1405,7 @@ class Bella {
     this.say(pick(LINES.hide, 'hide'), { prio: 3 });
     this.hideTimeout = setTimeout(() => {
       this.leaving = true;
+      sfx('powerDown');
       this.hideTimeout = setTimeout(() => {
         this.hidden = true;
         this.hiding = false;
@@ -1666,6 +1674,7 @@ class Bella {
     s.sleeping = false;
     s.pokes = now - s.pokeAt < 2500 ? s.pokes + 1 : 1;
     s.pokeAt = now;
+    sfx('boop');
     if (!reducedMotion) {
       s.hopFrom = now;
       if (s.pokes % 2 === 1) s.spinFrom = now;
@@ -1691,8 +1700,8 @@ class Bella {
     const s = this.s;
     const now = performance.now();
     if (name === 'nod') s.nodUntil = now + 700;
-    else if (name === 'hop') s.hopFrom = now;
-    else if (name === 'spin') s.spinFrom = now;
+    else if (name === 'hop') { s.hopFrom = now; sfx('boing', { gap: 300 }); }
+    else if (name === 'spin') { s.spinFrom = now; sfx('whirr', { gap: 500 }); }
     else if (name === 'wave') s.waveUntil = now + 1800;
     else if (name === 'wag') s.wagUntil = now + 2200;
   }
@@ -1735,6 +1744,7 @@ class Bella {
     const react = (cue) => {
       this.setExpr(cue.e, 60000);
       if (cue.g) this.gesture(cue.g);
+      if (STINGS[cue.e]) sfx(STINGS[cue.e][0], { gap: STINGS[cue.e][1] });
     };
     react(cues[0]);
     let nextCue = 1;
@@ -1766,6 +1776,7 @@ class Bella {
     this.typeTimer = setInterval(() => {
       i += 1;
       this.bubbleText.textContent = text.slice(0, i);
+      if (i % 3 === 0 && text[i - 1] !== ' ') babble(this.s.expr);
       while (nextCue < cues.length && i > cues[nextCue].at) {
         react(cues[nextCue]);
         nextCue += 1;
@@ -1985,6 +1996,7 @@ class Bella {
       if (this.say(pick(LINES.sections[this.presenting.section], `section-${this.presenting.section}`), { prio: 2, expr: 'happy' })) {
         this.presenting.said = true;
         this.introduced.add(this.presenting.section);
+        sfx('chime');
         s.nodUntil = now + 700;
       }
     }

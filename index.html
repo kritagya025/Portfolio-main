@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 3.14.0 -->
+<!-- Portfolio Version: 3.16.0 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
@@ -490,15 +490,46 @@
       position: absolute;
       inset-inline: 0;
       height: 50.5%;
+      overflow: hidden;
       background-color: hsl(var(--background));
-      background-image: radial-gradient(hsl(var(--primary) / 0.14) 1px, transparent 1.7px);
+      background-image: radial-gradient(hsl(var(--primary) / 0.12) 1px, transparent 1.7px);
       background-size: 26px 26px;
-      transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1);
+      transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1), box-shadow 0.4s ease;
     }
     .preloader-half.is-top { top: 0; background-position: 0 0; }
     .preloader-half.is-bottom { bottom: 0; background-position: 0 100%; }
-    .preloader.is-exiting .preloader-half.is-top { transform: translateY(-101%); }
-    .preloader.is-exiting .preloader-half.is-bottom { transform: translateY(101%); }
+    .preloader.is-exiting .preloader-half.is-top { transform: translateY(-101%); box-shadow: 0 2px 0 hsl(var(--primary)), 0 14px 44px -6px hsl(var(--primary) / 0.75); }
+    .preloader.is-exiting .preloader-half.is-bottom { transform: translateY(101%); box-shadow: 0 -2px 0 hsl(var(--primary)), 0 -14px 44px -6px hsl(var(--primary) / 0.75); }
+    /* Perspective grid: a floor on the bottom door and a ceiling on the top one, running toward the viewer */
+    .preloader-half::before {
+      content: '';
+      position: absolute;
+      inset-inline: -60%;
+      height: 150%;
+      background-image:
+        linear-gradient(hsl(var(--primary) / 0.32) 1px, transparent 1px),
+        linear-gradient(90deg, hsl(var(--accent) / 0.26) 1px, transparent 1px);
+      background-size: 64px 64px;
+      animation: grid-run 1.4s linear infinite;
+      pointer-events: none;
+    }
+    .preloader-half.is-bottom::before {
+      top: 0;
+      transform-origin: 50% 0;
+      transform: perspective(380px) rotateX(64deg);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%);
+      mask-image: linear-gradient(to bottom, transparent, #000 35%);
+    }
+    .preloader-half.is-top::before {
+      bottom: 0;
+      transform-origin: 50% 100%;
+      transform: perspective(380px) rotateX(-64deg);
+      -webkit-mask-image: linear-gradient(to top, transparent, #000 35%);
+      mask-image: linear-gradient(to top, transparent, #000 35%);
+      animation-direction: reverse;
+    }
+    .preloader-stars { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity 0.7s ease 0.3s; }
+    .preloader.is-exiting .preloader-stars { opacity: 0; }
     .preloader-glow {
       position: absolute;
       width: 60vmin;
@@ -533,7 +564,59 @@
     .preloader.is-exiting .preloader-glow,
     .preloader.is-exiting .preloader-scan,
     .preloader.is-exiting .preloader-log,
+    .preloader.is-exiting .preloader-hud,
+    .preloader.is-exiting .preloader-sound,
     .preloader.is-exiting .preloader-skip { opacity: 0; }
+    .preloader-sound {
+      position: absolute;
+      z-index: 2;
+      right: clamp(1rem, 4vw, 3rem);
+      bottom: calc(clamp(1rem, 5vh, 2.75rem) + 1.6rem);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 9999px;
+      border: 1px solid hsl(var(--primary) / 0.45);
+      background: hsl(var(--card) / 0.7);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: hsl(var(--foreground));
+      cursor: pointer;
+      transition: opacity 0.4s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      animation: hud-in 0.6s var(--ease-out) both 0.3s;
+    }
+    .preloader-sound:hover, .preloader-sound[aria-pressed="true"] { border-color: hsl(var(--primary)); box-shadow: 0 0 18px -4px hsl(var(--primary) / 0.7); }
+    .preloader-sound i { color: hsl(var(--primary)); }
+    /* Corner readouts with little HUD brackets */
+    .preloader-hud {
+      position: absolute;
+      z-index: 1;
+      top: clamp(1rem, 4vh, 2.25rem);
+      padding: 0.5rem 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: hsl(var(--muted-foreground));
+      transition: opacity 0.4s ease;
+      animation: hud-in 0.6s var(--ease-out) both 0.15s;
+    }
+    .preloader-hud::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 12px;
+      height: 12px;
+      border-top: 1.5px solid hsl(var(--primary));
+    }
+    .preloader-hud.is-tl { left: clamp(1rem, 4vw, 3rem); }
+    .preloader-hud.is-tl::before { left: 0; border-left: 1.5px solid hsl(var(--primary)); }
+    .preloader-hud.is-tr { right: clamp(1rem, 4vw, 3rem); text-align: right; }
+    .preloader-hud.is-tr::before { right: 0; border-right: 1.5px solid hsl(var(--primary)); }
+    .preloader-hud b { color: hsl(var(--primary)); font-weight: 600; }
     .preloader-core {
       position: relative;
       z-index: 1;
@@ -546,6 +629,28 @@
     }
     .preloader.is-exiting .preloader-core { transform: scale(1.25); opacity: 0; filter: blur(8px); }
     .preloader-emblem { position: relative; width: clamp(150px, 26vmin, 210px); aspect-ratio: 1; display: grid; place-items: center; }
+    /* Brackets that lock onto the emblem */
+    .preloader-brackets {
+      position: absolute;
+      inset: -22px;
+      pointer-events: none;
+      --b: hsl(var(--primary));
+      background:
+        linear-gradient(var(--b), var(--b)) top left / 20px 2px no-repeat,
+        linear-gradient(var(--b), var(--b)) top left / 2px 20px no-repeat,
+        linear-gradient(var(--b), var(--b)) top right / 20px 2px no-repeat,
+        linear-gradient(var(--b), var(--b)) top right / 2px 20px no-repeat,
+        linear-gradient(var(--b), var(--b)) bottom left / 20px 2px no-repeat,
+        linear-gradient(var(--b), var(--b)) bottom left / 2px 20px no-repeat,
+        linear-gradient(var(--b), var(--b)) bottom right / 20px 2px no-repeat,
+        linear-gradient(var(--b), var(--b)) bottom right / 2px 20px no-repeat;
+      opacity: 0.8;
+      animation: brackets-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both 0.25s;
+    }
+    /* Shockwave when access is granted */
+    .preloader-shock { position: absolute; inset: 0; border-radius: 50%; border: 2px solid hsl(var(--primary)); opacity: 0; pointer-events: none; }
+    .preloader.is-done .preloader-shock { animation: shock 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .preloader.is-done .preloader-shock + .preloader-shock { animation-delay: 0.12s; border-color: hsl(var(--accent)); }
     .preloader-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
     .preloader-ring circle { fill: none; }
     .preloader-ring .ring-track { stroke: hsl(var(--border)); stroke-width: 2; }
@@ -557,6 +662,16 @@
       stroke-dashoffset: calc(100 - var(--progress, 0));
       filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.65));
     }
+    .preloader-ring .ring-ticks {
+      stroke: hsl(var(--foreground) / 0.28);
+      stroke-width: 6;
+      stroke-dasharray: 0.22 1.4467;
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: portal-spin 24s linear infinite reverse;
+    }
+    .preloader-ring .ring-head { transform-origin: 100px 100px; transform: rotate(calc(var(--progress, 0) * 3.6deg)); }
+    .preloader-ring .ring-head circle { fill: #ffffff; filter: drop-shadow(0 0 5px hsl(var(--primary))) drop-shadow(0 0 10px hsl(var(--primary))); }
     .preloader-ring .ring-dash {
       stroke: hsl(var(--accent) / 0.55);
       stroke-width: 1.2;
@@ -580,7 +695,7 @@
     .preloader-mono path:nth-of-type(3) { animation-delay: 0.24s; }
     .preloader-mono path:nth-of-type(4) { animation-delay: 0.36s; }
     .preloader-mono path:nth-of-type(5) { animation-delay: 0.48s; }
-    .preloader.is-done .preloader-mono { filter: drop-shadow(0 0 16px hsl(var(--primary) / 0.75)); transform: scale(1.06); }
+    .preloader.is-done .preloader-mono { filter: drop-shadow(0 0 16px hsl(var(--primary) / 0.75)); transform: scale(1.06); animation: mono-glitch 0.36s steps(2) 1; }
     .intro-stop-a { stop-color: hsl(var(--primary)); }
     .intro-stop-b { stop-color: hsl(var(--accent)); }
     .preloader-name {
@@ -592,6 +707,7 @@
       color: hsl(var(--foreground));
       white-space: nowrap;
     }
+    .preloader-name .scramble { color: hsl(var(--primary) / 0.8); text-shadow: 0 0 14px hsl(var(--primary) / 0.65); }
     .preloader-status {
       display: flex;
       align-items: center;
@@ -632,10 +748,21 @@
       transition: opacity 0.4s ease;
     }
     @keyframes mono-draw { to { stroke-dashoffset: 0; } }
+    @keyframes grid-run { from { background-position: 0 0; } to { background-position: 0 64px; } }
+    @keyframes brackets-in { from { inset: -60px; opacity: 0; } to { inset: -22px; opacity: 0.8; } }
+    @keyframes shock { from { transform: scale(0.95); opacity: 0.95; box-shadow: 0 0 30px hsl(var(--primary) / 0.8); } to { transform: scale(3); opacity: 0; box-shadow: 0 0 0 transparent; } }
+    @keyframes hud-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+    @keyframes mono-glitch {
+      0% { filter: drop-shadow(4px 0 hsl(var(--accent))) drop-shadow(-4px 0 hsl(var(--neon))); transform: translateX(3px) skewX(-8deg) scale(1.06); }
+      50% { filter: drop-shadow(-4px 0 hsl(var(--accent))) drop-shadow(4px 0 hsl(var(--primary))); transform: translateX(-3px) skewX(6deg) scale(1.06); }
+      100% { filter: drop-shadow(0 0 16px hsl(var(--primary) / 0.75)); transform: scale(1.06); }
+    }
     @keyframes log-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
     @media (max-width: 640px) {
       .preloader-log { font-size: 0.62rem; }
       .preloader-skip { display: none; }
+      .preloader-sound { bottom: auto; top: calc(clamp(1rem, 4vh, 2.25rem) + 2.4rem); }
+      .preloader-hud { font-size: 0.56rem; letter-spacing: 0.16em; }
     }
 
     /* ---- Scroll Progress Indicator ---- */
@@ -1452,11 +1579,15 @@
 <div class="preloader" id="preloader" aria-hidden="true">
   <div class="preloader-half is-top"></div>
   <div class="preloader-half is-bottom"></div>
+  <canvas class="preloader-stars" id="preloader-stars"></canvas>
   <div class="preloader-glow"></div>
   <div class="preloader-scan"></div>
   <div class="preloader-seam"></div>
   <div class="preloader-core">
     <div class="preloader-emblem">
+      <span class="preloader-brackets"></span>
+      <span class="preloader-shock"></span>
+      <span class="preloader-shock"></span>
       <svg class="preloader-ring" viewBox="0 0 200 200" aria-hidden="true">
         <defs>
           <linearGradient id="intro-gradient" x1="0" y1="0" x2="1" y2="1">
@@ -1464,8 +1595,10 @@
             <stop offset="1" class="intro-stop-b"></stop>
           </linearGradient>
         </defs>
+        <circle class="ring-ticks" cx="100" cy="100" r="104" pathLength="100"></circle>
         <circle class="ring-track" cx="100" cy="100" r="92"></circle>
         <circle class="ring-progress" cx="100" cy="100" r="92" pathLength="100"></circle>
+        <g class="ring-head"><circle cx="192" cy="100" r="4.5"></circle></g>
         <circle class="ring-dash" cx="100" cy="100" r="80"></circle>
       </svg>
       <svg class="preloader-mono" viewBox="0 0 112 80" aria-hidden="true">
@@ -1487,7 +1620,10 @@
     <p class="preloader-status"><span id="preloader-state">Booting</span><span class="preloader-count text-gradient" id="preloader-count">0%</span></p>
   </div>
   <pre class="preloader-log" id="preloader-log"></pre>
+  <p class="preloader-hud is-tl"><b>KY</b>://system.boot</p>
+  <p class="preloader-hud is-tr" id="preloader-clock">Noida, IN</p>
   <p class="preloader-skip">Click to skip</p>
+  <button type="button" class="preloader-sound sound-toggle" aria-pressed="false"><i class="fas fa-volume-xmark text-sm" aria-hidden="true"></i><span data-sound-label>Sound: off</span></button>
 </div>
 
 <!-- Scroll Progress Bar -->
@@ -1534,6 +1670,9 @@
         <button id="cmd-palette-trigger" type="button" class="hidden lg:flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground bg-secondary/50 border border-border px-3 py-1.5 rounded-lg hover:text-foreground hover:border-primary/40 transition-all" aria-label="Open command palette (Ctrl+K)" title="Quick Navigation">
           <i class="fas fa-magnifying-glass text-[10px]"></i>
           <span>Ctrl</span><span>K</span>
+        </button>
+        <button type="button" class="sound-toggle icon-btn" aria-label="Turn sound effects on" aria-pressed="false" title="Sound off">
+          <i class="fas fa-volume-xmark text-sm" aria-hidden="true"></i>
         </button>
         <button type="button" class="theme-toggle icon-btn" aria-label="Switch to light theme" title="Toggle theme">
           <i class="fas fa-sun text-sm" aria-hidden="true"></i>
@@ -2875,6 +3014,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <!-- Physics & Interactive Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+<!-- Sound effects (synthesized, off by default): window.KYSound -->
+<script src="js/sound.js"></script>
 
 <script>
 (function () {
@@ -2893,6 +3034,7 @@
   const NAV_OFFSET = -80;
 
   const $ = (sel, scope = document) => scope.querySelector(sel);
+  const sfx = (name) => { if (window.KYSound) window.KYSound.play(name); };
   const $$ = (sel, scope = document) => Array.from(scope.querySelectorAll(sel));
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
@@ -3019,6 +3161,7 @@
     if (lenis) lenis.stop();
     portal.classList.add('is-active');
     emit('start');
+    sfx('portalOpen');
 
     // Open: the rim races outwards from the origin, the portal surface grows behind it
     placeRim(ox, oy, reach);
@@ -3043,6 +3186,7 @@
     ).finished.then(() => {
       status.textContent = `200 OK · ${eyebrowText}`;
       status.classList.add('is-ok');
+      sfx('check');
     });
 
     return opening.finished
@@ -3055,6 +3199,7 @@
       .then(() => {
         // Close: a quick glitch, then the portal collapses into the center
         emit('reveal');
+        sfx('portalClose');
         content.classList.add('is-glitch');
         placeRim(vw / 2, vh / 2, half);
         rim.animate([{ transform: 'translate(-50%, -50%) scale(1)' }, { transform: 'translate(-50%, -50%) scale(0)' }], { duration: 850, delay: 160, easing: suck, fill: 'forwards' });
@@ -3182,6 +3327,7 @@
   function toggleTheme(e) {
     const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     if (themeSwitching) return;
+    sfx(next === 'light' ? 'themeLight' : 'themeDark');
     if (prefersReducedMotion) {
       setTheme(next);
       return;
@@ -3408,6 +3554,8 @@
       while (logged < BOOT.length && value >= BOOT[logged][0]) {
         const [, state, text, ok] = BOOT[logged];
         if (stateEl) stateEl.textContent = state;
+        sfx('tick');
+        if (ok) setTimeout(() => { if (preloader.isConnected) sfx('check'); }, 260);
         if (logEl && !seen) {
           const line = document.createElement('span');
           line.textContent = ok ? `> ${text}  ` : text;
@@ -3423,28 +3571,107 @@
       }
     }
 
-    // The name decodes out of scrambled glyphs
+    // The name decodes out of scrambled glyphs: solved letters lock in white, the rest flicker in emerald
     const nameEl = $('#preloader-name');
     const NAME = nameEl ? nameEl.textContent : '';
     const GLYPHS = '01<>/{}[]#$%&*+=?ABCDEFGHJKLMNPQRSTUVWXYZ';
     const decodeTime = seen ? 350 : 950;
+    const locked = document.createElement('span');
+    const scrambling = document.createElement('span');
+    scrambling.className = 'scramble';
+    if (nameEl && !prefersReducedMotion) {
+      nameEl.textContent = '';
+      nameEl.append(locked, scrambling);
+    }
     function decodeName(elapsed) {
       if (!nameEl || prefersReducedMotion) return;
       const solved = Math.floor(NAME.length * Math.min(1, Math.max(0, elapsed - 150) / decodeTime));
-      let out = '';
-      for (let i = 0; i < NAME.length; i++) {
-        out += i < solved || NAME[i] === ' ' ? NAME[i] : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-      }
-      nameEl.textContent = out;
+      let tail = '';
+      for (let i = solved; i < NAME.length; i++) tail += NAME[i] === ' ' ? ' ' : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+      locked.textContent = NAME.slice(0, solved);
+      scrambling.textContent = tail;
     }
 
+    // Live local time in the top-right readout
+    const clockEl = $('#preloader-clock');
+    if (clockEl) {
+      try {
+        const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' }).format(new Date());
+        clockEl.textContent = `Noida, IN · ${time} IST`;
+      } catch (e) { /* keep the static label */ }
+    }
+
+    // Star field: drifts out from the center while loading, then streaks into warp as the doors open
+    const starCanvas = $('#preloader-stars');
+    if (starCanvas && !prefersReducedMotion) {
+      const ctx = starCanvas.getContext('2d');
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const w = starCanvas.clientWidth;
+      const h = starCanvas.clientHeight;
+      starCanvas.width = Math.round(w * dpr);
+      starCanvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineCap = 'round';
+      const tone = (name) => getComputedStyle(root).getPropertyValue(name).trim().split(/\s+/).join(', ');
+      const colors = [tone('--primary'), tone('--accent'), tone('--neon')];
+      const spawn = (star) => {
+        star.x = (Math.random() - 0.5) * 2;
+        star.y = (Math.random() - 0.5) * 2;
+        star.z = 1;
+        return star;
+      };
+      const stars = Array.from({ length: w < 640 ? 70 : 150 }, (_, i) => Object.assign(spawn({ c: colors[i % 3] }), { z: Math.random() }));
+      let warp = 0;
+      let last = performance.now();
+      const draw = (now) => {
+        if (!preloader.isConnected) return;
+        const dt = Math.min(0.05, (now - last) / 1000);
+        last = now;
+        if (preloader.classList.contains('is-done')) warp = Math.min(1, warp + dt * 2);
+        const speed = 0.14 + warp * warp * 2.6;
+        const reach = Math.max(w, h) * 0.5;
+        ctx.clearRect(0, 0, w, h);
+        stars.forEach((star) => {
+          const prevZ = star.z;
+          star.z -= dt * speed;
+          if (star.z <= 0.03) { spawn(star); return; }
+          const x = w / 2 + (star.x / star.z) * reach * 0.5;
+          const y = h / 2 + (star.y / star.z) * reach * 0.5;
+          const px = w / 2 + (star.x / prevZ) * reach * 0.5;
+          const py = h / 2 + (star.y / prevZ) * reach * 0.5;
+          ctx.strokeStyle = `hsla(${star.c}, ${Math.min(1, (1 - star.z) * 1.5)})`;
+          ctx.lineWidth = 0.4 + (1 - star.z) * 2.2;
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+        });
+        requestAnimationFrame(draw);
+      };
+      requestAnimationFrame(draw);
+    }
+
+    // The hum starts as soon as sound is on (turning it on mid-intro picks it up right away)
+    const drone = window.KYSound ? window.KYSound.drone : null;
+    const startDrone = () => { if (drone && preloader.isConnected && !preloader.classList.contains('is-exiting')) drone.start(); };
+    startDrone();
+    document.addEventListener('ky:soundchange', (e) => { if (e.detail.enabled) setTimeout(startDrone, 80); });
+
     function finish() {
-      if (nameEl) nameEl.textContent = NAME;
+      sfx('granted');
+      setTimeout(() => sfx('glitch'), 60);
+      if (nameEl) {
+        locked.textContent = NAME;
+        scrambling.textContent = '';
+      }
       if (stateEl) stateEl.textContent = 'Access granted';
       logUpTo(100);
       preloader.classList.add('is-done');
       setTimeout(() => {
         preloader.classList.add('is-exiting');
+        sfx('doors');
+        sfx('warp');
+        if (drone) drone.stop();
         startHero();
         setTimeout(() => preloader.remove(), prefersReducedMotion ? 0 : 1050);
       }, prefersReducedMotion ? 0 : 480);
@@ -3462,6 +3689,7 @@
       }
       if (countEl) countEl.textContent = Math.round(progress) + '%';
       preloader.style.setProperty('--progress', progress.toFixed(1));
+      if (drone) drone.level(progress / 100);
       logUpTo(progress);
       decodeName(elapsed);
       if (progress >= 100) { finish(); return; }
@@ -3832,6 +4060,7 @@
       { label: 'Contact', icon: 'fas fa-envelope', target: '#contact', hint: 'Get in touch' },
       { label: 'Copy Email Address', icon: 'far fa-copy', run: 'copy-email', hint: 'Clipboard' },
       { label: 'Toggle Light / Dark Theme', icon: 'fas fa-circle-half-stroke', run: 'theme', hint: 'Appearance' },
+      { label: 'Toggle Sound Effects', icon: 'fas fa-volume-high', run: 'sound', hint: 'Audio' },
       { label: 'Keyboard Shortcuts', icon: 'fas fa-keyboard', run: 'shortcuts', hint: 'Cheat sheet (?)' },
       { label: 'Download Resume', icon: 'fas fa-download', run: 'resume', hint: 'PDF' },
       { label: 'LinkedIn', icon: 'fab fa-linkedin', url: LINKS.linkedin, hint: 'External' },
@@ -3901,6 +4130,8 @@
           link.remove();
         } else if (cmd.run === 'copy-email') {
           copyEmail();
+        } else if (cmd.run === 'sound') {
+          if (window.KYSound) window.KYSound.toggle();
         } else if (cmd.run === 'theme') {
           toggleTheme();
         } else if (cmd.run === 'shortcuts') {

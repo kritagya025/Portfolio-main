@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.16.0] - 2026-10-20
+
+### Added
+- Sound effects, synthesized with the Web Audio API (`js/sound.js`, no audio files) and **off by default**: a speaker button in the navbar and in the intro, plus "Toggle Sound Effects" in `Ctrl+K`; the choice is remembered. Browsers only allow audio after a click, tap, or key press, so if sound is on but still locked, the intro button reads "tap to start" and unlocks it without skipping the intro
+- Intro: a low hum whose filter and pitch rise with the loading progress, a tick for each boot-log line and a two-note blip for each check mark, an "access granted" chord, a glitch crackle, a door whoosh with a low thump, and a warp sweep
+- Section portal: a rising whoosh as it opens, a blip at `200 OK`, and a falling whoosh with a thump as it collapses; theme switches play a rising or falling chime run
+- Bella: robot babble while typing (pitched by her mood: higher when happy or amazed, lower when sad or crying), a jet whoosh on her entrance and a landing thump with sparkles, a boop when poked, boings on hops and whirrs on spins, a chime when she introduces a section, little stings on expression changes (heart-eyes ding, star-eyes sparkle, surprised pop, dizzy wobble, sad sigh, sobbing), and a power-down when she is hidden
+
+---
+
+## [3.15.0] - 2026-10-20
+
+### Changed
+- Richer intro visuals, same boot concept:
+  - A neon tunnel: perspective grids (a floor on the bottom door, a ceiling on the top one) run toward the viewer, and a star field drifts out from the center, then streaks into warp as the doors open; the door edges glow while they part
+  - The emblem gets a rotating ring of tick marks, a glowing comet head riding the tip of the progress ring, corner brackets that lock on, and, at "Access granted", an RGB glitch on the monogram and a double shockwave
+  - The name decodes with solved letters locking in white while the rest flicker in glowing emerald
+  - HUD readouts in the top corners: `KY://system.boot` and the live time in Noida (IST)
+
+---
+
 ## [3.14.0] - 2026-10-20
 
 ### Changed
