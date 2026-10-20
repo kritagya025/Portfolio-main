@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.13.0] - 2026-10-20
+
+### Added
+- Theme switch transition: the new theme is revealed in a circle that grows from the toggle you pressed (or the screen center from `Ctrl+K`) while the old view dims, using View Transitions; browsers without them cross-fade colors instead; instant for reduced-motion users
+- Bella's light-theme outfit: a glossy midnight-indigo shell with silver armor and deeper emerald and violet lights (instead of a slightly dimmed white), so she stands out on light pages
+- Outfit change animation: on a theme switch Bella's colors morph over about a second while a glowing scanner ring sweeps from her ear tips to her thruster, with a burst of sparks, a spin, and a new line ("Daylight mode! New outfit... how do I look?", "Ahh, wolf hours. Pearl white suits me, right?")
+
+### Fixed
+- Clicking something no longer triggers Bella's hover explanation for that same element right after her reaction to the click
+
+---
+
 ## [3.12.0] - 2026-10-20
 
 ### Changed

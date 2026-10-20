@@ -115,8 +115,14 @@ const LINES = {
     security: [{ t: 'Security & APIs:', e: 'cool' }, { t: ' the Event Booking System and KeyVault.', e: 'happy', g: 'nod' }],
   },
   copied: [[{ t: 'Fetched!', e: 'happy', g: 'hop' }, { t: " Kritagya's email is on your clipboard.", e: 'love', g: 'wag' }]],
-  themeLight: [[{ t: 'Too bright!', e: 'surprised' }, { t: ' My LEDs are squinting.', e: 'wink' }]],
-  themeDark: [[{ t: 'Ahh, night mode.', e: 'happy' }, { t: ' Wolf hours!', e: 'love', g: 'wag' }]],
+  themeLight: [
+    [{ t: 'Daylight mode!', e: 'surprised' }, { t: ' New outfit... how do I look?', e: 'blush', g: 'spin' }],
+    [{ t: 'Ooh, midnight indigo!', e: 'wow' }, { t: ' Very fancy for daytime.', e: 'wink', g: 'wag' }],
+  ],
+  themeDark: [
+    [{ t: 'Night mode!', e: 'happy' }, { t: ' Back in my glow-in-the-dark suit.', e: 'love', g: 'spin' }],
+    [{ t: 'Ahh, wolf hours.', e: 'cool' }, { t: ' Pearl white suits me, right?', e: 'blush', g: 'wag' }],
+  ],
   poke: [
     [{ t: 'Beep-awoo!', e: 'surprised', g: 'hop' }, { t: ' That tickles!', e: 'blush' }],
     [{ t: 'Tip:', e: 'wink' }, { t: ' press Ctrl+K to jump anywhere.', e: 'happy' }],
@@ -589,6 +595,13 @@ class WolfFace {
 
 const EMERALD = 0x34d399;
 const PURPLE = 0xa855f7;
+// Bella's colors per theme. Dark pages: pearl shell, gunmetal armor, neon emerald and purple lights.
+// Light pages: glossy midnight-indigo shell, silver armor, deeper emerald and violet so she stands out.
+const LIVERY = {
+  dark: { shell: 0xe8edf5, metal: 0x1e293b, green: 0x34d399, purple: 0xa855f7, holo: 0x34d399, holoOpacity: 0.32, tear: 0x7dd3fc, scan: 0xa7f3d0 },
+  light: { shell: 0x1e1b4b, metal: 0xcbd5e1, green: 0x10b981, purple: 0x7c3aed, holo: 0x7c3aed, holoOpacity: 0.55, tear: 0x0ea5e9, scan: 0xc4b5fd },
+};
+const LIVERY_MS = 1100; // how long the outfit change takes
 
 function glowTexture(T, rgb, elongated) {
   const canvas = document.createElement('canvas');
@@ -668,7 +681,8 @@ class Engine {
     this.mainDir = new T.Vector3();
     this.mainPower = 0;
     this.burstCount = 0;
-    this.emerald = new T.Color(EMERALD);
+    this.coreA = new T.Color(PURPLE); // the core pulses between these two
+    this.coreB = new T.Color(EMERALD);
     this.build();
   }
 
@@ -903,6 +917,15 @@ class Engine {
     this.pivot.add(orbit);
     this.orbit = orbit;
 
+    // ---- Scanner ring that sweeps from ear tips to thruster while the outfit changes ----
+    this.scan = mesh(new T.TorusGeometry(1, 0.028, 8, seg(64)), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, toneMapped: false }));
+    this.scan.rotation.x = Math.PI / 2;
+    this.scan.visible = false;
+    this.pivot.add(this.scan);
+    this.scanGlow = glowSprite(T, this.dotTex, 0);
+    this.scanGlow.visible = false;
+    this.pivot.add(this.scanGlow);
+
     // ---- Tear drops that roll off the visor when Bella cries ----
     const tearGeo = new T.SphereGeometry(0.065, 10, 8);
     tearGeo.scale(1, 1.4, 1);
@@ -934,16 +957,52 @@ class Engine {
     this.burstCount = count;
   }
 
-  applyTheme() {
+  /** The colors Bella is wearing right now, as plain values (for tweening between liveries). */
+  currentLivery() {
+    const M = this.M;
+    return {
+      shell: M.shell.color.clone(), metal: M.metal.color.clone(), green: M.green.color.clone(), purple: M.purple.color.clone(),
+      holo: M.holo.color.clone(), holoOpacity: M.holo.opacity, tear: this.tears[0].drop.material.color.clone(),
+      rim: this.rim.color.clone(), rim2: this.rim2.color.clone(),
+    };
+  }
+
+  /** Switch outfits for the current theme; with `animate`, colors morph while a scanner ring sweeps down. */
+  applyTheme(animate = false) {
+    const T = this.T;
     const light = root.getAttribute('data-theme') === 'light';
+    const livery = light ? LIVERY.light : LIVERY.dark;
     const accent = cssColor('--accent');
     const primary = cssColor('--primary');
-    if (accent) this.rim.color.setStyle(accent);
-    if (primary) this.rim2.color.setStyle(primary);
-    this.M.shell.color.set(light ? 0xdde4ee : 0xe8edf5);
-    this.M.holo.opacity = light ? 0.5 : 0.32;
+    const target = {
+      shell: new T.Color(livery.shell), metal: new T.Color(livery.metal), green: new T.Color(livery.green), purple: new T.Color(livery.purple),
+      holo: new T.Color(livery.holo), holoOpacity: livery.holoOpacity, tear: new T.Color(livery.tear),
+      rim: accent ? new T.Color().setStyle(accent) : this.rim.color.clone(),
+      rim2: primary ? new T.Color().setStyle(primary) : this.rim2.color.clone(),
+    };
     this.sparks.visible = !light; // additive sparks read as grey specks on a light page
-    this.tears.forEach((tear) => tear.drop.material.color.set(light ? 0x0ea5e9 : 0x7dd3fc));
+    this.scan.material.color.set(livery.scan);
+    this.liveryTween = { from: this.currentLivery(), to: target, start: performance.now(), duration: animate ? LIVERY_MS : 0 };
+    this.stepLivery(animate ? 0 : 1);
+  }
+
+  stepLivery(progress) {
+    const { from, to } = this.liveryTween;
+    const M = this.M;
+    const k = easeInOut(clamp(progress, 0, 1));
+    M.shell.color.copy(from.shell).lerp(to.shell, k);
+    M.metal.color.copy(from.metal).lerp(to.metal, k);
+    M.green.color.copy(from.green).lerp(to.green, k);
+    M.green.emissive.copy(M.green.color);
+    M.purple.color.copy(from.purple).lerp(to.purple, k);
+    M.purple.emissive.copy(M.purple.color);
+    M.holo.color.copy(from.holo).lerp(to.holo, k);
+    M.holo.opacity = from.holoOpacity + (to.holoOpacity - from.holoOpacity) * k;
+    this.tears.forEach((tear) => tear.drop.material.color.copy(from.tear).lerp(to.tear, k));
+    this.rim.color.copy(from.rim).lerp(to.rim, k);
+    this.rim2.color.copy(from.rim2).lerp(to.rim2, k);
+    this.coreA.copy(M.purple.color);
+    this.coreB.copy(M.green.color);
   }
 
   /** Where the visor is on the page, for the speech bubble (canvas = `box` px centered at cx, cy). */
@@ -1049,9 +1108,33 @@ class Engine {
     });
     this.tailTip.position.set(tx, ty2, tz);
 
+    // Outfit change: colors morph while a scanner ring sweeps from the ear tips down to the thruster
+    const tween = this.liveryTween;
+    if (tween && tween.duration) {
+      const progress = (t - tween.start) / tween.duration;
+      this.stepLivery(progress);
+      const sweep = clamp(progress, 0, 1);
+      const y = 2.05 - sweep * 3.35;
+      // Rough body outline, so the ring hugs the head, the neck, and the body as it passes
+      const radius = y > 1.75 ? 0.45
+        : y > 0.32 ? 0.12 + 0.82 * Math.sqrt(Math.max(0, 1 - Math.pow((y - 1.02) / 0.72, 2)))
+          : y > 0.18 ? 0.36
+            : y > -1.02 ? 0.1 + 0.62 * Math.sqrt(Math.max(0, 1 - Math.pow((y + 0.4) / 0.64, 2)))
+              : 0.3;
+      const fade = Math.sin(sweep * Math.PI);
+      this.scan.visible = this.scanGlow.visible = progress < 1;
+      this.scan.position.y = y;
+      this.scan.scale.set(radius + 0.06, radius + 0.06, 1);
+      this.scan.material.opacity = 0.95 * fade;
+      this.scanGlow.position.set(0, y, 0.2);
+      this.scanGlow.scale.set((radius + 0.3) * 2.2, 0.5, 1);
+      this.scanGlow.material.opacity = 0.55 * fade;
+      if (progress >= 1) tween.duration = 0;
+    }
+
     // Core pulses between purple and emerald; orbit ring spins
     const pulse = 0.5 + 0.5 * Math.sin(t / 700);
-    this.M.core.emissive.setHex(PURPLE).lerp(this.emerald, pulse * 0.6);
+    this.M.core.emissive.copy(this.coreA).lerp(this.coreB, pulse * 0.6);
     this.M.core.emissiveIntensity = p.sleepy || crying ? 1 : 2.2 + pulse;
     this.coreGlow.material.opacity = p.sleepy || crying ? 0.35 : 0.55 + pulse * 0.35;
     this.orbit.rotation.y += sec * (p.sleepy ? 0.15 : 0.6) * s;
@@ -1491,6 +1574,11 @@ class Bella {
       clearTimeout(hoverTimer);
       hoverTimer = setTimeout(() => explain(match), HOVER_DWELL);
     });
+    // Clicking something reacts to the click; don't then explain the button that was just pressed
+    document.addEventListener('pointerdown', () => {
+      clearTimeout(hoverTimer);
+      if (hoverEl) this.talkCooldowns.set(hoverEl, performance.now());
+    }, true);
     document.addEventListener('focusin', (e) => {
       if (!(e.target instanceof Element) || !e.target.matches(':focus-visible')) return;
       const match = this.matchTalk(e.target);
@@ -1549,7 +1637,8 @@ class Bella {
       this.say(pick(LINES.copied, 'copied'), { prio: 2 });
     });
     document.addEventListener('ky:themechange', (e) => {
-      this.engine.applyTheme();
+      this.engine.applyTheme(!reducedMotion && !this.hidden);
+      this.engine.burst(16);
       const light = e.detail && e.detail.theme === 'light';
       this.say(pick(light ? LINES.themeLight : LINES.themeDark, 'theme'), { prio: 2 });
     });
