@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.8.0] - 2026-10-20
+
+### Changed
+- New section transition, the **warp portal** (replaces the sliding curtain): a glowing ring bursts out from the link you clicked (or the screen center from `Ctrl+K`) and opens a portal over the page; inside, a terminal types the route (`kritagya@portfolio:~$ cd ./skills`), a huge outlined section number and the title come into focus over an LED dot field with a scanline, a dashed and a solid ring orbit while a comet arc races around, and a loader fills from `GET /#skills` to `200 OK · 02 — Skills & Tools`; the page jumps while covered, then the title glitches (RGB split) and the portal collapses into the center
+- Max flies into the portal with his shades on, hovers beside the title with his boosters lit, nods when it loads, and sets off to introduce the section as it collapses; his speech bubble stays clear of the title
+- Transition event renamed from `ky:curtain` to `ky:portal`
+
+---
+
 ## [3.7.0] - 2026-10-20
 
 ### Added

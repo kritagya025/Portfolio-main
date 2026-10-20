@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 3.7.0 -->
+<!-- Portfolio Version: 3.8.0 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
@@ -1082,63 +1082,134 @@
     .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
     .back-to-top:hover { border-color: hsl(var(--primary) / 0.5); color: hsl(var(--primary)); }
 
-    /* ---- Section transition curtain (slides in with the section name, page jumps behind it) ---- */
-    .section-curtain {
-      position: fixed;
+    /* ---- Section transition: the warp portal ----
+       A glowing ring opens a portal from the link you clicked; inside, a terminal types the route,
+       the section number and title come into focus and a loader fills ("200 OK"). The page jumps
+       while it is covered, then the portal glitches and collapses into the center. */
+    .section-portal { position: fixed; inset: 0; z-index: 55; visibility: hidden; pointer-events: none; }
+    .section-portal.is-active { visibility: visible; pointer-events: auto; }
+    .portal-surface {
+      position: absolute;
       inset: 0;
-      z-index: 55;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      background: hsl(var(--card));
-      border-left: 2px solid hsl(var(--primary));
-      box-shadow: -40px 0 90px -30px hsl(var(--primary) / 0.55);
-      transform: translateX(110%);
-      visibility: hidden;
+      background:
+        radial-gradient(ellipse at 18% 14%, hsl(var(--primary) / 0.16), transparent 52%),
+        radial-gradient(ellipse at 86% 88%, hsl(var(--accent) / 0.2), transparent 56%),
+        hsl(var(--background));
+      clip-path: circle(0px at 50% 50%);
     }
-    .section-curtain.is-active { visibility: visible; }
-    .section-curtain::before {
-      content: '';
+    /* LED dot field with a scanline sweeping down it */
+    .portal-grid {
       position: absolute;
       inset: 0;
-      opacity: 0.05;
-      background-image:
-        linear-gradient(hsl(var(--foreground)) 1px, transparent 1px),
-        linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px);
-      background-size: 80px 80px;
+      background-image: radial-gradient(hsl(var(--primary) / 0.32) 1px, transparent 1.7px);
+      background-size: 24px 24px;
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 12%, transparent 74%);
+      mask-image: radial-gradient(circle at 50% 50%, #000 12%, transparent 74%);
     }
-    .section-curtain::after {
+    .portal-grid::after {
       content: '';
       position: absolute;
-      top: -12rem;
-      right: -8rem;
-      width: 38rem;
-      height: 38rem;
-      border-radius: 9999px;
-      background: hsl(var(--primary) / 0.16);
-      filter: blur(100px);
+      inset: 0 0 auto;
+      height: 28%;
+      background: linear-gradient(transparent, hsl(var(--primary) / 0.1) 50%, transparent);
+      animation: portal-scan 2.2s linear infinite;
     }
-    .curtain-inner { position: relative; z-index: 1; padding: 0 1.5rem; text-align: center; }
-    .curtain-eyebrow {
+    /* Orbiting rings: a dashed ring, a faint solid ring, and a comet arc racing around */
+    .portal-rings span {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      translate: -50% -50%;
+    }
+    .portal-rings span:nth-child(1) { width: min(58vmin, 540px); border: 1px dashed hsl(var(--primary) / 0.45); animation: portal-spin 18s linear infinite; }
+    .portal-rings span:nth-child(2) { width: min(80vmin, 760px); border: 1px solid hsl(var(--accent) / 0.25); animation: portal-spin 30s linear infinite reverse; }
+    .portal-rings span:nth-child(3) {
+      width: min(66vmin, 620px);
+      background: conic-gradient(from 0deg, transparent 0 68%, hsl(var(--accent) / 0.5) 82%, hsl(var(--primary)) 99%, transparent 100%);
+      -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+      mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+      animation: portal-spin 1.8s linear infinite;
+    }
+    .portal-content { position: relative; z-index: 1; padding: 0 1.5rem; text-align: center; }
+    .portal-cmd {
       display: inline-flex;
       align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
+      gap: 0.6ch;
+      padding: 0.55rem 1.1rem;
+      border-radius: 9999px;
+      border: 1px solid hsl(var(--border));
+      background: hsl(var(--card) / 0.7);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: hsl(var(--primary));
+      font-size: clamp(0.72rem, 1.5vw, 0.9rem);
+      color: hsl(var(--muted-foreground));
+      white-space: nowrap;
     }
-    .curtain-eyebrow::before, .curtain-eyebrow::after { content: ''; width: 2.5rem; height: 1px; background: hsl(var(--primary) / 0.6); }
-    .curtain-title {
+    .portal-prompt { color: hsl(var(--primary)); }
+    #portal-cmd { color: hsl(var(--foreground)); }
+    .portal-caret { width: 0.55em; height: 1.1em; background: hsl(var(--primary)); animation: portal-caret 0.9s steps(1) infinite; }
+    .portal-heading { display: grid; place-items: center; margin: 1.5rem 0 1.9rem; }
+    .portal-num, .portal-title { grid-area: 1 / 1; }
+    .portal-num {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(3.25rem, 11vw, 9.5rem);
+      font-size: clamp(9rem, 30vw, 24rem);
+      font-weight: 700;
+      line-height: 0.8;
+      letter-spacing: -0.06em;
+      color: transparent;
+      -webkit-text-stroke: 1.5px hsl(var(--primary) / 0.3);
+      user-select: none;
+    }
+    .portal-title {
+      position: relative;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3.25rem, 11vw, 8.5rem);
       font-weight: 700;
       line-height: 0.95;
       letter-spacing: -0.045em;
       color: hsl(var(--foreground));
+    }
+    .portal-progress { width: min(340px, 64vw); height: 3px; margin: 0 auto; border-radius: 9999px; background: hsl(var(--border)); overflow: hidden; }
+    #portal-bar {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)));
+      box-shadow: 0 0 12px hsl(var(--primary) / 0.8);
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+    .portal-status {
+      margin-top: 0.9rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: hsl(var(--muted-foreground));
+      transition: color 0.3s ease;
+    }
+    .portal-status.is-ok { color: hsl(var(--primary)); }
+    .portal-content.is-glitch .portal-title { animation: portal-glitch 0.32s steps(2) 1; }
+    /* The glowing edge of the portal (sized and placed by the script) */
+    .portal-rim {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid hsl(var(--primary));
+      box-shadow: 0 0 26px 4px hsl(var(--primary) / 0.6), inset 0 0 26px 2px hsl(var(--accent) / 0.45);
+      transform: translate(-50%, -50%) scale(0);
+      pointer-events: none;
+    }
+    @keyframes portal-spin { to { rotate: 360deg; } }
+    @keyframes portal-scan { from { transform: translateY(-100%); } to { transform: translateY(460%); } }
+    @keyframes portal-caret { 50% { opacity: 0; } }
+    @keyframes portal-glitch {
+      0% { text-shadow: 3px 0 hsl(var(--accent)), -3px 0 hsl(var(--primary)); transform: translateX(2px) skewX(-8deg); }
+      50% { text-shadow: -4px 0 hsl(var(--neon)), 4px 0 hsl(var(--accent)); transform: translateX(-3px) skewX(6deg); }
+      100% { text-shadow: none; transform: none; }
     }
 
     /* ---- Max, the wolf guide (js/max-bot.js) ---- */
@@ -1251,7 +1322,7 @@
       body { background: #ffffff !important; color: #000000 !important; }
       .preloader, .film-grain, .ambient-layer, #particle-canvas, .back-to-top, .scroll-progress,
       #navbar, dialog, #toast, .bg-word, .hero-bg-text, .hero-terminal, .hero-scroll, .hero-rail,
-      .marquee, .projects-progress, .bot-layer, .bot-toggle, .section-curtain { display: none !important; }
+      .marquee, .projects-progress, .bot-layer, .bot-toggle, .section-portal { display: none !important; }
       .glass-card, .dialog-panel {
         background: transparent !important;
         -webkit-backdrop-filter: none !important;
@@ -2375,12 +2446,22 @@
   <span id="toast-message">Copied to clipboard!</span>
 </div>
 
-<!-- Section transition curtain (driven by navigateTo; Max tows it in when he is around) -->
-<div id="section-curtain" class="section-curtain" aria-hidden="true">
-  <div class="curtain-inner">
-    <p class="curtain-eyebrow"><span id="curtain-eyebrow">Kritagya Yadav</span></p>
-    <p class="curtain-title"><span id="curtain-title">About</span><span class="text-gradient">.</span></p>
+<!-- Section transition: the warp portal (driven by navigateTo; Max flies in beside the title) -->
+<div id="section-portal" class="section-portal" aria-hidden="true">
+  <div class="portal-surface">
+    <div class="portal-grid"></div>
+    <div class="portal-rings"><span></span><span></span><span></span></div>
+    <div class="portal-content">
+      <p class="portal-cmd"><span class="portal-prompt">kritagya@portfolio:~$</span><span id="portal-cmd"></span><span class="portal-caret"></span></p>
+      <div class="portal-heading">
+        <span id="portal-num" class="portal-num">00</span>
+        <p class="portal-title"><span id="portal-title">Home</span><span class="text-gradient">.</span></p>
+      </div>
+      <div class="portal-progress"><span id="portal-bar"></span></div>
+      <p id="portal-status" class="portal-status">GET /</p>
+    </div>
   </div>
+  <div class="portal-rim"></div>
 </div>
 
 <!-- ====== Mobile Navigation (full-screen) ====== -->
@@ -2744,9 +2825,10 @@
     el.focus({ preventScroll: true });
   }
 
-  // ---- Section transition curtain ----
-  // Jumping to a section slides a full-screen curtain in with the section name, moves the page while
-  // it covers the screen, then wipes it away. Max (js/max-bot.js) listens for 'ky:curtain' and tows it.
+  // ---- Section transition: the warp portal ----
+  // Jumping to a section opens a portal from the link you clicked (or the screen center), shows the
+  // route loading inside it, moves the page while it covers the screen, then collapses it into the
+  // center. Max (js/max-bot.js) listens for 'ky:portal' and flies in beside the title.
   const SECTION_TITLES = {
     top: 'Home',
     about: 'About',
@@ -2759,57 +2841,124 @@
     'github-activity': 'Activity',
     contact: 'Contact',
   };
-  const curtain = $('#section-curtain');
-  const curtainSupported = !prefersReducedMotion && !!curtain && typeof curtain.animate === 'function';
-  let curtainBusy = false;
+  const portal = $('#section-portal');
+  const portalSupported = !prefersReducedMotion && !!portal && typeof portal.animate === 'function';
+  let portalBusy = false;
 
-  function playCurtain(id, onCovered) {
-    curtainBusy = true;
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  function typeInto(el, text, delay) {
+    return new Promise((resolve) => {
+      let i = 0;
+      const step = () => {
+        i += 1;
+        el.textContent = text.slice(0, i);
+        if (i < text.length) setTimeout(step, 38);
+        else resolve();
+      };
+      setTimeout(step, delay);
+    });
+  }
+
+  function playPortal(id, onCovered, origin) {
+    portalBusy = true;
     const target = document.getElementById(id);
     const section = target && target.closest('section');
     const eyebrow = section && section.id !== 'top' ? section.querySelector('.eyebrow span') : null;
-    $('#curtain-title').textContent = SECTION_TITLES[id];
-    $('#curtain-eyebrow').textContent = eyebrow ? eyebrow.textContent : 'Kritagya Yadav';
-    const inner = curtain.querySelector('.curtain-inner');
-    const emit = (phase) => document.dispatchEvent(new CustomEvent('ky:curtain', {
+    const eyebrowText = eyebrow ? eyebrow.textContent : 'Home';
+    const number = (eyebrowText.match(/^\d+/) || ['00'])[0];
+    const route = id === 'top' ? '' : id;
+    $('#portal-title').textContent = SECTION_TITLES[id];
+    $('#portal-num').textContent = number;
+    $('#portal-cmd').textContent = '';
+    const status = $('#portal-status');
+    status.textContent = `GET /#${route}`;
+    status.classList.remove('is-ok');
+
+    const surface = portal.querySelector('.portal-surface');
+    const content = portal.querySelector('.portal-content');
+    const rim = portal.querySelector('.portal-rim');
+    const emit = (phase) => document.dispatchEvent(new CustomEvent('ky:portal', {
       detail: { phase, id: section ? section.id : id, label: SECTION_TITLES[id] },
     }));
-    const ease = 'cubic-bezier(0.65, 0, 0.35, 1)';
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const ox = origin ? origin.x : vw / 2;
+    const oy = origin ? origin.y : vh / 2;
+    const reach = Math.hypot(Math.max(ox, vw - ox), Math.max(oy, vh - oy)) + 4;
+    const half = Math.hypot(vw, vh) / 2 + 4;
+    const placeRim = (x, y, r) => {
+      rim.style.left = `${x}px`;
+      rim.style.top = `${y}px`;
+      rim.style.width = rim.style.height = `${r * 2}px`;
+    };
+    const inOut = 'cubic-bezier(0.65, 0, 0.35, 1)';
+    const suck = 'cubic-bezier(0.7, 0, 0.84, 0)';
+    const settle = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
     if (lenis) lenis.stop();
-    curtain.classList.add('is-active');
+    portal.classList.add('is-active');
     emit('start');
-    inner.animate(
-      [{ transform: 'translateX(22%)', opacity: 0 }, { transform: 'translateX(0)', opacity: 1 }],
-      { duration: 1250, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+
+    // Open: the rim races outwards from the origin, the portal surface grows behind it
+    placeRim(ox, oy, reach);
+    rim.animate([{ transform: 'translate(-50%, -50%) scale(0)' }, { transform: 'translate(-50%, -50%) scale(1)' }], { duration: 950, easing: inOut, fill: 'forwards' });
+    const opening = surface.animate(
+      [{ clipPath: `circle(0px at ${ox}px ${oy}px)` }, { clipPath: `circle(${reach}px at ${ox}px ${oy}px)` }],
+      { duration: 950, easing: inOut, fill: 'forwards' }
     );
-    return curtain.animate([{ transform: 'translateX(100%)' }, { transform: 'translateX(0)' }], { duration: 1100, easing: ease, fill: 'forwards' })
-      .finished
+    // Inside: type the route, bring the heading into focus, fill the loader, then "200 OK"
+    typeInto($('#portal-cmd'), ` cd ./${route || '~'}`, 320);
+    $('#portal-num').animate(
+      [{ opacity: 0, transform: 'scale(1.25)' }, { opacity: 1, transform: 'scale(1)' }],
+      { duration: 1100, delay: 250, easing: settle, fill: 'both' }
+    );
+    portal.querySelector('.portal-title').animate(
+      [{ opacity: 0, transform: 'translateY(28px)', filter: 'blur(14px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }],
+      { duration: 800, delay: 420, easing: settle, fill: 'both' }
+    );
+    const loading = $('#portal-bar').animate(
+      [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }],
+      { duration: 1150, delay: 520, easing: 'cubic-bezier(0.45, 0, 0.2, 1)', fill: 'both' }
+    ).finished.then(() => {
+      status.textContent = `200 OK · ${eyebrowText}`;
+      status.classList.add('is-ok');
+    });
+
+    return opening.finished
       .then(() => {
         onCovered();
         emit('covered');
-        return new Promise((resolve) => setTimeout(resolve, 750));
+        return loading;
       })
+      .then(() => wait(450))
       .then(() => {
+        // Close: a quick glitch, then the portal collapses into the center
         emit('reveal');
-        inner.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-14%)' }], { duration: 950, easing: ease, fill: 'forwards' });
-        return curtain.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-100%)' }], { duration: 950, easing: ease, fill: 'forwards' }).finished;
+        content.classList.add('is-glitch');
+        placeRim(vw / 2, vh / 2, half);
+        rim.animate([{ transform: 'translate(-50%, -50%) scale(1)' }, { transform: 'translate(-50%, -50%) scale(0)' }], { duration: 850, delay: 160, easing: suck, fill: 'forwards' });
+        content.animate([{ transform: 'scale(1)', opacity: 1, filter: 'blur(0)' }, { transform: 'scale(0.55)', opacity: 0, filter: 'blur(8px)' }], { duration: 700, delay: 160, easing: suck, fill: 'forwards' });
+        return surface.animate(
+          [{ clipPath: `circle(${half}px at ${vw / 2}px ${vh / 2}px)` }, { clipPath: `circle(0px at ${vw / 2}px ${vh / 2}px)` }],
+          { duration: 850, delay: 160, easing: suck, fill: 'forwards' }
+        ).finished;
       })
       .catch(() => {})
       .then(() => {
-        curtain.getAnimations({ subtree: true }).forEach((animation) => animation.cancel());
-        curtain.classList.remove('is-active');
-        curtainBusy = false;
+        portal.getAnimations({ subtree: true }).forEach((animation) => animation.cancel());
+        content.classList.remove('is-glitch');
+        portal.classList.remove('is-active');
+        portalBusy = false;
         if (lenis && lenis.isStopped && !$$('dialog[open]').length) lenis.start();
         emit('end');
       });
   }
 
-  function navigateTo(hash, { transition = false } = {}) {
+  function navigateTo(hash, { transition = false, origin = null } = {}) {
     const id = hash === '#' ? 'top' : hash.slice(1);
     const isTop = id === 'top';
     const target = isTop ? null : document.getElementById(id);
-    if (curtainBusy || (!isTop && !target)) return;
+    if (portalBusy || (!isTop && !target)) return;
     const land = (immediate) => {
       scrollToTarget(isTop ? 0 : target, { immediate });
       focusWithoutScroll(isTop ? $('#main-content') : target);
@@ -2818,8 +2967,8 @@
     const alreadyThere = isTop
       ? window.scrollY < 4
       : Math.abs(target.getBoundingClientRect().top + offsetFor(target)) < 6;
-    if (transition && curtainSupported && heroStarted && SECTION_TITLES[id] && !alreadyThere) {
-      playCurtain(id, () => land(true));
+    if (transition && portalSupported && heroStarted && SECTION_TITLES[id] && !alreadyThere) {
+      playPortal(id, () => land(true), origin);
       return;
     }
     land(false);
@@ -3117,8 +3266,10 @@
     if (hash !== '#' && hash !== '#top' && !document.querySelector(hash)) return;
     e.preventDefault();
     const dialog = link.closest('dialog');
+    const rect = link.getBoundingClientRect();
+    const origin = rect.width ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : null;
     const go = () => {
-      navigateTo(hash, { transition: true });
+      navigateTo(hash, { transition: true, origin });
       if (hash.length > 1 && hash !== '#top') history.replaceState(null, '', hash);
       else history.replaceState(null, '', location.pathname + location.search);
     };

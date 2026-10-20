@@ -8,8 +8,8 @@
  *   an egg-shaped body with a pulsing core, paw hands, a segmented tail, a hover thruster that
  *   sheds sparks, twin back boosters, and a holographic orbit ring.
  * - Flies alongside the cursor while it moves and turns his body and eyes to look at it; flies to
- *   each section heading as it scrolls into view to introduce it; hovers by the hero terminal; leads
- *   the section-transition curtain; perches at the screen edge while you read; naps when you go idle.
+ *   each section heading as it scrolls into view to introduce it; hovers by the hero terminal; flies
+ *   into the section-transition portal; perches at the screen edge while you read; naps when you go idle.
  * - On touch screens and narrow windows he hovers in the empty middle of the navbar instead.
  * - The robot button in the bottom-left corner hides or shows Max; the choice is remembered.
  * - Honors prefers-reduced-motion: Max holds still, does not chase the cursor, and does not type letter by letter.
@@ -71,7 +71,7 @@ function timeOfDay() {
 const LINES = {
   greet: () => `Good ${timeOfDay()}! I'm Max, Kritagya's robo-wolf guide.`,
   greetFollow: ["I'll fly along with your cursor. Lead the way!", 'Psst: Ctrl+K jumps anywhere on this page.'],
-  curtain: (label) => [`Next stop: ${label}!`, `Thrusters on, heading to ${label}!`, `Hold tight, flying to ${label}!`],
+  portal: (label) => [`Opening a portal to ${label}!`, `Warping to ${label}...`, `Next stop: ${label}!`],
   sections: {
     about: [
       "This is the 'who is Kritagya' part. Short version: Java, Spring Boot, lots of tests.",
@@ -649,7 +649,7 @@ class Engine {
 
   /**
    * Pose and draw one frame. t and dt are in ms. p: lookX/lookY (-1..1), vx/vy (px per frame),
-   * expr, talk, nod, hop, spin (0..1, -1 none), wave, sleepy, boost, towing, scale (pop in/out), still.
+   * expr, talk, nod, hop, spin (0..1, -1 none), wave, sleepy, boost, burn (boosters on), scale (pop in/out), still.
    */
   frame(t, dt, p) {
     const k = dt / 16;
@@ -661,7 +661,6 @@ class Engine {
     // Body leans and turns; the head turns further, so he really looks at things
     let ty = p.sleepy ? 0 : p.lookX * 0.55;
     let tp = p.sleepy ? 0.3 : p.lookY * 0.3;
-    if (p.towing) ty = -0.7;
     if (p.nod) tp += Math.sin(t / 110) * 0.25 * s;
     st.y += (ty - st.y) * ease;
     st.p += (tp - st.p) * ease;
@@ -762,7 +761,7 @@ class Engine {
     this.pivot.updateMatrixWorld(true);
     this.camera.getWorldDirection(this.camDir);
     const speed = Math.hypot(p.vx, p.vy);
-    const boosters = clamp((speed - 4) * 0.08, 0, 1) + (p.towing ? 0.8 : 0);
+    const boosters = clamp((speed - 4) * 0.08, 0, 1) + (p.burn ? 0.8 : 0);
     this.jets.forEach((jet) => {
       const pos = jet.point.getWorldPosition(this.tmp);
       const dir = this.tmp2.set(0, -1, 0).transformDirection(jet.point.matrixWorld);
@@ -874,7 +873,7 @@ class Max {
     this.mode = 'hero';
     this.presenting = null;       // { section, until, said } while introducing a heading
     this.entry = null;            // the flying entrance while it plays
-    this.curtain = null;          // 'tow' while leading the section curtain in, 'hold' while it covers the page
+    this.portal = null;           // 'open' while the section portal opens, 'hold' while it covers the page
     this.petting = false;         // pointer is over Max: hold still so he can be clicked
     this.hidden = true;
     this.dialogOpen = false;
@@ -1040,7 +1039,7 @@ class Max {
     let hoverTimer = 0;
     let hoverEl = null;
     document.addEventListener('pointerover', (e) => {
-      if (!finePointer || this.hidden || this.curtain) return;
+      if (!finePointer || this.hidden || this.portal) return;
       const match = this.matchHoverTarget(e.target);
       if (!match || match.el === hoverEl) return;
       hoverEl = match.el;
@@ -1059,21 +1058,23 @@ class Max {
       clearTimeout(hoverTimer);
     });
 
-    // Section transitions: lead the curtain in, wait while it covers the page, then carry on
-    document.addEventListener('ky:curtain', (e) => {
+    // Section transitions: fly into the warp portal beside the title, then carry on when it collapses
+    document.addEventListener('ky:portal', (e) => {
       if (this.hidden || this.compact) return;
       const { phase, label, id } = e.detail;
       if (phase === 'start') {
-        this.curtain = 'tow';
+        this.portal = 'open';
+        this.entry = null;
         this.presenting = null;
         this.s.sleeping = false;
-        this.say(pick(LINES.curtain(label), 'curtain'), { prio: 3, expr: 'cool' });
+        this.say(pick(LINES.portal(label), 'portal'), { prio: 3, expr: 'cool' });
       } else if (phase === 'covered') {
-        this.curtain = 'hold';
-        this.setExpr('happy', 1400);
-      } else if ((phase === 'reveal' || phase === 'end') && this.curtain) {
-        // Take off as the curtain wipes away, then introduce the section he just led you to
-        this.curtain = null;
+        this.portal = 'hold';
+        this.setExpr('happy', 1600);
+        this.s.nodUntil = performance.now() + 700;
+      } else if ((phase === 'reveal' || phase === 'end') && this.portal) {
+        // Take off as the portal collapses, then introduce the section he just led you to
+        this.portal = null;
         this.hideBubble();
         if (id) this.introduced.delete(id);
         this.lastUnprompted = -1e9;
@@ -1142,14 +1143,14 @@ class Max {
   }
 
   /**
-   * Show a speech bubble. prio 1 = unprompted (sections, hovers, idle), 2 = reactions, 3 = show/hide/curtain.
+   * Show a speech bubble. prio 1 = unprompted (sections, hovers, idle), 2 = reactions, 3 = show/hide/portal.
    * Returns false when the line was skipped (cooldown, a more important line is playing, or hidden).
    */
   say(text, { prio = 1, expr = 'happy', exprMs, then } = {}) {
     if (!text) return false;
     if (this.hidden && prio < 3) return false;
     if (this.dialogOpen) return false;
-    if (this.curtain && prio < 3) return false;
+    if (this.portal && prio < 3) return false;
     const now = performance.now();
     if (this.speaking && prio < this.speakingPrio) return false;
     if (prio <= 1 && now - this.lastUnprompted < UNPROMPTED_GAP) return false;
@@ -1208,7 +1209,7 @@ class Max {
   /* ---- placement ---- */
 
   /**
-   * Where Max should fly right now, in priority order: leading the curtain, introducing a new
+   * Where Max should fly right now, in priority order: flying into the section portal, introducing a new
    * section heading, following the moving cursor, hovering by the hero terminal, napping in the
    * corner, or perching at the nearest screen edge while you read.
    */
@@ -1218,16 +1219,9 @@ class Max {
     const R = this.R;
     const s = this.s;
 
-    if (this.curtain) {
-      const scale = 0.8;
-      const box = R * scale;
-      const rest = box * 0.3 + 12;
-      if (this.curtain === 'tow') {
-        const curtainEl = document.getElementById('section-curtain');
-        const left = curtainEl ? curtainEl.getBoundingClientRect().left : 0;
-        return { mode: 'tow', scale, cx: Math.max(rest, left - box * 0.12), cy: vh * 0.55, snap: true };
-      }
-      return { mode: 'hold', scale, cx: rest, cy: vh * 0.55 };
+    if (this.portal) {
+      // Warp portal: hover low beside the big title, looking at it
+      return { mode: 'warp', scale: 0.8, cx: vw / 2 + Math.min(vw * 0.32, 440), cy: vh * 0.62, lookAt: { left: vw / 2 - 1, width: 2, top: vh * 0.45 } };
     }
 
     if (this.compact) {
@@ -1334,11 +1328,11 @@ class Max {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    if (!this.target || this.curtain || this.frame % 2 === 0) this.target = this.computeTarget(now);
+    if (!this.target || this.portal || this.frame % 2 === 0) this.target = this.computeTarget(now);
     const tg = this.target;
     this.mode = tg.mode;
 
-    // Fly: ride the curtain edge exactly, otherwise a soft spring (looser while following the cursor)
+    // Fly: a soft spring (looser while following the cursor, snappier into the portal)
     const box = this.R * s.scale;
     const tx = tg.snap || tg.free ? tg.cx : clamp(tg.cx, box * 0.3 + 8, vw - box * 0.3 - 8);
     const ty = tg.free ? tg.cy : clamp(tg.cy, NAV_CLEARANCE + box * 0.34, vh - box * 0.32);
@@ -1371,7 +1365,7 @@ class Max {
       s.cy = damp(s.cy, ty, 8, dt);
       s.scale = damp(s.scale, tg.scale, 8, dt);
     } else {
-      const k = tg.mode === 'follow' ? 12 : 18;
+      const k = tg.mode === 'follow' ? 12 : tg.mode === 'warp' ? 26 : 18;
       const c = 2 * Math.sqrt(k) * 0.95;
       s.vx += (k * (tx - s.cx) - c * s.vx) * dt;
       s.vy += (k * (ty - s.cy) - c * s.vy) * dt;
@@ -1398,11 +1392,11 @@ class Max {
 
     // Mood: nap after a long idle, chat a little when the visitor has been quiet
     const idleFor = now - s.lastInput;
-    if (!s.sleeping && idleFor > SLEEP_AFTER && !this.speaking && !this.curtain && !this.presenting) {
+    if (!s.sleeping && idleFor > SLEEP_AFTER && !this.speaking && !this.portal && !this.presenting) {
       s.sleeping = true;
       s.sleptAt = now;
     }
-    if (!s.sleeping && !this.speaking && !this.curtain && now - this.lastTalk > IDLE_CHAT_AFTER && this.idleChats < 2) {
+    if (!s.sleeping && !this.speaking && !this.portal && now - this.lastTalk > IDLE_CHAT_AFTER && this.idleChats < 2) {
       if (this.say(pick(LINES.idle, 'idle'), { prio: 1, expr: 'idle' })) this.idleChats += 1;
     }
 
@@ -1413,8 +1407,6 @@ class Max {
     if (this.entry) {
       lookX = clamp(s.vx / 900, -1, 1);
       lookY = clamp(s.vy / 1200, -1, 1);
-    } else if (this.curtain === 'tow') {
-      lookX = -1;
     } else if (tg.lookAt) {
       lookX = clamp((tg.lookAt.left + tg.lookAt.width / 2 - head.x) / (vw * 0.3), -1, 1);
       lookY = clamp((tg.lookAt.top - head.y) / (vh * 0.35), -1, 1);
@@ -1442,8 +1434,8 @@ class Max {
       hop: hopP <= 1 ? hopP : -1,
       spin: spinP <= 1 ? spinP : -1,
       sleepy: s.sleeping,
-      boost: this.entry ? 2.2 : this.curtain === 'tow' ? 1.6 : 1,
-      towing: this.curtain === 'tow',
+      boost: this.entry ? 2.2 : this.portal === 'open' ? 1.7 : 1,
+      burn: this.portal === 'open',
       scale: s.pop,
       still: reducedMotion,
     });
@@ -1462,7 +1454,7 @@ class Max {
     let tail;
     // Keep the bubble on the side away from the cursor so it never sits under the pointer
     const cursorLeft = this.s.cursor && this.s.cursor.x < headX;
-    const preferRight = !cursorLeft || this.compact;
+    const preferRight = !cursorLeft || this.compact || !!this.portal; // in the portal, keep the title clear
     const fitsRight = headX + half + 12 + bw <= vw - 8;
     const fitsLeft = headX - half - 12 - bw >= 8;
     if ((preferRight && fitsRight) || !fitsLeft) {
