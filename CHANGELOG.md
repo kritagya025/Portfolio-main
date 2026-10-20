@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.9.0] - 2026-10-20
+
+### Added
+- Max explains whatever you point at (or tap on a phone): every skill tile, chip, and course; the hero, About, project, and internship numbers; each internship highlight; project cards and actions; learning, education, and certification cards; the language breakdown; navbar links, filters, skill tabs, contact links, and buttons. All explanations use facts already on the site
+- Reactions while he talks: lines are split into parts, and as the typing reaches each part he switches expression and plays a gesture (nod, hop, spin, wave, tail wag)
+- New expressions: star eyes (wow), thinking, sad, and blushing; ears perk up for wow and droop when sad, and his tail wags when he is happy, in love, blushing, or amazed
+- Situational reactions: speed-scrolling, reaching the end of the page, coming back to the tab, selecting text, shaking the cursor, the cursor leaving the window, resizing, and head pats
+- Small talk with tips and facts after about 8 quiet seconds, only while someone is actively on the page
+
+### Changed
+- The welcome is much earlier: Max is built while the intro plays and flies in the moment the page is ready, with heart eyes from launch and his hello starting mid-flight (the entrance is also shorter: 1.7 s desktop, 1.3 s phones)
+- He stays beside the cursor while explaining and looks at the thing he is talking about; the speech bubble now opens on the side away from the cursor and is a little wider
+- Petting only counts when you move onto Max, so he no longer freezes on top of a resting cursor and hides what you are pointing at
+
+---
+
 ## [3.8.0] - 2026-10-20
 
 ### Changed
