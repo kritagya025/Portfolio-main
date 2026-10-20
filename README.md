@@ -27,7 +27,8 @@ A modern, high-performance personal developer portfolio showcasing software engi
 - **🟢 Live Availability & Local Time**: Real-time hiring availability badge paired with dynamic Indian Standard Time (IST &middot; UTC+5:30) clock widget in the Hero and Contact sections.
 - **🗂️ Pinned Horizontal Project Showcase**: On desktop, featured projects scroll sideways inside a pinned viewport with a progress rail; tablets and phones get stacked cards. Category filters (*All*, *High Concurrency*, *Cloud & DevOps*, *Security & APIs*) keep their live counts.
 - **🔎 Project Detail Modals**: Each card opens a detail view with key metrics, highlights, tech stack, and source/live links.
-- **🤖 Bean, the Floating Robot Guide**: A procedural three.js robot with an LED-matrix face (`js/bean-bot.js`, no model files). He floats beside the hero, hovers above each section heading as it scrolls in, docks in the corner while you read, follows the cursor with his eyes, and reacts to project filters, skill tabs, theme changes, copied email, and pokes. The robot button (bottom-left) hides/shows him and the choice is remembered. Lazy-loaded after the intro, skipped without WebGL, and docked/still for reduced-motion users.
+- **🤖 Max, the Floating Robot Guide**: A three.js robot (`js/max-bot.js`) with an animated LED-matrix face drawn onto his screen. He floats beside the hero, hovers above each section heading as it scrolls in, docks in the corner while you read, follows the cursor with his eyes, tows the section-transition curtain, and reacts to project filters, skill tabs, theme changes, copied email, and pokes. The robot button (bottom-left) hides/shows him and the choice is remembered. Lazy-loaded after the intro, skipped without WebGL, and docked/still on touch screens and for reduced-motion users.
+- **🎬 Section Transitions**: Jumping to a section (navbar, logo, mobile menu, or `Ctrl+K`) slides a full-screen curtain in with the section's number and name, moves the page while it is covered, then wipes it away. Reduced-motion users get an instant jump.
 - **📊 Code-Only Language Breakdown**: A native card that sums bytes per language across public, non-fork repositories (excluding HTML/CSS markup and notebooks), refreshed live from the GitHub API with a day-long cache and a bundled snapshot fallback.
 - **🏛️ System Architecture Deep Dive**: Interactive architecture modal detailing the Event Booking Engine's high-concurrency lifecycle, `@Version` optimistic locking, Redis TTL locks, and STOMP WebSocket broadcasting.
 - **🧭 Interactive Skills Explorer**: Eight skill categories in an accessible tab list (arrow-key navigation) with animated tool tiles; stacked cards on mobile.
@@ -52,7 +53,7 @@ A modern, high-performance personal developer portfolio showcasing software engi
 - **CSS Utility Engine**: Tailwind CSS
 - **Design System & Typography**: Google Fonts (*Space Grotesk* display, *Syne* body, *JetBrains Mono* labels) & FontAwesome 6
 - **Animation & Physics Libraries**: GSAP, AOS, Lenis Scroll, Vanilla-Tilt.js
-- **3D**: three.js (r160, ES module via import map) for the Bean robot guide
+- **3D**: three.js (r160, ES module via import map) with GLTFLoader + DRACOLoader for the Max robot guide
 
 ---
 
@@ -92,7 +93,7 @@ Tested and optimized for modern evergreen browsers including Google Chrome, Micr
      python -m http.server 8000
      ```
    - Navigate to `http://localhost:8000`.
-   - Use a local server rather than opening the file directly if you want to see Bean, the robot guide: browsers block ES modules on `file://` URLs (the rest of the site works either way).
+   - Use a local server rather than opening the file directly if you want to see Max, the robot guide: browsers block ES modules and model files on `file://` URLs (the rest of the site works either way).
 
 ---
 
@@ -109,6 +110,10 @@ Tested and optimized for modern evergreen browsers including Google Chrome, Micr
 
 This project is open-source and available under the [MIT License](LICENSE).
 
+### Credits
+
+- Max's 3D model: ["Flying Robot 07"](https://sketchfab.com/3d-models/flying-robot-07-07-b31dff5e3b344aa1a6f2a3c8454ad440) by [Konstantin_Dem](https://sketchfab.com/Konstantin_Dem), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The bundled file is Draco-compressed and lightly modified (helper nodes, screen material); the LED face is drawn at runtime. The model is not covered by this repository's MIT license.
+
 ---
 
 ## 🏗️ Project Architecture & File Structure
@@ -116,7 +121,8 @@ This project is open-source and available under the [MIT License](LICENSE).
 ```
 Portfolio-main/
 ├── index.html              # Single-page application (all HTML, CSS, JS)
-├── js/bean-bot.js          # Bean, the floating 3D robot guide (lazy-loaded ES module)
+├── js/max-bot.js           # Max, the floating 3D robot guide (lazy-loaded ES module)
+├── assets/models/max-robot.glb  # Max's 3D model (CC BY 4.0, see Credits)
 ├── 404.html                # Custom GitHub Pages 404 error page
 ├── Kritagya_Yadav_Resume.pdf  # Downloadable resume asset
 ├── robots.txt              # SEO crawler directives

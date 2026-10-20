@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 3.1.0 -->
+<!-- Portfolio Version: 3.2.0 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
@@ -1053,8 +1053,67 @@
     .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
     .back-to-top:hover { border-color: hsl(var(--primary) / 0.5); color: hsl(var(--primary)); }
 
-    /* ---- Bean, the floating robot guide (js/bean-bot.js) ---- */
-    .bot-layer { position: fixed; inset: 0; z-index: 45; pointer-events: none; overflow: hidden; transition: opacity 0.4s ease; }
+    /* ---- Section transition curtain (slides in with the section name, page jumps behind it) ---- */
+    .section-curtain {
+      position: fixed;
+      inset: 0;
+      z-index: 55;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: hsl(var(--card));
+      border-left: 2px solid hsl(var(--primary));
+      box-shadow: -40px 0 90px -30px hsl(var(--primary) / 0.55);
+      transform: translateX(110%);
+      visibility: hidden;
+    }
+    .section-curtain.is-active { visibility: visible; }
+    .section-curtain::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.05;
+      background-image:
+        linear-gradient(hsl(var(--foreground)) 1px, transparent 1px),
+        linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+    .section-curtain::after {
+      content: '';
+      position: absolute;
+      top: -12rem;
+      right: -8rem;
+      width: 38rem;
+      height: 38rem;
+      border-radius: 9999px;
+      background: hsl(var(--primary) / 0.16);
+      filter: blur(100px);
+    }
+    .curtain-inner { position: relative; z-index: 1; padding: 0 1.5rem; text-align: center; }
+    .curtain-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: hsl(var(--primary));
+    }
+    .curtain-eyebrow::before, .curtain-eyebrow::after { content: ''; width: 2.5rem; height: 1px; background: hsl(var(--primary) / 0.6); }
+    .curtain-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3.25rem, 11vw, 9.5rem);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+      color: hsl(var(--foreground));
+    }
+
+    /* ---- Max, the floating robot guide (js/max-bot.js) ---- */
+    .bot-layer { position: fixed; inset: 0; z-index: 56; pointer-events: none; overflow: hidden; transition: opacity 0.4s ease; }
     .bot-layer.is-hidden { opacity: 0; }
     .bot-layer.is-hidden .bot-hit { pointer-events: none; }
     .bot-body {
@@ -1065,8 +1124,8 @@
       will-change: transform;
     }
     .bot-body canvas { display: block; width: 100%; height: 100%; }
-    .bot-hit { position: absolute; inset: 6% 26% 6% 26%; border-radius: 40%; pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-    .bot-layer.is-compact .bot-hit { inset: 4% 24% 50% 24%; } /* touch: only the head is tappable, so taps reach the page */
+    .bot-hit { position: absolute; inset: 20% 22% 22% 22%; border-radius: 30%; pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .bot-layer.is-compact .bot-hit { inset: 24% 28% 34% 28%; } /* touch: only the screen area is tappable, so taps reach the page */
     .bot-bubble {
       position: absolute;
       left: 0;
@@ -1101,7 +1160,7 @@
       position: fixed;
       left: 16px;
       bottom: 16px;
-      z-index: 46;
+      z-index: 57;
       width: 2.5rem;
       height: 2.5rem;
       display: flex;
@@ -1142,7 +1201,7 @@
       body { background: #ffffff !important; color: #000000 !important; }
       .preloader, .film-grain, .ambient-layer, #particle-canvas, .back-to-top, .scroll-progress,
       #navbar, dialog, #toast, .bg-word, .hero-bg-text, .hero-terminal, .hero-scroll, .hero-rail,
-      .marquee, .projects-progress, .bot-layer, .bot-toggle { display: none !important; }
+      .marquee, .projects-progress, .bot-layer, .bot-toggle, .section-curtain { display: none !important; }
       .glass-card, .dialog-panel {
         background: transparent !important;
         -webkit-backdrop-filter: none !important;
@@ -2196,6 +2255,12 @@
         <span class="font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground/60">Designed &amp; Developed by Kritagya Yadav</span>
         <span class="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" aria-hidden="true"></span>
       </div>
+      <p class="mt-3 text-center font-mono text-[10px] text-muted-foreground/70">
+        Max's 3D model:
+        <a href="https://sketchfab.com/3d-models/flying-robot-07-07-b31dff5e3b344aa1a6f2a3c8454ad440" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-primary">“Flying Robot 07”</a>
+        by <a href="https://sketchfab.com/Konstantin_Dem" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-primary">Konstantin_Dem</a>,
+        licensed <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-primary">CC BY 4.0</a> (optimized and modified)
+      </p>
     </footer>
   </section>
 
@@ -2209,6 +2274,14 @@
 <div id="toast" class="glass-card px-5 py-3 rounded-full text-xs font-mono text-foreground shadow-2xl flex items-center gap-2" role="status" aria-live="polite">
   <i class="fas fa-check text-neon" aria-hidden="true"></i>
   <span id="toast-message">Copied to clipboard!</span>
+</div>
+
+<!-- Section transition curtain (driven by navigateTo; Max tows it in when he is around) -->
+<div id="section-curtain" class="section-curtain" aria-hidden="true">
+  <div class="curtain-inner">
+    <p class="curtain-eyebrow"><span id="curtain-eyebrow">Kritagya Yadav</span></p>
+    <p class="curtain-title"><span id="curtain-title">About</span><span class="text-gradient">.</span></p>
+  </div>
 </div>
 
 <!-- ====== Mobile Navigation (full-screen) ====== -->
@@ -2571,16 +2644,84 @@
     el.focus({ preventScroll: true });
   }
 
-  function navigateTo(hash) {
-    if (hash === '#top' || hash === '#') {
-      scrollToTarget(0);
-      focusWithoutScroll($('#main-content'));
+  // ---- Section transition curtain ----
+  // Jumping to a section slides a full-screen curtain in with the section name, moves the page while
+  // it covers the screen, then wipes it away. Max (js/max-bot.js) listens for 'ky:curtain' and tows it.
+  const SECTION_TITLES = {
+    top: 'Home',
+    about: 'About',
+    skills: 'Skills',
+    projects: 'Projects',
+    learning: 'Learning',
+    education: 'Education',
+    certifications: 'Certifications',
+    'github-activity': 'Activity',
+    contact: 'Contact',
+  };
+  const curtain = $('#section-curtain');
+  const curtainSupported = !prefersReducedMotion && !!curtain && typeof curtain.animate === 'function';
+  let curtainBusy = false;
+
+  function playCurtain(id, onCovered) {
+    curtainBusy = true;
+    const target = document.getElementById(id);
+    const section = target && target.closest('section');
+    const eyebrow = section && section.id !== 'top' ? section.querySelector('.eyebrow span') : null;
+    $('#curtain-title').textContent = SECTION_TITLES[id];
+    $('#curtain-eyebrow').textContent = eyebrow ? eyebrow.textContent : 'Kritagya Yadav';
+    const inner = curtain.querySelector('.curtain-inner');
+    const emit = (phase) => document.dispatchEvent(new CustomEvent('ky:curtain', {
+      detail: { phase, id: section ? section.id : id, label: SECTION_TITLES[id] },
+    }));
+    const ease = 'cubic-bezier(0.65, 0, 0.35, 1)';
+
+    if (lenis) lenis.stop();
+    curtain.classList.add('is-active');
+    emit('start');
+    inner.animate(
+      [{ transform: 'translateX(22%)', opacity: 0 }, { transform: 'translateX(0)', opacity: 1 }],
+      { duration: 850, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+    );
+    return curtain.animate([{ transform: 'translateX(100%)' }, { transform: 'translateX(0)' }], { duration: 750, easing: ease, fill: 'forwards' })
+      .finished
+      .then(() => {
+        onCovered();
+        emit('covered');
+        return new Promise((resolve) => setTimeout(resolve, 380));
+      })
+      .then(() => {
+        emit('reveal');
+        inner.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-14%)' }], { duration: 600, easing: ease, fill: 'forwards' });
+        return curtain.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-100%)' }], { duration: 600, easing: ease, fill: 'forwards' }).finished;
+      })
+      .catch(() => {})
+      .then(() => {
+        curtain.getAnimations({ subtree: true }).forEach((animation) => animation.cancel());
+        curtain.classList.remove('is-active');
+        curtainBusy = false;
+        if (lenis && lenis.isStopped && !$$('dialog[open]').length) lenis.start();
+        emit('end');
+      });
+  }
+
+  function navigateTo(hash, { transition = false } = {}) {
+    const id = hash === '#' ? 'top' : hash.slice(1);
+    const isTop = id === 'top';
+    const target = isTop ? null : document.getElementById(id);
+    if (curtainBusy || (!isTop && !target)) return;
+    const land = (immediate) => {
+      scrollToTarget(isTop ? 0 : target, { immediate });
+      focusWithoutScroll(isTop ? $('#main-content') : target);
+    };
+    // Already there: skip the show and just move focus
+    const alreadyThere = isTop
+      ? window.scrollY < 4
+      : Math.abs(target.getBoundingClientRect().top + offsetFor(target)) < 6;
+    if (transition && curtainSupported && heroStarted && SECTION_TITLES[id] && !alreadyThere) {
+      playCurtain(id, () => land(true));
       return;
     }
-    const target = document.querySelector(hash);
-    if (!target) return;
-    scrollToTarget(target);
-    focusWithoutScroll(target);
+    land(false);
   }
 
   // ---- Dialog Controller (native <dialog> with animated open/close) ----
@@ -2876,7 +3017,7 @@
     e.preventDefault();
     const dialog = link.closest('dialog');
     const go = () => {
-      navigateTo(hash);
+      navigateTo(hash, { transition: true });
       if (hash.length > 1 && hash !== '#top') history.replaceState(null, '', hash);
       else history.replaceState(null, '', location.pathname + location.search);
     };
@@ -3278,7 +3419,7 @@
       if (!cmd) return;
       Dialogs.close(palette).then(() => {
         if (cmd.target) {
-          navigateTo(cmd.target);
+          navigateTo(cmd.target, { transition: true });
         } else if (cmd.filter) {
           setActiveProjectFilter(cmd.filter, { scroll: true });
           focusWithoutScroll($('#projects'));
@@ -3617,7 +3758,7 @@
 })();
 </script>
 
-<!-- Bean, the floating robot guide: an ES module that lazy-loads three.js once the page intro finishes -->
+<!-- Max, the floating robot guide: an ES module that lazy-loads three.js and his model once the page intro finishes -->
 <script type="importmap">
   {
     "imports": {
@@ -3626,7 +3767,7 @@
     }
   }
 </script>
-<script type="module" src="js/bean-bot.js"></script>
+<script type="module" src="js/max-bot.js"></script>
 
 </body>
 </html>

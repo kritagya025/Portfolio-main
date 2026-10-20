@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.2.0] - 2026-10-20
+
+### Added
+- Section transitions: navbar, logo, mobile-menu, and `Ctrl+K` section jumps slide a full-screen curtain in with the section number and name, move the page while it is covered, then wipe it away (instant jump for reduced-motion users)
+- Max tows the curtain in from the right, waits at the edge while the page changes, then flies to the new section and introduces it
+- Credits for Max's model ("Flying Robot 07" by Konstantin_Dem, CC BY 4.0) in the footer and README
+
+### Changed
+- The robot guide is now **Max**: the procedural model is replaced by the "Flying Robot 07" glTF model (`assets/models/max-robot.glb`, Draco-compressed) with the LED face projected onto its screen; module renamed to `js/max-bot.js`
+- Max uses the small corner dock (beside the robot button) on touch devices and windows narrower than 1024px
+
+### Removed
+- `js/bean-bot.js` (superseded by `js/max-bot.js`)
+
+---
+
 ## [3.1.0] - 2026-10-20
 
 ### Added
