@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.7.0] - 2026-10-20
+
+### Added
+- Flying entrance for Max: he launches from below the screen, swoops high across it with a barrel roll at the top of the arc (boosters blazing, banking into the turn), glides into place, and lands with a hop and a burst of sparks before greeting you with heart eyes and a wave; on phones he rockets up into the navbar. Showing him again with the robot button replays a short version. Reduced-motion users get no flight
+
+### Changed
+- Max is about 25% bigger: a larger canvas (360px desktop, 170px on phones) and larger on-screen scales while following the cursor, introducing sections, leading the curtain, and perching
+- On the hero he now hovers beside the terminal card, between it and your name
+
+---
+
 ## [3.6.0] - 2026-10-20
 
 ### Changed

@@ -29,10 +29,15 @@ const IDLE_CHAT_AFTER = 32000;
 const FOLLOW_IDLE = 4500;      // stop chasing the cursor once it has been still this long
 const PRESENT_MS = 4800;       // how long Max stays at a new section heading to introduce it
 const NAV_CLEARANCE = 84;      // keep clear of the fixed navbar
+const BOX = { desktop: 360, compact: 170 }; // size of Max's canvas in px (his on-screen scale multiplies it)
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 const damp = (current, target, lambda, dt) => target + (current - target) * Math.exp(-lambda * dt);
 const easeInOut = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+const bezier = (a, b, c, d, u) => {
+  const v = 1 - u;
+  return v * v * v * a + 3 * v * v * u * b + 3 * v * u * u * c + u * u * u * d;
+};
 
 function webglAvailable() {
   try {
@@ -381,6 +386,7 @@ class Engine {
     this.mainPos = new T.Vector3();
     this.mainDir = new T.Vector3();
     this.mainPower = 0;
+    this.burstCount = 0;
     this.emerald = new T.Color(EMERALD);
     this.build();
   }
@@ -619,6 +625,11 @@ class Engine {
     this.sparkNext = 0;
   }
 
+  /** A ring of sparks from the hover thruster, e.g. when Max lands. */
+  burst(count) {
+    this.burstCount = count;
+  }
+
   applyTheme() {
     const light = root.getAttribute('data-theme') === 'light';
     const accent = cssColor('--accent');
@@ -784,6 +795,16 @@ class Engine {
     // Sparks: emitted from the hover thruster, falling and fading
     const posAttr = this.sparks.geometry.attributes.position;
     const colAttr = this.sparks.geometry.attributes.color;
+    while (this.burstCount > 0 && !p.still) {
+      this.burstCount -= 1;
+      const i = this.sparkNext;
+      const spark = this.sparkState[i];
+      this.sparkNext = (i + 1) % SPARKS;
+      spark.life = spark.max = 0.5 + Math.random() * 0.45;
+      const a = Math.random() * Math.PI * 2;
+      spark.v.set(Math.cos(a) * (1.4 + Math.random()), -0.3 - Math.random() * 0.9, Math.sin(a) * (1.4 + Math.random()));
+      posAttr.setXYZ(i, this.mainPos.x, this.mainPos.y, this.mainPos.z);
+    }
     if (!p.still && t > st.sparkAt && this.mainPower > 0.3 && p.scale > 0.5) {
       st.sparkAt = t + 70 / this.mainPower;
       const i = this.sparkNext;
@@ -836,7 +857,7 @@ class Max {
     document.body.appendChild(this.layer);
 
     this.compact = this.isCompact();
-    this.R = this.compact ? 150 : 300;
+    this.R = this.compact ? BOX.compact : BOX.desktop;
     this.layer.classList.toggle('is-compact', this.compact);
     this.body.style.width = this.body.style.height = `${this.R}px`;
     this.engine = new Engine(THREE, RoomEnvironment, this.canvas, this.R);
@@ -852,6 +873,7 @@ class Max {
     this.target = null;
     this.mode = 'hero';
     this.presenting = null;       // { section, until, said } while introducing a heading
+    this.entry = null;            // the flying entrance while it plays
     this.curtain = null;          // 'tow' while leading the section curtain in, 'hold' while it covers the page
     this.petting = false;         // pointer is over Max: hold still so he can be clicked
     this.hidden = true;
@@ -884,27 +906,55 @@ class Max {
     clearTimeout(this.hideTimeout);
     this.hidden = false;
     this.layer.classList.remove('is-hidden');
-    this.target = this.computeTarget(performance.now());
-    // Pop in where he is needed, rising slightly (in place for reduced motion)
+    const now = performance.now();
+    this.target = this.computeTarget(now);
+    this.greetOnArrival = greet;
     const s = this.s;
-    s.cx = this.target.cx;
-    s.cy = this.target.cy + (reducedMotion ? 0 : 40);
     s.scale = this.target.scale;
     s.vx = s.vy = 0;
-    s.pop = reducedMotion ? 1 : 0;
+    s.pop = 1;
     this.start();
-    if (greet) {
-      // Heart eyes and a wave the moment he appears on the opening screen
-      this.setExpr('love', 4200);
-      s.waveUntil = performance.now() + 3000;
-      setTimeout(() => this.greet(), reducedMotion ? 200 : 700);
+    if (reducedMotion) {
+      s.cx = this.target.cx;
+      s.cy = this.target.cy;
+      this.arrive(now);
+      return;
+    }
+    // Flying entrance: launch from below the screen, swoop high across it with a barrel roll at the top
+    // of the arc, then glide into place. The path's end follows the live target, so he always lands right.
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const box = this.R * this.target.scale;
+    if (this.compact) {
+      this.entry = { start: now, dur: 1600, from: { x: vw * 0.85, y: vh + box }, c1: { x: vw * 0.1, y: vh * 0.6 }, c2: { dx: vw * 0.35, dy: vh * 0.25 } };
     } else {
-      s.waveUntil = performance.now() + 1600;
+      this.entry = { start: now, dur: 2400, from: { x: -box * 0.6, y: vh + box * 0.5 }, c1: { x: vw * 0.28, y: -vh * 0.05 }, c2: { dx: box * 1.1, dy: -box * 0.9 } };
+    }
+    this.entry.scale0 = this.target.scale * 0.55;
+    s.cx = this.entry.from.x;
+    s.cy = this.entry.from.y;
+    s.scale = this.entry.scale0;
+    s.spinFrom = now + this.entry.dur * 0.2;
+    this.setExpr('cool', this.entry.dur);
+  }
+
+  /** Touchdown after the entrance: a little hop, a burst of sparks, then hello (heart eyes on page load). */
+  arrive(now) {
+    const s = this.s;
+    if (!reducedMotion) s.hopFrom = now;
+    this.engine.burst(20);
+    if (this.greetOnArrival) {
+      this.setExpr('love', 4200);
+      s.waveUntil = now + 3000;
+      setTimeout(() => this.greet(), reducedMotion ? 200 : 350);
+    } else {
+      s.waveUntil = now + 1600;
       this.say(pick(LINES.show, 'show'), { prio: 3, expr: 'happy' });
     }
   }
 
   hide() {
+    this.entry = null;
     this.say(pick(LINES.hide, 'hide'), { prio: 3, expr: 'wink' });
     clearTimeout(this.hideTimeout);
     this.hideTimeout = setTimeout(() => {
@@ -967,7 +1017,7 @@ class Max {
       const compact = this.isCompact();
       if (compact === this.compact) return;
       this.compact = compact;
-      this.R = compact ? 150 : 300;
+      this.R = compact ? BOX.compact : BOX.desktop;
       this.layer.classList.toggle('is-compact', compact);
       this.body.style.width = this.body.style.height = `${this.R}px`;
       this.engine.setSize(this.R);
@@ -1169,7 +1219,7 @@ class Max {
     const s = this.s;
 
     if (this.curtain) {
-      const scale = 0.72;
+      const scale = 0.8;
       const box = R * scale;
       const rest = box * 0.3 + 12;
       if (this.curtain === 'tow') {
@@ -1184,7 +1234,7 @@ class Max {
       // Phones / small windows: hover in the empty middle of the navbar so content stays clear
       const nav = document.getElementById('nav-inner');
       const nr = nav ? nav.getBoundingClientRect() : null;
-      const scale = 0.7;
+      const scale = 0.72;
       if (nr && nr.width > 0) {
         return { mode: 'dock', scale, cx: nr.left + nr.width * 0.47, cy: nr.top + nr.height * 0.5, section: this.visibleSection(), free: true };
       }
@@ -1192,7 +1242,7 @@ class Max {
     }
 
     // A section heading just scrolled into view: fly over and introduce it
-    const heading = this.presentableEyebrow(R * 0.62, vh);
+    const heading = this.presentableEyebrow(R * 0.66, vh);
     if (!this.presenting && heading && LINES.sections[heading.section] && !this.introduced.has(heading.section) && !s.sleeping) {
       this.presenting = { section: heading.section, until: now + PRESENT_MS, said: false };
     }
@@ -1201,7 +1251,7 @@ class Max {
         this.introduced.add(this.presenting.section);
         this.presenting = null;
       } else {
-        const scale = 0.62;
+        const scale = 0.66;
         const box = R * scale;
         return { mode: 'present', scale, cx: heading.rect.right + box * 0.34 + 10, cy: heading.rect.top + heading.rect.height / 2 - box * 0.06, section: heading.section, lookAt: heading.rect };
       }
@@ -1211,35 +1261,35 @@ class Max {
     // Not while it is up in the navbar: he would only hover over the headings below it.
     const cursorInPage = s.cursor && s.cursor.y > NAV_CLEARANCE;
     if (cursorInPage && !s.sleeping && (this.petting || now - s.cursorMovedAt < FOLLOW_IDLE)) {
-      const scale = 0.72;
+      const scale = 0.8;
       if (this.petting) return { mode: 'follow', scale, cx: s.cx, cy: s.cy };
       const box = R * scale;
-      const gap = box * 0.28 + 30;
+      const gap = box * 0.26 + 36;
       const side = s.cursor.x + gap + box * 0.3 < vw - 8 ? 1 : -1;
       return { mode: 'follow', scale, cx: s.cursor.x + side * gap, cy: s.cursor.y - box * 0.04 };
     }
 
-    // Hero, cursor at rest: hover above the terminal (or in the open space on the right)
+    // Hero, cursor at rest: hover beside the terminal (or in the open space on the right)
     const hero = document.getElementById('top');
     const heroRect = hero ? hero.getBoundingClientRect() : null;
     if (heroRect && heroRect.bottom > vh * 0.55) {
       const terminal = document.querySelector('.hero-terminal');
       const tr = terminal ? terminal.getBoundingClientRect() : null;
       if (tr && tr.width > 0) {
-        const scale = 0.9;
-        return { mode: 'hero', scale, cx: tr.left + tr.width * 0.2, cy: tr.top - R * scale * 0.3 };
+        const scale = 0.95;
+        return { mode: 'hero', scale, cx: tr.left - R * scale * 0.22, cy: tr.top + R * scale * 0.08 };
       }
-      return { mode: 'hero', scale: 0.95, cx: vw - Math.max(180, vw * 0.18), cy: vh * 0.45 + heroRect.top * 0.6 };
+      return { mode: 'hero', scale: 1, cx: vw - Math.max(190, vw * 0.18), cy: vh * 0.45 + heroRect.top * 0.6 };
     }
 
     // Napping: settle in the bottom-left corner beside the robot button
     if (s.sleeping) {
-      const scale = 0.5;
+      const scale = 0.55;
       return { mode: 'dock', scale, cx: 64 + R * scale * 0.3, cy: vh - 24 - R * scale * 0.32 };
     }
 
     // Reading: perch at the nearest screen edge, at the height he was
-    const scale = 0.55;
+    const scale = 0.62;
     const box = R * scale;
     const edge = s.cx < vw / 2 ? box * 0.3 + 16 : vw - box * 0.3 - 16;
     return { mode: 'rest', scale, cx: edge, cy: s.cy };
@@ -1291,8 +1341,25 @@ class Max {
     // Fly: ride the curtain edge exactly, otherwise a soft spring (looser while following the cursor)
     const box = this.R * s.scale;
     const tx = tg.snap || tg.free ? tg.cx : clamp(tg.cx, box * 0.3 + 8, vw - box * 0.3 - 8);
-    const ty = tg.free ? tg.cy : clamp(tg.cy, NAV_CLEARANCE + box * 0.3, vh - box * 0.32);
-    if (reducedMotion) {
+    const ty = tg.free ? tg.cy : clamp(tg.cy, NAV_CLEARANCE + box * 0.34, vh - box * 0.32);
+    if (this.entry) {
+      // Flying entrance: fast launch, gliding finish along a curve that ends at the live target
+      const e = this.entry;
+      const raw = Math.min(1, (now - e.start) / e.dur);
+      const u = 1 - Math.pow(1 - raw, 3);
+      const x = bezier(e.from.x, e.c1.x, tx + e.c2.dx, tx, u);
+      const y = bezier(e.from.y, e.c1.y, Math.max(-box * 0.2, ty + e.c2.dy), ty, u);
+      s.vx = (x - s.cx) / dt;
+      s.vy = (y - s.cy) / dt;
+      s.cx = x;
+      s.cy = y;
+      s.scale = e.scale0 + (tg.scale - e.scale0) * u;
+      if (raw >= 1) {
+        this.entry = null;
+        s.vx = s.vy = 0;
+        this.arrive(now);
+      }
+    } else if (reducedMotion) {
       s.cx = tx;
       s.cy = ty;
       s.scale = tg.scale;
@@ -1343,7 +1410,10 @@ class Max {
     const head = this.engine.headOnPage(s.cx, s.cy, box);
     let lookX = 0;
     let lookY = 0;
-    if (this.curtain === 'tow') {
+    if (this.entry) {
+      lookX = clamp(s.vx / 900, -1, 1);
+      lookY = clamp(s.vy / 1200, -1, 1);
+    } else if (this.curtain === 'tow') {
       lookX = -1;
     } else if (tg.lookAt) {
       lookX = clamp((tg.lookAt.left + tg.lookAt.width / 2 - head.x) / (vw * 0.3), -1, 1);
@@ -1372,7 +1442,7 @@ class Max {
       hop: hopP <= 1 ? hopP : -1,
       spin: spinP <= 1 ? spinP : -1,
       sleepy: s.sleeping,
-      boost: this.curtain === 'tow' ? 1.6 : 1,
+      boost: this.entry ? 2.2 : this.curtain === 'tow' ? 1.6 : 1,
       towing: this.curtain === 'tow',
       scale: s.pop,
       still: reducedMotion,
