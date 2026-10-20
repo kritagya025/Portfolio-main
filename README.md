@@ -23,16 +23,17 @@ A modern, high-performance personal developer portfolio showcasing software engi
 ## ✨ Features & User Experience
 
 - **🎨 Design System with Light & Dark Themes**: HSL design tokens (`--primary`, `--accent`, `--neon`, …) drive both themes; the toggle is remembered per visitor and applied before first paint. Film grain, grid overlays, glass cards, and huge outlined section words give every section depth.
-- **🎬 Cinematic Hero**: Letter-by-letter name reveal (GSAP), rotating role badge, live stats (83+ REST APIs · 55+ automated tests · 7.58 CGPA), side social rail, scroll-linked parallax, and a decorative terminal card on wide screens.
+- **🎬 Cinematic Hero**: Letter-by-letter name reveal (GSAP), rotating role badge, live stats (83+ REST APIs · 45+ automated tests · 7.58 CGPA), side social rail, scroll-linked parallax, and a decorative terminal card on wide screens.
 - **🟢 Live Availability & Local Time**: Real-time hiring availability badge paired with dynamic Indian Standard Time (IST &middot; UTC+5:30) clock widget in the Hero and Contact sections.
 - **🗂️ Pinned Horizontal Project Showcase**: On desktop, featured projects scroll sideways inside a pinned viewport with a progress rail; tablets and phones get stacked cards. Category filters (*All*, *High Concurrency*, *Cloud & DevOps*, *Security & APIs*) keep their live counts.
 - **🔎 Project Detail Modals**: Each card opens a detail view with key metrics, highlights, tech stack, and source/live links.
-- **🐺 Max, the Flying Mech-Wolf Guide**: A rigged, animated wolf rendered with three.js (`js/max-bot.js`) and rebuilt as a machine at runtime: chrome armour with environment reflections, glowing emerald circuit lines skinned to the same skeleton, emerald eyes, a two-thruster jetpack with live flames, and an antenna. He flies alongside your cursor and turns his head to look at it, flies to each section heading as it scrolls in to introduce it, hovers by the hero terminal, leads the section-transition curtain, and reacts to project filters, skill tabs, theme changes, copied email, and pats (he holds still when you move onto him, and naps with floating "zzz" when you go idle). On phones and narrow windows he hovers in the navbar so he never covers content. The paw button (bottom-left) hides/shows him and the choice is remembered. Lazy-loaded after the intro, skipped without WebGL, and still for reduced-motion users.
+- **💼 Experience**: The Software Engineering & QA internship at Compass (HeyCompass) with dates, key numbers (50 merged commits, 25+ QA-reported defects), and highlights taken from the resume.
+- **🤖 Max, the Robot Guide with a Wolf Face**: The reference design's floating robot, rendered with three.js (`js/max-bot.js`), with an LED dot-matrix wolf face on its screen: pointed ears, slanted eyes, fur tufts, and a snout. His eyes turn into hearts when he greets you on page load. He flies alongside your cursor and turns his body and eyes to look at it, flies to each section heading as it scrolls in to introduce it, hovers by the hero terminal, leads the section-transition curtain, perches at the screen edge while you read, and reacts to project filters, skill tabs, theme changes, copied email, and pokes (blinks, ear flicks, thruster flames, wobbling antennas, and a nap with floating "zzz" when you go idle). On phones and narrow windows he hovers in the navbar so he never covers content. The robot button (bottom-left) hides/shows him and the choice is remembered. Lazy-loaded after the intro, skipped without WebGL, and still for reduced-motion users.
 - **🎬 Section Transitions**: Jumping to a section (navbar, logo, mobile menu, or `Ctrl+K`) slides a full-screen curtain in with the section's number and name, moves the page while it is covered, then wipes it away. Reduced-motion users get an instant jump.
 - **📊 Code-Only Language Breakdown**: A native card that sums bytes per language across public, non-fork repositories (excluding HTML/CSS markup and notebooks), refreshed live from the GitHub API with a day-long cache and a bundled snapshot fallback.
 - **🏛️ System Architecture Deep Dive**: Interactive architecture modal detailing the Event Booking Engine's high-concurrency lifecycle, `@Version` optimistic locking, Redis TTL locks, and STOMP WebSocket broadcasting.
 - **🧭 Interactive Skills Explorer**: Eight skill categories in an accessible tab list (arrow-key navigation) with animated tool tiles; stacked cards on mobile.
-- **⌘ Command Palette & Shortcuts**: Fast navigation with `Ctrl+K` quick switcher (sections, project filters, architecture deep dive, theme toggle, copy email, resume) and `?` keyboard shortcuts cheatsheet modal.
+- **⌘ Command Palette & Shortcuts**: Fast navigation with `Ctrl+K` quick switcher (sections, project filters, architecture deep dive, theme toggle, copy email, resume) and `?` keyboard shortcuts cheat sheet.
 - **📋 One-Click Copy & Toast**: Instant email copying to clipboard with floating animated glass toast feedback.
 - **♿ Accessible Dialogs**: All overlays use native `<dialog>` elements for focus trapping, `Esc` handling, and focus restoration.
 - **⚡ Interactive Micro-Animations**:
@@ -53,22 +54,30 @@ A modern, high-performance personal developer portfolio showcasing software engi
 - **CSS Utility Engine**: Tailwind CSS
 - **Design System & Typography**: Google Fonts (*Space Grotesk* display, *Syne* body, *JetBrains Mono* labels) & FontAwesome 6
 - **Animation & Physics Libraries**: GSAP, AOS, Lenis Scroll, Vanilla-Tilt.js
-- **3D**: three.js (r160, ES module via import map) with GLTFLoader + MeshoptDecoder, RoomEnvironment reflections, and AnimationMixer for the Max mech-wolf guide
+- **3D**: three.js (r160, ES module via import map) with GLTFLoader + DRACOLoader for Max, the robot guide; his wolf face is a canvas texture drawn at runtime
 
 ---
 
 ## 📂 Featured Backend Systems
 
 1. **[Event Booking System](https://github.com/kritagya025/Event-Booking-System)**
-   - High-concurrency event reservation and e-ticketing backend: 83 REST endpoints across 16 controllers and 13 JPA entities.
-   - Optimistic locking (`@Version`), seat-lock expiration, Redis caching, real-time seat availability over STOMP WebSockets, and JWT/RBAC security — validated by 39 JUnit/Mockito tests.
+   - Concurrency-safe booking platform with seat, payment, and ticketing workflows: 83 REST endpoints across 16 controllers and 13 JPA entities.
+   - Pessimistic and optimistic locking (`@Version`) against concurrent overbooking, verified by a multithreaded test; real-time seat updates over WebSocket/STOMP; JWT, rotating refresh tokens, RBAC, and per-resource ownership checks backed by a 6-test security regression suite.
 
 2. **[LinkPulse – URL Shortener Platform](https://github.com/kritagya025/URL_SHORTNER-LinkPluse-)** · [Live Demo](https://linkpulse-frontend.onrender.com/)
-   - Production Spring Boot service on Render with a GitHub Actions → Docker Hub → Render CI/CD pipeline.
-   - Base62 short-code engine, indexed PostgreSQL lookups, HikariCP pooling, and 16 JUnit tests that gate every build.
+   - Production Spring Boot service on Render: GitHub Actions runs the tests against a live database before each deploy, and the app ships in a 3-stage Docker build with a jlink-pruned, non-root Java runtime.
+   - 5-endpoint REST API with indexed lookups and database-enforced, collision-safe short codes, validated by 39 JUnit/Mockito tests.
 
 3. **[KeyVault](https://github.com/kritagya025/KeyVault)**
    - Focused Spring Boot service for key and credential management with a Controller-Service-Repository architecture and server-side validation.
+
+---
+
+## 💼 Experience
+
+- **Software Engineering & QA Intern — Compass (HeyCompass)**, AI travel-planning startup · 30 Aug 2026 – 7 Oct 2026
+  - 50 merged commits addressing 25+ QA-reported defects with Claude as an AI coding assistant.
+  - Helped resolve a race condition that let a 500-request burst bypass the API rate limit of 10 across 30 routes (atomic database update, verified by concurrency tests).
 
 ---
 
@@ -93,7 +102,7 @@ Tested and optimized for modern evergreen browsers including Google Chrome, Micr
      python -m http.server 8000
      ```
    - Navigate to `http://localhost:8000`.
-   - Use a local server rather than opening the file directly if you want to see Max, the mech-wolf guide: browsers block ES modules and model files on `file://` URLs (the rest of the site works either way).
+   - Use a local server rather than opening the file directly if you want to see Max, the robot guide: browsers block ES modules and model files on `file://` URLs (the rest of the site works either way).
 
 ---
 
@@ -112,7 +121,7 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 ### Credits
 
-- Max's 3D model: ["Wolf"](https://poly.pizza/m/P1gU3Qkr9r) by [Quaternius](https://quaternius.com), released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (public domain). The bundled file keeps 9 of the original animation clips and is meshopt-compressed (987 KB → 313 KB); the armour, circuit lines, jetpack, and antenna are added at runtime.
+- Max's 3D model: ["Flying Robot 07"](https://sketchfab.com/3d-models/flying-robot-07-07-b31dff5e3b344aa1a6f2a3c8454ad440) by [Konstantin_Dem](https://sketchfab.com/Konstantin_Dem), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The bundled file is Draco-compressed and lightly modified (helper nodes, screen material); the wolf LED face is drawn at runtime. The model is not covered by this repository's MIT license.
 
 ---
 
@@ -121,8 +130,8 @@ This project is open-source and available under the [MIT License](LICENSE).
 ```
 Portfolio-main/
 ├── index.html              # Single-page application (all HTML, CSS, JS)
-├── js/max-bot.js           # Max, the flying 3D mech-wolf guide (lazy-loaded ES module)
-├── assets/models/max-wolf.glb   # Max's 3D model (CC0, see Credits)
+├── js/max-bot.js           # Max, the 3D robot guide with a wolf LED face (lazy-loaded ES module)
+├── assets/models/max-robot.glb  # Max's 3D model (CC BY 4.0, see Credits)
 ├── 404.html                # Custom GitHub Pages 404 error page
 ├── Kritagya_Yadav_Resume.pdf  # Downloadable resume asset
 ├── robots.txt              # SEO crawler directives
@@ -143,11 +152,11 @@ Portfolio-main/
 
 | Decision | Rationale |
 |---|---|
-| **Single HTML file** | Zero build step, instant deployment via GitHub Pages, no framework overhead (the optional mech-wolf guide lives in one lazy-loaded module) |
+| **Single HTML file** | Zero build step, instant deployment via GitHub Pages, no framework overhead (the optional robot guide lives in one lazy-loaded module) |
 | **CDN-loaded libraries** | Avoids `node_modules` bloat; leverages browser caching from shared CDNs |
 | **JSON-LD structured data** | Improves search engine rich snippet rendering (Person schema) |
 | **Intersection Observer** | Efficient scroll-based nav highlighting without costly scroll listeners |
-| **HSL design tokens** | One set of CSS variables powers Tailwind colours, both themes, and the particle canvas |
+| **HSL design tokens** | One set of CSS variables powers Tailwind colors, both themes, and the particle canvas |
 | **Native `<dialog>`** | Built-in focus trapping, `Esc` handling, and focus restoration for every overlay |
 | **`prefers-reduced-motion`** | WCAG 2.1 AA compliance: disables smooth scroll, pinning, parallax, and reveal animations |
 

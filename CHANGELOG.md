@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.5.0] - 2026-10-20
+
+### Added
+- Experience section (03) for the Software Engineering & QA internship at Compass (HeyCompass), taken from the resume: role, dates, key numbers, five highlights, and skills used; added to the navbar, mobile menu, `Ctrl+K` palette, section curtain, and sitemap (later sections renumbered 04–08)
+- Resume details the site was missing: React (basic), optimistic and pessimistic locking, MockMvc, manual and exploratory testing, Claude Code; Event Booking pessimistic locking, multithreaded overbooking test, per-resource ownership checks, and 6-test security regression suite; LinkPulse 39 JUnit/Mockito tests, live-database CI tests before each deploy, and a 3-stage Docker build with a jlink-pruned, non-root runtime; "(Expected)" graduation date; the internship in About and the structured data
+
+### Changed
+- Max is the reference robot again ("Flying Robot 07", CC BY 4.0) with a new LED dot-matrix **wolf face**: pointed ears, slanted eyes, fur tufts, and a snout, with blinks, ear flicks, and expressions (happy, surprised, cool shades, dizzy, sleepy, wink)
+- Heart eyes when Max greets you on page load (and when you hover Hire Me, Copy email, or the resume)
+- Thruster flames, wobbling antennas, and swinging cables as in the reference; Max still follows the cursor and turns his body and eyes towards it, and perches at the nearest screen edge while you read instead of covering content; he ignores the cursor while it is over the navbar
+- Navbar logo: a solid "KY" monogram in a gradient-ringed tile with a "Kritagya." wordmark (hidden at 1024–1279px so the navbar fits); the old 20px gradient "KY" was clipped and hard to see
+- Test counts aligned with the resume: 45+ tests overall (39 LinkPulse JUnit/Mockito tests + the 6-test security suite), LinkPulse 39 (was 16), Event Booking now shows its 6-test security regression suite
+- Spelling: American English throughout ("modeling", "practiced"), "Cheat sheet", "roll back", and "BCrypt Password Hashing" (BCrypt hashes; it does not encrypt)
+
+### Removed
+- The wolf model (`assets/models/max-wolf.glb`)
+
+---
+
 ## [3.4.0] - 2026-10-20
 
 ### Changed

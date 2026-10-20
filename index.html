@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 3.4.0 -->
+<!-- Portfolio Version: 3.5.0 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
@@ -55,12 +55,12 @@
       "name": "KCC Institute of Technology & Management",
       "url": "https://www.kccitm.edu.in/"
     },
-    "knowsAbout": ["Java", "Spring Boot", "PostgreSQL", "Redis", "Docker", "RESTful APIs", "System Design", "Backend Engineering"],
-    "description": "B.Tech Computer Science & Engineering student specializing in Java, Spring Boot, RESTful API design, database architectures, and scalable backend engineering."
+    "knowsAbout": ["Java", "Spring Boot", "Spring Security", "PostgreSQL", "Redis", "WebSocket", "Docker", "GitHub Actions", "RESTful APIs", "JUnit", "Mockito", "System Design", "Backend Engineering"],
+    "description": "Java/Spring Boot backend developer (B.Tech Computer Science & Engineering, graduating 2027) who has designed and shipped RESTful APIs across two full-stack systems, and a former Software Engineering & QA Intern at Compass (HeyCompass)."
   }
   </script>
 
-  <!-- Apply the saved colour theme before first paint to avoid a flash -->
+  <!-- Apply the saved color theme before first paint to avoid a flash -->
   <script>
     (function () {
       var root = document.documentElement;
@@ -105,7 +105,7 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-  <!-- Tailwind Configuration: colours resolve to the theme tokens defined below -->
+  <!-- Tailwind Configuration: colors resolve to the theme tokens defined below -->
   <script>
     tailwind.config = {
       theme: {
@@ -587,6 +587,34 @@
       backdrop-filter: blur(14px);
       border-color: hsl(var(--border) / 0.6);
       box-shadow: 0 12px 32px -18px hsl(0 0% 0% / 0.45);
+    }
+    /* Brand monogram: solid letters in a gradient-ringed tile, readable in both themes */
+    .brand { display: inline-flex; align-items: center; gap: 0.7rem; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.85rem;
+      border: 1.5px solid transparent;
+      background:
+        linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
+        linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))) border-box;
+      color: hsl(var(--foreground));
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: 0 0 24px -10px hsl(var(--primary) / 0.9);
+      transition: transform 0.35s var(--ease-out), box-shadow 0.35s ease;
+    }
+    .brand:hover .brand-mark { transform: rotate(-6deg) scale(1.06); box-shadow: 0 0 28px -6px hsl(var(--primary) / 0.8); }
+    .brand-name {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: hsl(var(--foreground));
     }
     .nav-link {
       position: relative;
@@ -1126,7 +1154,7 @@
     }
     .bot-body canvas { display: block; width: 100%; height: 100%; }
     /* top/bottom are set from the model's measured height in JS */
-    .bot-hit { position: absolute; inset: 30% 22% 24% 22%; border-radius: 40%; pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .bot-hit { position: absolute; inset: 18% 27% 20% 27%; border-radius: 38%; pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .bot-layer.is-compact .bot-hit { pointer-events: none; } /* touch / small screens: never swallow taps meant for the page */
     .bot-zzz {
       position: absolute;
@@ -1295,13 +1323,15 @@
 <header>
   <nav id="navbar" class="fixed top-0 inset-x-0 z-50" aria-label="Main Navigation">
     <div id="nav-inner" class="mx-4 md:mx-8 xl:mx-12 px-4 md:px-6 py-2.5 rounded-full flex items-center justify-between gap-4">
-      <a href="#top" class="font-display text-xl font-bold tracking-tighter transition-transform duration-300 hover:scale-110" aria-label="Kritagya Yadav — back to top">
-        <span class="text-gradient">KY</span><span class="text-foreground/40">.</span>
+      <a href="#top" class="brand" aria-label="Kritagya Yadav — back to top">
+        <span class="brand-mark" aria-hidden="true">KY</span>
+        <span class="brand-name hidden sm:inline lg:hidden xl:inline" aria-hidden="true">Kritagya<span class="text-primary">.</span></span>
       </a>
 
       <div class="hidden lg:flex items-center gap-1">
         <a href="#about" class="nav-link">About</a>
         <a href="#skills" class="nav-link">Skills</a>
+        <a href="#experience" class="nav-link">Experience</a>
         <a href="#projects" class="nav-link">Projects</a>
         <a href="#learning" class="nav-link">Learning</a>
         <a href="#education" class="nav-link">Education</a>
@@ -1401,7 +1431,7 @@
           </div>
           <div class="text-center">
             <dt class="sr-only">Automated tests written</dt>
-            <dd class="font-display text-2xl font-bold text-gradient-static"><span class="count-up" data-count-to="55">55</span>+</dd>
+            <dd class="font-display text-2xl font-bold text-gradient-static"><span class="count-up" data-count-to="45">45</span>+</dd>
             <dd class="font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground mt-1" aria-hidden="true">Auto Tests</dd>
           </div>
           <div class="text-center">
@@ -1420,7 +1450,7 @@
         </div>
         <div class="glass-card rounded-2xl p-3 text-center flex flex-col-reverse">
           <dt class="font-mono text-[9px] tracking-[0.18em] uppercase text-muted-foreground mt-0.5">Auto Tests</dt>
-          <dd class="font-display text-xl font-bold text-gradient-static">55+</dd>
+          <dd class="font-display text-xl font-bold text-gradient-static">45+</dd>
         </div>
         <div class="glass-card rounded-2xl p-3 text-center flex flex-col-reverse">
           <dt class="font-mono text-[9px] tracking-[0.18em] uppercase text-muted-foreground mt-0.5">CGPA</dt>
@@ -1452,7 +1482,7 @@
               <p class="terminal-line"><span class="text-neon">$</span> ls ./projects</p>
               <p class="terminal-line text-primary mb-2">event-booking/  linkpulse/  keyvault/</p>
               <p class="terminal-line"><span class="text-neon">$</span> ./run-tests</p>
-              <p class="terminal-line text-muted-foreground"><span class="text-neon">✓</span> 55+ JUnit &amp; Mockito tests</p>
+              <p class="terminal-line text-muted-foreground"><span class="text-neon">✓</span> 45+ JUnit &amp; Mockito tests</p>
               <p class="terminal-line"><span class="text-neon">$</span> <span class="terminal-caret"></span></p>
             </div>
           </div>
@@ -1501,10 +1531,10 @@
               B.Tech Computer Science &amp; Engineering student (2023–2027) at KCC Institute of Technology &amp; Management (AKTU, CGPA: 7.58), specializing in Java, Spring Boot, RESTful API design, database architectures, and scalable backend engineering.
             </p>
             <p>
-              Hands-on across the full software development life cycle — from database design and implementation through automated testing and CI/CD deployment. I've independently designed, built, and deployed 83+ RESTful APIs across two full-stack Java/Spring Boot systems, including a live cloud-deployed backend on Render.
+              Hands-on across the full software development life cycle — from database design and implementation through automated testing and CI/CD deployment. I've independently designed and shipped 83+ RESTful APIs across two full-stack Java/Spring Boot systems: a concurrency-safe event booking platform and a URL shortener live in production on Render.
             </p>
             <p>
-              Driven by core CS principles, robust software design, and automated testing — comfortable working independently, solving problems end-to-end, and quickly picking up new tools and technologies.
+              Most recently, as a Software Engineering &amp; QA Intern at Compass (HeyCompass), an AI travel-planning startup, I delivered 50 merged commits addressing 25+ QA-reported defects with Claude as an AI coding assistant. Comfortable working independently, solving problems end-to-end, and quickly picking up new tools and technologies.
             </p>
           </div>
 
@@ -1514,6 +1544,9 @@
             </span>
             <span class="glass-card inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm text-muted-foreground">
               <i class="fas fa-location-dot text-accent text-xs" aria-hidden="true"></i> Noida, India
+            </span>
+            <span class="glass-card inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm text-muted-foreground">
+              <i class="fas fa-briefcase text-primary text-xs" aria-hidden="true"></i> Ex-SE &amp; QA Intern — Compass
             </span>
           </div>
 
@@ -1550,10 +1583,10 @@
               <div class="icon-tile w-14 h-14 rounded-xl"><i class="fas fa-vial-circle-check text-lg" aria-hidden="true"></i></div>
               <div>
                 <p class="flex items-baseline gap-1.5">
-                  <span class="font-display text-3xl font-bold text-gradient"><span class="count-up" data-count-to="55">55</span>+</span>
+                  <span class="font-display text-3xl font-bold text-gradient"><span class="count-up" data-count-to="45">45</span>+</span>
                   <span class="text-lg font-medium text-foreground/60">Tests</span>
                 </p>
-                <p class="font-mono text-xs text-muted-foreground mt-1">Automated JUnit &amp; Mockito unit and integration tests</p>
+                <p class="font-mono text-xs text-muted-foreground mt-1">JUnit &amp; Mockito tests across both systems</p>
               </div>
             </div>
           </div>
@@ -1654,7 +1687,7 @@
           <div id="skill-tabs" class="space-y-1.5" role="tablist" aria-label="Skill categories" aria-orientation="vertical">
             <button type="button" class="skill-tab is-active" role="tab" id="skill-tab-languages" aria-controls="skill-panel-languages" aria-selected="true">
               <span class="skill-icon"><i class="fas fa-code" aria-hidden="true"></i></span>
-              <span class="flex-1 min-w-0"><span class="skill-tab-label">Languages</span><span class="skill-tab-meta">5 tools</span></span>
+              <span class="flex-1 min-w-0"><span class="skill-tab-label">Languages</span><span class="skill-tab-meta">6 tools</span></span>
               <span class="skill-tab-indicator" aria-hidden="true"></span>
             </button>
             <button type="button" class="skill-tab" role="tab" id="skill-tab-backend" aria-controls="skill-panel-backend" aria-selected="false" tabindex="-1">
@@ -1669,7 +1702,7 @@
             </button>
             <button type="button" class="skill-tab" role="tab" id="skill-tab-security" aria-controls="skill-panel-security" aria-selected="false" tabindex="-1">
               <span class="skill-icon"><i class="fas fa-user-shield" aria-hidden="true"></i></span>
-              <span class="flex-1 min-w-0"><span class="skill-tab-label">Security &amp; Auth</span><span class="skill-tab-meta">4 tools</span></span>
+              <span class="flex-1 min-w-0"><span class="skill-tab-label">Security &amp; Concurrency</span><span class="skill-tab-meta">6 tools</span></span>
               <span class="skill-tab-indicator" aria-hidden="true"></span>
             </button>
             <button type="button" class="skill-tab" role="tab" id="skill-tab-devops" aria-controls="skill-panel-devops" aria-selected="false" tabindex="-1">
@@ -1679,12 +1712,12 @@
             </button>
             <button type="button" class="skill-tab" role="tab" id="skill-tab-testing" aria-controls="skill-panel-testing" aria-selected="false" tabindex="-1">
               <span class="skill-icon"><i class="fas fa-vials" aria-hidden="true"></i></span>
-              <span class="flex-1 min-w-0"><span class="skill-tab-label">Testing &amp; Validation</span><span class="skill-tab-meta">5 tools</span></span>
+              <span class="flex-1 min-w-0"><span class="skill-tab-label">Testing &amp; Validation</span><span class="skill-tab-meta">7 tools</span></span>
               <span class="skill-tab-indicator" aria-hidden="true"></span>
             </button>
             <button type="button" class="skill-tab" role="tab" id="skill-tab-tools" aria-controls="skill-panel-tools" aria-selected="false" tabindex="-1">
               <span class="skill-icon"><i class="fas fa-screwdriver-wrench" aria-hidden="true"></i></span>
-              <span class="flex-1 min-w-0"><span class="skill-tab-label">Tools &amp; Environments</span><span class="skill-tab-meta">6 tools</span></span>
+              <span class="flex-1 min-w-0"><span class="skill-tab-label">Tools &amp; Environments</span><span class="skill-tab-meta">7 tools</span></span>
               <span class="skill-tab-indicator" aria-hidden="true"></span>
             </button>
             <button type="button" class="skill-tab" role="tab" id="skill-tab-core" aria-controls="skill-panel-core" aria-selected="false" tabindex="-1">
@@ -1698,9 +1731,9 @@
         <div class="md:col-span-7 lg:col-span-8 min-w-0">
           <div class="md:sticky md:top-28 space-y-5 md:space-y-0">
             <div class="skill-panel glass-card is-active" id="skill-panel-languages" role="tabpanel" aria-labelledby="skill-tab-languages" data-aos="fade-up">
-              <div class="skill-panel-head"><span class="skill-icon"><i class="fas fa-code" aria-hidden="true"></i></span><div><h3 class="font-display text-sm font-semibold">Languages</h3><p class="font-mono text-[10px] text-muted-foreground">Languages I build with</p></div></div>
+              <div class="skill-panel-head"><span class="skill-icon"><i class="fas fa-code" aria-hidden="true"></i></span><div><h3 class="font-display text-sm font-semibold">Languages</h3><p class="font-mono text-[10px] text-muted-foreground">Java &amp; SQL first; basic JavaScript, React, HTML &amp; CSS</p></div></div>
               <ul class="skill-grid">
-                <li class="skill-tile">Java</li><li class="skill-tile">SQL</li><li class="skill-tile">JavaScript</li><li class="skill-tile">HTML</li><li class="skill-tile">CSS</li>
+                <li class="skill-tile">Java</li><li class="skill-tile">SQL</li><li class="skill-tile">JavaScript</li><li class="skill-tile">React</li><li class="skill-tile">HTML</li><li class="skill-tile">CSS</li>
               </ul>
             </div>
             <div class="skill-panel glass-card" id="skill-panel-backend" role="tabpanel" aria-labelledby="skill-tab-backend" data-aos="fade-up">
@@ -1710,33 +1743,33 @@
               </ul>
             </div>
             <div class="skill-panel glass-card" id="skill-panel-databases" role="tabpanel" aria-labelledby="skill-tab-databases" data-aos="fade-up">
-              <div class="skill-panel-head"><span class="skill-icon"><i class="fas fa-database" aria-hidden="true"></i></span><div><h3 class="font-display text-sm font-semibold">Databases</h3><p class="font-mono text-[10px] text-muted-foreground">Relational modelling, querying &amp; caching</p></div></div>
+              <div class="skill-panel-head"><span class="skill-icon"><i class="fas fa-database" aria-hidden="true"></i></span><div><h3 class="font-display text-sm font-semibold">Databases</h3><p class="font-mono text-[10px] text-muted-foreground">Relational modeling, querying &amp; caching</p></div></div>
               <ul class="skill-grid">
                 <li class="skill-tile">PostgreSQL</li><li class="skill-tile">MySQL</li><li class="skill-tile">Redis</li><li class="skill-tile">SQL Queries &amp; Joins</li><li class="skill-tile">Indexing</li><li class="skill-tile">Schema Design</li>
               </ul>
             </div>
             <div class="skill-panel glass-card" id="skill-panel-security" role="tabpanel" aria-labelledby="skill-tab-security" data-aos="fade-up">
-              <div class="skill-panel-head"><span class="skill-icon"><i class="fas fa-user-shield" aria-hidden="true"></i></span><div><h3 class="font-display text-sm font-semibold">Security &amp; Auth</h3><p class="font-mono text-[10px] text-muted-foreground">Authentication, authorization &amp; credential safety</p></div></div>
+              <div class="skill-panel-head"><span class="skill-icon"><i class="fas fa-user-shield" aria-hidden="true"></i></span><div><h3 class="font-display text-sm font-semibold">Security &amp; Concurrency</h3><p class="font-mono text-[10px] text-muted-foreground">Authentication, authorization &amp; safe concurrent writes</p></div></div>
               <ul class="skill-grid">
-                <li class="skill-tile">JWT Authentication</li><li class="skill-tile">Refresh Token Rotation</li><li class="skill-tile">Role-Based Access Control</li><li class="skill-tile">BCrypt Encryption</li>
+                <li class="skill-tile">JWT Authentication</li><li class="skill-tile">Refresh Token Rotation</li><li class="skill-tile">Role-Based Access Control</li><li class="skill-tile">BCrypt Password Hashing</li><li class="skill-tile">Optimistic Locking</li><li class="skill-tile">Pessimistic Locking</li>
               </ul>
             </div>
             <div class="skill-panel glass-card" id="skill-panel-devops" role="tabpanel" aria-labelledby="skill-tab-devops" data-aos="fade-up">
               <div class="skill-panel-head"><span class="skill-icon"><i class="fas fa-cloud" aria-hidden="true"></i></span><div><h3 class="font-display text-sm font-semibold">Cloud &amp; DevOps</h3><p class="font-mono text-[10px] text-muted-foreground">Containers, pipelines &amp; deployment</p></div></div>
               <ul class="skill-grid">
-                <li class="skill-tile">Docker</li><li class="skill-tile">Docker Compose</li><li class="skill-tile">Multi-Stage Builds</li><li class="skill-tile">GitHub Actions</li><li class="skill-tile">Render</li><li class="skill-tile">Nginx</li>
+                <li class="skill-tile">Docker</li><li class="skill-tile">Docker Compose</li><li class="skill-tile">Multi-Stage Builds</li><li class="skill-tile">GitHub Actions (CI/CD)</li><li class="skill-tile">Render</li><li class="skill-tile">Nginx</li>
               </ul>
             </div>
             <div class="skill-panel glass-card" id="skill-panel-testing" role="tabpanel" aria-labelledby="skill-tab-testing" data-aos="fade-up">
               <div class="skill-panel-head"><span class="skill-icon"><i class="fas fa-vials" aria-hidden="true"></i></span><div><h3 class="font-display text-sm font-semibold">Testing &amp; Validation</h3><p class="font-mono text-[10px] text-muted-foreground">Automated tests &amp; input validation</p></div></div>
               <ul class="skill-grid">
-                <li class="skill-tile">JUnit 5</li><li class="skill-tile">Mockito</li><li class="skill-tile">Unit Testing</li><li class="skill-tile">Integration Testing</li><li class="skill-tile">Bean Validation</li>
+                <li class="skill-tile">JUnit 5</li><li class="skill-tile">Mockito</li><li class="skill-tile">MockMvc</li><li class="skill-tile">Unit Testing</li><li class="skill-tile">Integration Testing</li><li class="skill-tile">Manual &amp; Exploratory Testing</li><li class="skill-tile">Bean Validation</li>
               </ul>
             </div>
             <div class="skill-panel glass-card" id="skill-panel-tools" role="tabpanel" aria-labelledby="skill-tab-tools" data-aos="fade-up">
               <div class="skill-panel-head"><span class="skill-icon"><i class="fas fa-screwdriver-wrench" aria-hidden="true"></i></span><div><h3 class="font-display text-sm font-semibold">Tools &amp; Environments</h3><p class="font-mono text-[10px] text-muted-foreground">Daily development workflow</p></div></div>
               <ul class="skill-grid">
-                <li class="skill-tile">Git &amp; GitHub</li><li class="skill-tile">Maven</li><li class="skill-tile">IntelliJ IDEA</li><li class="skill-tile">Postman</li><li class="skill-tile">Swagger / OpenAPI</li><li class="skill-tile">Linux CLI</li>
+                <li class="skill-tile">Git &amp; GitHub</li><li class="skill-tile">Maven</li><li class="skill-tile">IntelliJ IDEA</li><li class="skill-tile">Postman</li><li class="skill-tile">Swagger / OpenAPI</li><li class="skill-tile">Claude Code</li><li class="skill-tile">Linux CLI</li>
               </ul>
             </div>
             <div class="skill-panel glass-card" id="skill-panel-core" role="tabpanel" aria-labelledby="skill-tab-core" data-aos="fade-up">
@@ -1758,14 +1791,64 @@
     </div>
   </section>
 
-  <!-- ====== 03 — PROJECTS ====== -->
+  <!-- ====== 03 — EXPERIENCE ====== -->
+  <section id="experience" class="section" tabindex="-1">
+    <div class="bg-word top-16" data-parallax="5,-9" aria-hidden="true">EXPERIENCE</div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
+      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>03 — Experience</span></p>
+      <h2 class="section-title mb-4" data-aos="fade-up">Where I've <span class="text-gradient">shipped</span></h2>
+      <p class="text-muted-foreground text-base md:text-lg max-w-2xl mb-14" data-aos="fade-up" data-aos-delay="80">
+        Industry experience fixing real defects, hardening APIs, and testing AI-powered product workflows.
+      </p>
+
+      <article class="exp-card group relative rounded-3xl glass-card overflow-hidden" data-aos="fade-up" data-aos-delay="100" aria-labelledby="exp-title-compass">
+        <div class="h-1 bg-gradient-to-r from-primary via-accent to-transparent" aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" aria-hidden="true"></div>
+        <div class="relative p-7 md:p-10 grid lg:grid-cols-12 gap-10 lg:gap-12">
+          <div class="lg:col-span-5 min-w-0 flex flex-col">
+            <div class="flex items-center justify-between mb-6">
+              <div class="icon-tile w-14 h-14"><i class="fas fa-briefcase text-xl" aria-hidden="true"></i></div>
+              <span class="font-mono text-[9px] tracking-[0.2em] uppercase font-bold px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/25">Internship</span>
+            </div>
+            <h3 id="exp-title-compass" class="font-display text-2xl md:text-3xl font-bold mb-1 group-hover:text-primary transition-colors duration-300">Software Engineering &amp; QA Intern</h3>
+            <p class="text-base text-primary/90 font-semibold mb-5">Compass (HeyCompass) <span class="text-muted-foreground font-normal text-sm">· AI travel-planning startup</span></p>
+            <div class="flex flex-wrap gap-3 mb-8">
+              <span class="meta-pill"><i class="far fa-calendar text-[11px]" aria-hidden="true"></i> 30 Aug 2026 – 7 Oct 2026</span>
+            </div>
+            <dl class="grid grid-cols-2 gap-3 mb-8">
+              <div class="p-4 rounded-2xl glass-card text-center flex flex-col-reverse"><dt class="font-mono text-[10px] text-muted-foreground mt-1">merged commits</dt><dd class="font-display text-2xl font-bold text-gradient-static">50</dd></div>
+              <div class="p-4 rounded-2xl glass-card text-center flex flex-col-reverse"><dt class="font-mono text-[10px] text-muted-foreground mt-1">QA-reported defects addressed</dt><dd class="font-display text-2xl font-bold text-gradient-static">25+</dd></div>
+              <div class="p-4 rounded-2xl glass-card text-center flex flex-col-reverse"><dt class="font-mono text-[10px] text-muted-foreground mt-1">routes covered by the rate-limit fix</dt><dd class="font-display text-2xl font-bold text-gradient-static">30</dd></div>
+              <div class="p-4 rounded-2xl glass-card text-center flex flex-col-reverse"><dt class="font-mono text-[10px] text-muted-foreground mt-1">itinerary distance-validation rule</dt><dd class="font-display text-2xl font-bold text-gradient-static">25 km</dd></div>
+            </dl>
+            <ul class="flex flex-wrap gap-2 mt-auto" aria-label="Skills used">
+              <li class="chip">Claude Code</li><li class="chip">Concurrency Testing</li><li class="chip">API Validation</li><li class="chip">Manual &amp; Exploratory Testing</li><li class="chip">Android Device Testing</li>
+            </ul>
+          </div>
+          <div class="lg:col-span-7 min-w-0">
+            <h4 class="modal-label">What I worked on</h4>
+            <ul class="space-y-3">
+              <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Delivered <strong class="text-foreground">50 merged commits</strong> addressing <strong class="text-foreground">25+ QA-reported defects</strong> with Claude as an AI coding assistant: investigating each defect, reviewing the changes, and validating fixes with tests.</span></li>
+              <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Helped resolve a race condition that let a <strong class="text-foreground">500-request burst</strong> bypass the API rate limit of 10 across 30 routes, using an atomic database update; concurrency tests verified the limit was enforced.</span></li>
+              <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Contributed API and app improvements, including trip editing that separates trip access from traveler count, file-upload content validation, and a fix for flight fares multiplied by passenger count.</span></li>
+              <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Improved AI itinerary behavior with a 25 km distance-validation rule after one day spanned about 130 km, and addressed 3 issues in WhatsApp and Instagram planning workflows.</span></li>
+              <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Tested the AI WhatsApp agent and its Instagram Reel and YouTube link processing hands-on, and directed and reviewed AI-assisted Android device testing and QA reporting.</span></li>
+            </ul>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ====== 04 — PROJECTS ====== -->
   <section id="projects" class="projects-section" tabindex="-1">
     <div id="projects-pin" class="projects-pin">
       <div class="projects-sticky">
         <div class="bg-word top-24 !left-auto right-0" data-parallax="10,-25" aria-hidden="true">PROJECTS</div>
 
         <div class="projects-head max-w-7xl mx-auto px-6 md:px-12 w-full">
-          <p class="eyebrow mb-4" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>03 — Selected Work</span></p>
+          <p class="eyebrow mb-4" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>04 — Selected Work</span></p>
           <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 lg:gap-8 mb-8 lg:mb-6">
             <div>
               <h2 class="section-title lg:whitespace-nowrap" data-aos="fade-up">Featured <span class="text-gradient">projects</span></h2>
@@ -1805,16 +1888,16 @@
                     <h3 id="project-title-event-booking" class="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-2">Event Booking System</h3>
                     <p class="text-primary font-medium mb-3">High-concurrency event reservation &amp; e-ticketing backend</p>
                     <p class="project-desc text-muted-foreground text-sm md:text-base leading-relaxed max-w-2xl mb-5">
-                      High-concurrency backend for event reservation and e-ticketing — optimistic locking via <code class="font-mono text-xs text-foreground/90">@Version</code> prevents double-booking during traffic surges, while seat availability is pushed live over STOMP WebSockets.
+                      83-endpoint Spring Boot booking platform with seat, payment, and ticketing workflows — pessimistic and optimistic locking (<code class="font-mono text-xs text-foreground/90">@Version</code>) stop concurrent overbooking, verified by a multithreaded test, while seat updates are pushed live over WebSocket/STOMP.
                     </p>
                     <ul class="flex flex-wrap gap-2.5 mb-5" aria-label="Key metrics">
                       <li class="metric"><span class="metric-value text-gradient-static">83</span><span class="metric-label">REST endpoints</span></li>
                       <li class="metric"><span class="metric-value text-gradient-static">16</span><span class="metric-label">controllers</span></li>
                       <li class="metric"><span class="metric-value text-gradient-static">13</span><span class="metric-label">JPA entities</span></li>
-                      <li class="metric"><span class="metric-value text-gradient-static">39</span><span class="metric-label">automated tests</span></li>
+                      <li class="metric"><span class="metric-value text-gradient-static">6</span><span class="metric-label">security regression tests</span></li>
                     </ul>
                     <ul class="flex flex-wrap gap-2" aria-label="Technologies">
-                      <li class="chip">Java</li><li class="chip">Spring Boot</li><li class="chip">PostgreSQL</li><li class="chip">Redis</li><li class="chip">WebSocket (STOMP)</li><li class="chip">JWT &amp; Security</li><li class="chip">React</li>
+                      <li class="chip">Java</li><li class="chip">Spring Boot</li><li class="chip">PostgreSQL</li><li class="chip">Spring Security</li><li class="chip">WebSocket (STOMP)</li><li class="chip">Redis</li><li class="chip">React</li>
                     </ul>
                     <div class="mt-6 flex flex-wrap items-center gap-3">
                       <button type="button" class="project-explore mr-2" data-project-open="event-booking"><span class="w-4 h-px bg-current" aria-hidden="true"></span>Explore details</button>
@@ -1837,12 +1920,12 @@
                     <h3 id="project-title-linkpulse" class="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-2">LinkPulse</h3>
                     <p class="text-primary font-medium mb-3">URL shortener platform with automated CI/CD</p>
                     <p class="project-desc text-muted-foreground text-sm md:text-base leading-relaxed max-w-2xl mb-5">
-                      Production Java/Spring Boot URL shortener deployed on Render through a GitHub Actions CI/CD pipeline — built around a Base62 short-code engine, indexed PostgreSQL lookups, and HikariCP connection pooling.
+                      Production URL shortener live on Render — a 5-endpoint REST API with indexed lookups and database-enforced, collision-safe short codes, shipped by a GitHub Actions pipeline that tests against a live database before every deploy.
                     </p>
                     <ul class="flex flex-wrap gap-2.5 mb-5" aria-label="Key metrics">
                       <li class="metric"><span class="metric-value text-gradient-static">5</span><span class="metric-label">REST endpoints</span></li>
-                      <li class="metric"><span class="metric-value text-gradient-static">16</span><span class="metric-label">JUnit tests in CI</span></li>
-                      <li class="metric"><span class="metric-value text-gradient-static">Base62</span><span class="metric-label">short-code engine</span></li>
+                      <li class="metric"><span class="metric-value text-gradient-static">39</span><span class="metric-label">JUnit/Mockito tests</span></li>
+                      <li class="metric"><span class="metric-value text-gradient-static">3-stage</span><span class="metric-label">Docker build</span></li>
                     </ul>
                     <ul class="flex flex-wrap gap-2" aria-label="Technologies">
                       <li class="chip">Java</li><li class="chip">Spring Boot</li><li class="chip">PostgreSQL</li><li class="chip">Docker</li><li class="chip">Nginx</li><li class="chip">GitHub Actions</li><li class="chip">Render</li>
@@ -1908,12 +1991,12 @@
     </div>
   </section>
 
-  <!-- ====== 04 — CURRENTLY EXPLORING ====== -->
+  <!-- ====== 05 — CURRENTLY EXPLORING ====== -->
   <section id="learning" class="section" tabindex="-1">
     <div class="bg-word top-16" data-parallax="4,-10" aria-hidden="true">LEARNING</div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>04 — Currently Exploring</span></p>
+      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>05 — Currently Exploring</span></p>
       <h2 class="section-title mb-4" data-aos="fade-up">Always <span class="text-gradient">learning</span></h2>
       <p class="text-muted-foreground text-base md:text-lg max-w-2xl mb-14" data-aos="fade-up" data-aos-delay="80">
         Technologies and concepts I'm actively studying and building with to deepen my backend engineering expertise.
@@ -1971,12 +2054,12 @@
     </div>
   </section>
 
-  <!-- ====== 05 — EDUCATION & CERTIFICATIONS ====== -->
+  <!-- ====== 06 — EDUCATION & CERTIFICATIONS ====== -->
   <section id="education" class="section" tabindex="-1">
     <div class="bg-word top-16" data-parallax="-4,8" aria-hidden="true">JOURNEY</div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>05 — Journey</span></p>
+      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>06 — Journey</span></p>
       <h2 class="section-title mb-4" data-aos="fade-up">Education &amp; <span class="text-gradient">credentials</span></h2>
       <p class="text-muted-foreground text-base md:text-lg max-w-2xl mb-14" data-aos="fade-up" data-aos-delay="80">
         The academic foundation and training behind my engineering work.
@@ -1996,7 +2079,7 @@
             <h3 class="font-display text-2xl md:text-3xl font-bold mb-1 group-hover:text-accent transition-colors duration-300">Computer Science &amp; Engineering</h3>
             <p class="text-base text-accent/90 font-semibold mb-5">KCC Institute of Technology &amp; Management, AKTU</p>
             <div class="flex flex-wrap gap-3 mb-6">
-              <span class="meta-pill"><i class="far fa-calendar text-[11px]" aria-hidden="true"></i> 2023 – 2027</span>
+              <span class="meta-pill"><i class="far fa-calendar text-[11px]" aria-hidden="true"></i> 2023 – 2027 (Expected)</span>
               <span class="meta-pill"><i class="fas fa-building-columns text-[11px]" aria-hidden="true"></i> AKTU</span>
             </div>
             <div class="p-4 rounded-2xl bg-accent/10 border border-accent/20 mb-8 flex items-center gap-3">
@@ -2066,12 +2149,12 @@
     </div>
   </section>
 
-  <!-- ====== 06 — GITHUB ACTIVITY ====== -->
+  <!-- ====== 07 — GITHUB ACTIVITY ====== -->
   <section id="github-activity" class="section" tabindex="-1">
     <div class="bg-word top-16" data-parallax="6,-6" aria-hidden="true">ACTIVITY</div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>06 — Coding Activity</span></p>
+      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>07 — Coding Activity</span></p>
       <h2 class="section-title mb-4" data-aos="fade-up">Shipping <span class="text-gradient">consistently</span></h2>
       <p class="text-muted-foreground text-base md:text-lg max-w-2xl mb-14" data-aos="fade-up" data-aos-delay="80">
         Live GitHub contribution metrics and coding streak data, pulled directly from my public repositories.
@@ -2121,13 +2204,13 @@
     </div>
   </section>
 
-  <!-- ====== 07 — CONTACT ====== -->
+  <!-- ====== 08 — CONTACT ====== -->
   <section id="contact" class="section !pb-0" tabindex="-1">
     <div class="bg-word top-1/2 -translate-y-1/2 !opacity-[0.15]" aria-hidden="true">LET'S CONNECT</div>
     <div class="hidden md:block absolute top-20 right-10 w-[400px] h-[400px] rounded-full blur-[70px] bg-primary/10 pointer-events-none" aria-hidden="true"></div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-      <p class="eyebrow mb-8" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>07 — Get In Touch</span></p>
+      <p class="eyebrow mb-8" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>08 — Get In Touch</span></p>
 
       <h2 class="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.95] mb-6" data-aos="fade-up">
         Let's connect<br><span class="text-gradient">&amp; build.</span>
@@ -2278,9 +2361,10 @@
         <span class="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" aria-hidden="true"></span>
       </div>
       <p class="mt-3 text-center font-mono text-[10px] text-muted-foreground/70">
-        Max's 3D model: “Wolf” by
-        <a href="https://quaternius.com" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-primary">Quaternius</a>
-        (<a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-primary">CC0</a>)
+        Max's 3D model:
+        <a href="https://sketchfab.com/3d-models/flying-robot-07-07-b31dff5e3b344aa1a6f2a3c8454ad440" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-primary">“Flying Robot 07”</a>
+        by <a href="https://sketchfab.com/Konstantin_Dem" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-primary">Konstantin_Dem</a>,
+        licensed <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" class="underline decoration-dotted hover:text-primary">CC BY 4.0</a> (optimized and modified, with a wolf LED face)
       </p>
     </footer>
   </section>
@@ -2309,7 +2393,7 @@
 <dialog id="mobile-menu" class="ky-dialog mobile-menu" aria-label="Site navigation">
   <div class="dialog-panel mobile-menu-panel">
     <div class="flex items-center justify-between px-8 py-6">
-      <a href="#top" class="font-display text-xl font-bold tracking-tighter"><span class="text-gradient">KY</span><span class="text-foreground/40">.</span></a>
+      <a href="#top" class="brand" aria-label="Kritagya Yadav — back to top"><span class="brand-mark" aria-hidden="true">KY</span><span class="brand-name" aria-hidden="true">Kritagya<span class="text-primary">.</span></span></a>
       <button id="mobile-menu-close" type="button" class="w-10 h-10 rounded-full glass-card flex items-center justify-center" aria-label="Close navigation menu" autofocus>
         <i class="fas fa-xmark" aria-hidden="true"></i>
       </button>
@@ -2317,11 +2401,12 @@
     <nav class="mobile-menu-nav flex-1 flex flex-col items-center justify-center py-4" aria-label="Mobile navigation">
       <a href="#about" class="mobile-nav-link" style="--i:0">About</a>
       <a href="#skills" class="mobile-nav-link" style="--i:1">Skills</a>
-      <a href="#projects" class="mobile-nav-link" style="--i:2">Projects</a>
-      <a href="#learning" class="mobile-nav-link" style="--i:3">Learning</a>
-      <a href="#education" class="mobile-nav-link" style="--i:4">Education</a>
-      <a href="#certifications" class="mobile-nav-link" style="--i:5">Certifications</a>
-      <a href="#contact" class="mobile-nav-link" style="--i:6">Contact</a>
+      <a href="#experience" class="mobile-nav-link" style="--i:2">Experience</a>
+      <a href="#projects" class="mobile-nav-link" style="--i:3">Projects</a>
+      <a href="#learning" class="mobile-nav-link" style="--i:4">Learning</a>
+      <a href="#education" class="mobile-nav-link" style="--i:5">Education</a>
+      <a href="#certifications" class="mobile-nav-link" style="--i:6">Certifications</a>
+      <a href="#contact" class="mobile-nav-link" style="--i:7">Contact</a>
     </nav>
     <div class="px-8 pb-10 flex flex-col items-center gap-6">
       <a href="Kritagya_Yadav_Resume.pdf" download="Kritagya_Yadav_Resume.pdf" class="btn-primary btn-sm">
@@ -2427,10 +2512,10 @@
         <div class="p-4 rounded-xl bg-secondary/40 border border-border/60">
           <div class="flex items-center gap-2 mb-1.5 font-mono text-xs font-semibold">
             <i class="fas fa-shield-virus text-neon" aria-hidden="true"></i>
-            <span>Optimistic Concurrency Control (@Version)</span>
+            <span>Optimistic &amp; Pessimistic Locking (@Version)</span>
           </div>
           <p class="text-muted-foreground leading-relaxed">
-            PostgreSQL entity rows maintain an incremental version counter. When concurrent transactions attempt to book the same ticket, only the first transaction commits; subsequent transactions raise an <code class="font-mono text-xs text-foreground">OptimisticLockException</code> and rollback cleanly, preventing overbooking.
+            PostgreSQL entity rows maintain an incremental version counter. When concurrent transactions attempt to book the same ticket, only the first transaction commits; subsequent transactions raise an <code class="font-mono text-xs text-foreground">OptimisticLockException</code> and roll back cleanly. Together with pessimistic locking, this prevents concurrent overbooking, verified by a multithreaded test.
           </p>
         </div>
         <div class="p-4 rounded-xl bg-secondary/40 border border-border/60">
@@ -2457,13 +2542,13 @@
             <span>Dual-Token JWT Security &amp; BCrypt Password Hashing</span>
           </div>
           <p class="text-muted-foreground leading-relaxed">
-            Short-lived access tokens (15m) paired with database-backed refresh token rotation ensure stateless REST verification while preserving instantaneous revocation capability upon security compromise.
+            Short-lived access tokens (15m) paired with database-backed refresh token rotation ensure stateless REST verification while preserving instantaneous revocation capability upon security compromise. RBAC and per-resource ownership checks guard every endpoint, backed by a 6-test security regression suite.
           </p>
         </div>
       </div>
 
       <div class="pt-5 mt-6 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-muted-foreground">
-        <span class="flex items-center gap-2"><i class="fas fa-circle-check text-neon" aria-hidden="true"></i> Verified with Mockito &amp; JUnit 5</span>
+        <span class="flex items-center gap-2"><i class="fas fa-circle-check text-neon" aria-hidden="true"></i> Verified by a multithreaded test &amp; security regression suite</span>
         <a href="https://github.com/kritagya025/Event-Booking-System" target="_blank" rel="noopener noreferrer" class="text-foreground hover:text-primary flex items-center gap-1.5 transition-colors">
           <span>View Source Code</span><i class="fas fa-arrow-up-right-from-square text-[10px]" aria-hidden="true"></i>
         </a>
@@ -2492,27 +2577,27 @@
     </div>
   </div>
   <p class="text-muted-foreground leading-relaxed mb-8">
-    High-concurrency backend for event reservation and e-ticketing. Features optimistic locking via <code class="font-mono text-xs text-foreground">@Version</code> to prevent double-booking during traffic surges, seat-lock expiration scheduling, Redis caching, and real-time seat availability pushed over STOMP WebSockets. Securely protected with JWT auth, refresh token rotation, Role-Based Access Control (RBAC), and BCrypt encryption. Includes QR-code e-ticketing, coupons, waitlists, Swagger/OpenAPI docs, and automated JUnit/Mockito security regression testing.
+    Concurrency-safe Spring Boot booking platform with 83 RESTful endpoints covering seat, payment, and ticketing workflows. Pessimistic and optimistic locking (<code class="font-mono text-xs text-foreground">@Version</code>) prevent concurrent overbooking, verified by a multithreaded test, and real-time seat updates are pushed over WebSocket/STOMP. Secured with JWT authentication, rotating refresh tokens, RBAC, and per-resource ownership checks, backed by a 6-test security regression suite. Also includes seat-lock expiration scheduling, Redis caching, QR-code e-ticketing, coupons, waitlists, and Swagger/OpenAPI docs.
   </p>
   <h4 class="modal-label">Key Metrics</h4>
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
     <div class="p-4 rounded-2xl glass-card text-center"><div class="font-display text-2xl font-bold text-gradient">83</div><div class="font-mono text-[10px] text-muted-foreground mt-1">REST endpoints</div></div>
     <div class="p-4 rounded-2xl glass-card text-center"><div class="font-display text-2xl font-bold text-gradient">16</div><div class="font-mono text-[10px] text-muted-foreground mt-1">controllers</div></div>
     <div class="p-4 rounded-2xl glass-card text-center"><div class="font-display text-2xl font-bold text-gradient">13</div><div class="font-mono text-[10px] text-muted-foreground mt-1">JPA entities</div></div>
-    <div class="p-4 rounded-2xl glass-card text-center"><div class="font-display text-2xl font-bold text-gradient">39</div><div class="font-mono text-[10px] text-muted-foreground mt-1">JUnit/Mockito tests</div></div>
+    <div class="p-4 rounded-2xl glass-card text-center"><div class="font-display text-2xl font-bold text-gradient">6</div><div class="font-mono text-[10px] text-muted-foreground mt-1">security regression tests</div></div>
   </div>
   <h4 class="modal-label">Key Highlights</h4>
   <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Optimistic locking (@Version) on Seat, Booking &amp; Event entities prevents overbooking under concurrent load</span></li>
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Automated seat-lock expiration scheduling</span></li>
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Real-time seat availability over STOMP WebSockets with Redis caching</span></li>
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>JWT authentication with refresh token rotation, RBAC &amp; BCrypt</span></li>
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>QR-code e-ticketing, coupons &amp; waitlists</span></li>
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Swagger/OpenAPI docs and a dedicated SecurityFixesTest regression suite</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Pessimistic and optimistic locking (@Version) against concurrent overbooking, verified by a multithreaded test</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Seat, payment, and ticketing workflows across 83 REST endpoints</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Real-time seat updates over WebSocket/STOMP, with Redis caching</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>JWT authentication, rotating refresh tokens, RBAC &amp; per-resource ownership checks</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>6-test security regression suite (SecurityFixesTest)</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Seat-lock expiration, QR-code e-ticketing, coupons &amp; waitlists</span></li>
   </ul>
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-6 border-t border-border/60">
     <ul class="flex flex-wrap gap-2" aria-label="Technologies">
-      <li class="chip">Java</li><li class="chip">Spring Boot</li><li class="chip">PostgreSQL</li><li class="chip">Redis</li><li class="chip">WebSocket (STOMP)</li><li class="chip">JWT &amp; Security</li><li class="chip">React</li>
+      <li class="chip">Java</li><li class="chip">Spring Boot</li><li class="chip">PostgreSQL</li><li class="chip">Spring Security</li><li class="chip">WebSocket (STOMP)</li><li class="chip">Redis</li><li class="chip">React</li>
     </ul>
     <div class="flex flex-wrap gap-3 shrink-0">
       <button type="button" class="project-action is-primary" data-open-arch><i class="fas fa-sitemap" aria-hidden="true"></i> Architecture</button>
@@ -2531,23 +2616,23 @@
     </div>
   </div>
   <p class="text-muted-foreground leading-relaxed mb-8">
-    Production Java/Spring Boot URL shortener platform deployed on Render with containerized Docker builds and an automated GitHub Actions CI/CD pipeline. Engineered around a Base62 short-code engine, indexed PostgreSQL lookups, and HikariCP connection pooling. Features 16 automated JUnit unit tests, centralized exception handling (<code class="font-mono text-xs text-foreground">@RestControllerAdvice</code>) with standardized JSON error schemas, Bean Validation, link expiration (HTTP 410 Gone), and an interactive click analytics dashboard.
+    Production Java/Spring Boot URL shortener live on Render: a 5-endpoint REST API with indexed lookups and database-enforced, collision-safe Base62 short codes. A GitHub Actions CI/CD pipeline runs the tests against a live database before each Render deploy, and the service ships in a 3-stage Docker build with a jlink-pruned, non-root Java runtime. Validated by 39 JUnit/Mockito tests (including collision handling), with centralized exception handling (<code class="font-mono text-xs text-foreground">@RestControllerAdvice</code>), link expiration (HTTP 410 Gone), and a live analytics dashboard with search.
   </p>
   <h4 class="modal-label">Key Metrics</h4>
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
     <div class="p-4 rounded-2xl glass-card text-center"><div class="font-display text-2xl font-bold text-gradient">5</div><div class="font-mono text-[10px] text-muted-foreground mt-1">REST endpoints</div></div>
-    <div class="p-4 rounded-2xl glass-card text-center"><div class="font-display text-2xl font-bold text-gradient">16</div><div class="font-mono text-[10px] text-muted-foreground mt-1">JUnit tests in CI</div></div>
-    <div class="p-4 rounded-2xl glass-card text-center"><div class="font-display text-2xl font-bold text-gradient">Base62</div><div class="font-mono text-[10px] text-muted-foreground mt-1">short-code engine</div></div>
+    <div class="p-4 rounded-2xl glass-card text-center"><div class="font-display text-2xl font-bold text-gradient">39</div><div class="font-mono text-[10px] text-muted-foreground mt-1">JUnit/Mockito tests</div></div>
+    <div class="p-4 rounded-2xl glass-card text-center"><div class="font-display text-2xl font-bold text-gradient">3-stage</div><div class="font-mono text-[10px] text-muted-foreground mt-1">Docker build</div></div>
     <div class="p-4 rounded-2xl glass-card text-center"><div class="font-display text-2xl font-bold text-gradient">410</div><div class="font-mono text-[10px] text-muted-foreground mt-1">HTTP Gone on expiry</div></div>
   </div>
   <h4 class="modal-label">Key Highlights</h4>
   <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>GitHub Actions runs the JUnit suite, pushes a Docker image to Docker Hub, then triggers a Render deploy on every merge to main</span></li>
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Failing tests block Docker image builds in the pipeline</span></li>
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Layered Controller-Service-Repository architecture</span></li>
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Indexed PostgreSQL lookups with HikariCP connection pooling</span></li>
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Centralized @RestControllerAdvice with standardized JSON errors</span></li>
-    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Live analytics dashboard with auto-polling, search &amp; status badges</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>GitHub Actions runs the tests against a live database before each Render deploy; failing tests block the release</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>3-stage Docker build with a jlink-pruned, non-root Java runtime</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Indexed lookups with database-enforced, collision-safe short codes</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>39 JUnit/Mockito tests, including collision handling</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Layered Controller-Service-Repository architecture with centralized @RestControllerAdvice errors</span></li>
+    <li class="highlight-item"><i class="fas fa-chevron-right" aria-hidden="true"></i><span>Live analytics dashboard with search, auto-polling &amp; status badges</span></li>
   </ul>
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-6 border-t border-border/60">
     <ul class="flex flex-wrap gap-2" aria-label="Technologies">
@@ -2672,6 +2757,7 @@
     top: 'Home',
     about: 'About',
     skills: 'Skills',
+    experience: 'Experience',
     projects: 'Projects',
     learning: 'Learning',
     education: 'Education',
@@ -3375,6 +3461,7 @@
       { label: 'Home', icon: 'fas fa-house', target: '#top', hint: 'Hero' },
       { label: 'About', icon: 'fas fa-user', target: '#about', hint: 'Bio & highlights' },
       { label: 'Skills', icon: 'fas fa-code', target: '#skills', hint: 'Tech stack' },
+      { label: 'Experience', icon: 'fas fa-briefcase', target: '#experience', hint: 'Internship' },
       { label: 'Projects', icon: 'fas fa-diagram-project', target: '#projects', hint: 'Selected work' },
       { label: 'Filter: All Projects', icon: 'fas fa-table-cells-large', filter: 'all', hint: 'Projects' },
       { label: 'Filter: High Concurrency', icon: 'fas fa-bolt', filter: 'concurrency', hint: 'Projects' },
@@ -3388,7 +3475,7 @@
       { label: 'Contact', icon: 'fas fa-envelope', target: '#contact', hint: 'Get in touch' },
       { label: 'Copy Email Address', icon: 'far fa-copy', run: 'copy-email', hint: 'Clipboard' },
       { label: 'Toggle Light / Dark Theme', icon: 'fas fa-circle-half-stroke', run: 'theme', hint: 'Appearance' },
-      { label: 'Keyboard Shortcuts', icon: 'fas fa-keyboard', run: 'shortcuts', hint: 'Cheatsheet (?)' },
+      { label: 'Keyboard Shortcuts', icon: 'fas fa-keyboard', run: 'shortcuts', hint: 'Cheat sheet (?)' },
       { label: 'Download Resume', icon: 'fas fa-download', run: 'resume', hint: 'PDF' },
       { label: 'LinkedIn', icon: 'fab fa-linkedin', url: LINKS.linkedin, hint: 'External' },
       { label: 'GitHub Profile', icon: 'fab fa-github', url: LINKS.github, hint: 'External' },
