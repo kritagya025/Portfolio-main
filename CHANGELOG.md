@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.11.0] - 2026-10-20
+
+### Added
+- Max cries when you hide him: "W-wait... you are hiding me? *sniff* Okay... the robot button brings me back." He starts sad, then bursts into tears (two streams of LED tears run down his visor with a trembling mouth, and 3D tear drops roll off the visor and fall), sobs with his head drooping, ears folded back, tail limp, core dimmed and thruster low, wipes his visor with both paws, waves goodbye, and shrinks away
+- Hovering the hide button already makes him tear up: "That button hides me... Please don't press it!"
+- New `cry` expression; while he says goodbye he ignores pokes and does not start other lines; pressing the button again mid-goodbye brings him straight back
+
+---
+
 ## [3.10.0] - 2026-10-20
 
 ### Changed

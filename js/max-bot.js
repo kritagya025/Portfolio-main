@@ -75,7 +75,7 @@ function timeOfDay() {
 
 // A line is a string, or a list of parts { t: text, e: expression, g: gesture }. As the typing reaches
 // a part, Max switches to its expression (idle, happy, love, wow, think, cool, wink, surprised, sad,
-// blush, dizzy, sleepy) and plays its gesture (nod, hop, spin, wave, wag), so he reacts mid-sentence.
+// cry, blush, dizzy, sleepy) and plays its gesture (nod, hop, spin, wave, wag), so he reacts mid-sentence.
 const LINES = {
   greet: () => [
     { t: `Good ${timeOfDay()}!`, e: 'love' },
@@ -126,7 +126,7 @@ const LINES = {
   ],
   dizzy: [[{ t: 'Okay, okay!', e: 'dizzy' }, { t: " I'm dizzy now...", e: 'dizzy' }]],
   wake: [[{ t: 'Huh?!', e: 'surprised', g: 'hop' }, { t: " I'm up, I'm up!", e: 'happy' }]],
-  hide: [[{ t: 'Powering down...', e: 'sad' }, { t: ' The robot button wakes me up.', e: 'wink' }]],
+  hide: [[{ t: 'W-wait...', e: 'sad' }, { t: ' you are hiding me?', e: 'sad' }, { t: ' *sniff*', e: 'cry' }, { t: ' Okay... the robot button brings me back.', e: 'cry', g: 'wave' }]],
   show: [[{ t: 'Systems online!', e: 'wow', g: 'spin' }, { t: ' Max is back!', e: 'love', g: 'wave' }]],
   petting: [
     [{ t: 'Hehe!', e: 'blush' }, { t: ' Head pats accepted.', e: 'love', g: 'wag' }],
@@ -319,7 +319,7 @@ function istTime() {
 // Rules in priority order (buttons and links before the cards that contain them). `say` is a line, a
 // list of lines (one is picked), or a function of the element returning either.
 const TALK = [
-  { sel: '.bot-toggle', say: [[{ t: 'That button hides me...', e: 'sad' }, { t: " I'd miss you, though.", e: 'blush' }]] },
+  { sel: '.bot-toggle', say: [[{ t: 'That button hides me...', e: 'sad' }, { t: " Please don't press it!", e: 'cry' }]] },
   { sel: '#back-to-top', say: [[{ t: 'Back to the top?', e: 'surprised' }, { t: ' Wheee!', e: 'happy', g: 'spin' }]] },
   { sel: '.theme-toggle', say: () => (root.getAttribute('data-theme') === 'light'
     ? [{ t: 'Back to night mode?', e: 'happy' }, { t: ' Wolf hours!', e: 'love', g: 'wag' }]
@@ -420,7 +420,7 @@ function resolveLine(source, key) {
 const COLS = 26;
 const ROWS = 16;
 const CELL = 20;
-// Pattern cells: '#' bright LED, '+' dim LED, '*' heart LED, 'p' blush LED, '.' off
+// Pattern cells: '#' bright LED, '+' dim LED, '*' heart LED, 'p' blush LED, 't'/'u' tear LEDs, '.' off
 const PAT = {
   blaze: ['+....+', '.+..+.', '..++..'],
   cheek: ['#...', '+#..', '.+#.', '+#..', '#...'],
@@ -445,8 +445,9 @@ const PAT = {
   mouthSmirk: ['#..##...', '.##..###'],
   mouthHmm: ['....##', '####..'],
   mouthSad: ['.####.', '#....#'],
+  mouthSob: ['..##..', '.#..#.', '#....#'],
 };
-const LED = { on: '#d1fae5', glow: '#34d399', dim: 'rgba(52, 211, 153, 0.5)', heart: '#ffe4e6', heartGlow: '#fb7185', blush: 'rgba(251, 113, 133, 0.85)', off: '#0e1626', screen: '#03060c' };
+const LED = { on: '#d1fae5', glow: '#34d399', dim: 'rgba(52, 211, 153, 0.5)', heart: '#ffe4e6', heartGlow: '#fb7185', blush: 'rgba(251, 113, 133, 0.85)', tear: '#e0f2fe', tearGlow: '#38bdf8', tearTrail: 'rgba(125, 211, 252, 0.55)', off: '#0e1626', screen: '#03060c' };
 
 const mirror = (pattern) => pattern.map((row) => Array.from(row).reverse().join(''));
 
@@ -463,9 +464,9 @@ class WolfFace {
     this.key = '';
   }
 
-  /** Redraws only when something changed. blink: 0 open, 1 half, 2 shut. */
-  draw({ expr, dx, dy, blink, talk }) {
-    const key = [expr, dx, dy, blink, talk].join();
+  /** Redraws only when something changed. blink: 0 open, 1 half, 2 shut. tear: frame of the crying animation. */
+  draw({ expr, dx, dy, blink, talk, tear = 0 }) {
+    const key = [expr, dx, dy, blink, talk, tear].join();
     if (key === this.key) return;
     this.key = key;
 
@@ -519,6 +520,21 @@ class WolfFace {
       at(mirror(PAT.eye), lx, ey + 0.5);
       at(PAT.eye, rx, ey + 0.5);
       mouth = PAT.mouthSad;
+    } else if (expr === 'cry') {
+      at(mirror(PAT.eye), lx, ey + 0.5);
+      at(PAT.eye, rx, ey + 0.5);
+      // Two streams of tears run down from the outer corners of the eyes; the mouth trembles
+      const top = Math.round(ey + 3);
+      const span = ROWS - top;
+      [Math.round(lx - 2.5), Math.round(rx + 2)].forEach((x, side) => {
+        cells.set(`${x},${top - 1}`, 'u');
+        [0, 3].forEach((offset) => {
+          const y = top + ((tear + offset + side * 2) % span);
+          cells.set(`${x},${y}`, 't');
+          if (y - 1 >= top) cells.set(`${x},${y - 1}`, 'u');
+        });
+      });
+      mouth = tear % 2 ? PAT.mouthSob : PAT.mouthSad;
     } else if (expr === 'blush') {
       at(PAT.eyeHappy, lx, ey);
       at(PAT.eyeHappy, rx, ey);
@@ -549,10 +565,12 @@ class WolfFace {
         const ch = cells.get(`${x},${y}`);
         const lit = ch === '#' || ch === '*';
         c.beginPath();
-        c.arc(x * CELL + CELL / 2, y * CELL + CELL / 2, lit ? 8 : ch === '+' ? 6.6 : 5, 0, Math.PI * 2);
+        c.arc(x * CELL + CELL / 2, y * CELL + CELL / 2, lit || ch === 't' ? 8 : ch === '+' || ch === 'u' ? 6.6 : 5, 0, Math.PI * 2);
         if (ch === '#') { c.shadowColor = LED.glow; c.shadowBlur = 18; c.fillStyle = LED.on; }
         else if (ch === '*') { c.shadowColor = LED.heartGlow; c.shadowBlur = 20; c.fillStyle = LED.heart; }
         else if (ch === 'p') { c.shadowColor = LED.heartGlow; c.shadowBlur = 10; c.fillStyle = LED.blush; }
+        else if (ch === 't') { c.shadowColor = LED.tearGlow; c.shadowBlur = 16; c.fillStyle = LED.tear; }
+        else if (ch === 'u') { c.shadowBlur = 0; c.fillStyle = LED.tearTrail; }
         else if (ch === '+') { c.shadowBlur = 0; c.fillStyle = LED.dim; }
         else { c.shadowBlur = 0; c.fillStyle = LED.off; }
         c.fill();
@@ -885,6 +903,17 @@ class Engine {
     this.pivot.add(orbit);
     this.orbit = orbit;
 
+    // ---- Tear drops that roll off the visor when Max cries ----
+    const tearGeo = new T.SphereGeometry(0.065, 10, 8);
+    tearGeo.scale(1, 1.4, 1);
+    this.tears = Array.from({ length: 12 }, () => {
+      const drop = new T.Mesh(tearGeo, new T.MeshBasicMaterial({ color: 0x7dd3fc, transparent: true, opacity: 0, depthWrite: false, toneMapped: false }));
+      drop.visible = false;
+      this.scene.add(drop);
+      return { drop, life: 0, v: new T.Vector3() };
+    });
+    this.tearNext = 0;
+
     // ---- Sparks shed by the hover thruster ----
     const positions = new Float32Array(this.sparkCount * 3);
     const colors = new Float32Array(this.sparkCount * 3);
@@ -914,6 +943,7 @@ class Engine {
     this.M.shell.color.set(light ? 0xdde4ee : 0xe8edf5);
     this.M.holo.opacity = light ? 0.5 : 0.32;
     this.sparks.visible = !light; // additive sparks read as grey specks on a light page
+    this.tears.forEach((tear) => tear.drop.material.color.set(light ? 0x0ea5e9 : 0x7dd3fc));
   }
 
   /** Where the visor is on the page, for the speech bubble (canvas = `box` px centered at cx, cy). */
@@ -932,6 +962,8 @@ class Engine {
     const st = this.st;
     const s = p.still ? 0 : 1;
     const ease = Math.min(1, 0.1 * k);
+    const crying = p.expr === 'cry' && !p.still;
+    const sad = p.expr === 'sad' || p.expr === 'cry';
 
     // Body leans and turns; the head turns further, so he really looks at things
     let ty = p.sleepy ? 0 : p.lookX * 0.55;
@@ -943,9 +975,10 @@ class Engine {
     const spin = p.spin >= 0 ? easeInOut(p.spin) * Math.PI * 2 : 0;
     const hop = p.hop >= 0 ? Math.sin(p.hop * Math.PI) * 0.45 : 0;
     this.pivot.scale.setScalar(Math.max(0.001, p.scale));
-    this.pivot.position.y = s * (Math.sin(t / (p.sleepy ? 1100 : 650)) * 0.12 + hop) - (p.sleepy ? 0.18 : 0);
+    this.pivot.position.y = s * (Math.sin(t / (p.sleepy ? 1100 : 650)) * 0.12 + hop) - (p.sleepy ? 0.18 : 0)
+      - (crying ? Math.abs(Math.sin(t / 150)) * 0.07 : 0); // sobbing
     this.pivot.rotation.set(st.p * 0.45, st.y * 0.6 + spin, st.r + s * Math.sin(t / 1100) * 0.03);
-    this.head.rotation.set(st.p * 0.7, st.y * 0.6, 0);
+    this.head.rotation.set(st.p * 0.7 + (sad ? 0.22 : 0), st.y * 0.6, crying ? Math.sin(t / 70) * 0.035 : 0);
     this.head.position.y = 1.02 + s * Math.sin(t / 650 - 0.7) * 0.035 - (p.sleepy ? 0.06 : 0);
     this.neck.scale.setScalar(1 + s * Math.sin(t / 300) * 0.04);
 
@@ -960,7 +993,7 @@ class Engine {
       let rz = ear.rest.z;
       if (p.sleepy) { rx += 0.55; rz -= ear.side * 0.25; }
       if (p.expr === 'surprised' || p.expr === 'wow') rx -= 0.22;
-      if (p.expr === 'sad') { rx += 0.35; rz -= ear.side * 0.15; }
+      if (sad) { rx += 0.4; rz -= ear.side * 0.18; }
       if (twitching && ear.side === st.twitchSide) rx -= 0.45;
       ear.group.rotation.x += (rx - ear.group.rotation.x) * Math.min(1, 0.25 * k);
       ear.group.rotation.z += (rz - ear.group.rotation.z) * Math.min(1, 0.25 * k);
@@ -979,6 +1012,11 @@ class Engine {
         y = 0.45;
         z = 0.3;
         roll = Math.sin(t / 120) * 0.5;
+      } else if (crying) {
+        // Wiping the tears off the visor
+        x = paw.side * 0.6;
+        y = 0.78 + Math.sin(t / 90 + i) * 0.05;
+        z = 0.66;
       } else if (p.sleepy) {
         y = -0.5;
       }
@@ -1003,7 +1041,7 @@ class Engine {
     this.tail.forEach((seg, i) => {
       seg.position.set(tx, ty2, tz);
       const step = 0.12;
-      up += p.sleepy ? -0.05 : 0.16;
+      up += p.sleepy || sad ? -0.05 : 0.16;
       const side = wag * (i + 1) * 0.12;
       tx += Math.sin(side) * step;
       ty2 += Math.sin(up) * step;
@@ -1014,8 +1052,8 @@ class Engine {
     // Core pulses between purple and emerald; orbit ring spins
     const pulse = 0.5 + 0.5 * Math.sin(t / 700);
     this.M.core.emissive.setHex(PURPLE).lerp(this.emerald, pulse * 0.6);
-    this.M.core.emissiveIntensity = p.sleepy ? 1 : 2.2 + pulse;
-    this.coreGlow.material.opacity = p.sleepy ? 0.35 : 0.55 + pulse * 0.35;
+    this.M.core.emissiveIntensity = p.sleepy || crying ? 1 : 2.2 + pulse;
+    this.coreGlow.material.opacity = p.sleepy || crying ? 0.35 : 0.55 + pulse * 0.35;
     this.orbit.rotation.y += sec * (p.sleepy ? 0.15 : 0.6) * s;
     this.reactor.rotation.z -= sec * (p.sleepy ? 0.6 : 2.4) * s;
     this.satellites.forEach((dot, i) => {
@@ -1032,6 +1070,7 @@ class Engine {
       dy: Math.round(p.lookY * 1.5),
       blink: p.still ? 0 : bt < 170 ? (bt > 120 || bt < 40 ? 1 : 2) : 0,
       talk: p.talk,
+      tear: crying ? Math.floor(t / 110) : 0,
     });
 
     // Thruster flames, oriented along each nozzle's exhaust direction as seen by the camera
@@ -1047,7 +1086,7 @@ class Engine {
       const angle = Math.atan2(b.y - a.y, b.x - a.x);
       const fore = Math.sqrt(Math.max(0.12, 1 - Math.pow(dir.dot(this.camDir), 2)));
       const power = jet.main
-        ? (p.sleepy ? 0.45 : p.boost * (1 + Math.min(0.6, speed * 0.04)))
+        ? (p.sleepy || crying ? 0.45 : p.boost * (1 + Math.min(0.6, speed * 0.04)))
         : boosters;
       const flicker = power * (p.still ? 1 : 0.82 + Math.random() * 0.3);
       const w = jet.size * p.scale;
@@ -1066,6 +1105,29 @@ class Engine {
         this.mainDir.copy(dir);
         this.mainPower = power;
       }
+    });
+
+    // Tears: drops roll off the bottom of the visor, alternating sides, and fall
+    if (crying && t > (st.tearAt || 0) && p.scale > 0.3) {
+      st.tearAt = t + 160;
+      st.tearSide = st.tearSide === 1 ? -1 : 1;
+      const tear = this.tears[this.tearNext];
+      this.tearNext = (this.tearNext + 1) % this.tears.length;
+      this.head.localToWorld(tear.drop.position.set(st.tearSide * 0.36, -0.36, 0.78));
+      tear.v.set(st.tearSide * (0.35 + Math.random() * 0.4), 0.5, 0.45);
+      tear.life = 0.95;
+      tear.drop.visible = true;
+    }
+    this.tears.forEach((tear) => {
+      if (tear.life <= 0) {
+        tear.drop.visible = false;
+        return;
+      }
+      tear.life -= sec;
+      tear.v.y -= sec * 7;
+      tear.drop.position.addScaledVector(tear.v, sec);
+      tear.drop.material.opacity = Math.min(1, tear.life * 2.4);
+      tear.drop.scale.setScalar(p.scale);
     });
 
     // Sparks: emitted from the hover thruster, falling and fading
@@ -1189,6 +1251,8 @@ class Max {
   show({ greet = false } = {}) {
     clearTimeout(this.hideTimeout);
     this.hidden = false;
+    this.hiding = false;
+    this.leaving = false;
     this.layer.classList.remove('is-hidden');
     const now = performance.now();
     this.target = this.computeTarget(now);
@@ -1242,16 +1306,24 @@ class Max {
     }
   }
 
+  /** Goodbye: he looks sad, bursts into tears (sobbing, wiping his visor), waves, then shrinks away. */
   hide() {
     this.entry = null;
-    this.say(pick(LINES.hide, 'hide'), { prio: 3 });
+    this.focus = null;
+    this.hiding = true;
     clearTimeout(this.hideTimeout);
+    this.say(pick(LINES.hide, 'hide'), { prio: 3 });
     this.hideTimeout = setTimeout(() => {
-      this.hidden = true;
-      this.layer.classList.add('is-hidden');
-      this.hideBubble();
-      setTimeout(() => { if (this.hidden) this.stop(); }, 450);
-    }, 1600);
+      this.leaving = true;
+      this.hideTimeout = setTimeout(() => {
+        this.hidden = true;
+        this.hiding = false;
+        this.leaving = false;
+        this.layer.classList.add('is-hidden');
+        this.hideBubble();
+        setTimeout(() => { if (this.hidden) this.stop(); }, 450);
+      }, reducedMotion ? 0 : 650);
+    }, reducedMotion ? 2400 : 4400);
   }
 
   start() {
@@ -1291,7 +1363,7 @@ class Max {
     // Reactions to what the visitor is doing, each with its own cooldown
     const react = (key, cooldown) => {
       const now = performance.now();
-      if (this.hidden || this.portal || this.entry) return;
+      if (this.hidden || this.hiding || this.portal || this.entry) return;
       if (now - (this.reactedAt.get(key) || -1e9) < cooldown) return;
       if (this.say(pick(LINES.situations[key], key), { prio: 2 })) this.reactedAt.set(key, now);
     };
@@ -1396,7 +1468,7 @@ class Max {
     let hoverEl = null;
     const explain = (match) => {
       const now = performance.now();
-      if (this.hidden || this.portal || this.entry) return;
+      if (this.hidden || this.hiding || this.portal || this.entry) return;
       if (now - (this.talkCooldowns.get(match.el) || -1e9) < HOVER_COOLDOWN) return;
       // Let a line that has only just started get its first words out, then explain (if still pointed at)
       if (this.speaking && this.speakingPrio >= 2 && now - this.speechStart < 1300) {
@@ -1498,6 +1570,7 @@ class Max {
   }
 
   poke() {
+    if (this.hiding) return;
     const s = this.s;
     const now = performance.now();
     s.lastInput = now;
@@ -1809,7 +1882,7 @@ class Max {
       s.cy += s.vy * dt;
       s.scale = damp(s.scale, tg.scale, 5, dt);
     }
-    s.pop = damp(s.pop, 1, 7, dt);
+    s.pop = damp(s.pop, this.leaving ? 0 : 1, this.leaving ? 10 : 7, dt); // shrinks away when hidden
     const R = this.R;
     this.body.style.transform = `translate3d(${(s.cx - R / 2).toFixed(1)}px, ${(s.cy - R / 2).toFixed(1)}px, 0) scale(${s.scale.toFixed(3)})`;
     const docked = this.compact && !this.entry && tg.mode === 'dock';
@@ -1838,7 +1911,7 @@ class Max {
       s.sleptAt = now;
     }
     // Small talk when it has been quiet for a while, but only while someone is around to hear it
-    if (!s.sleeping && !this.speaking && !this.portal && !this.entry && !this.presenting
+    if (!s.sleeping && !this.speaking && !this.portal && !this.entry && !this.presenting && !this.hiding
       && now - Math.max(this.lastTalk, this.speechEnd) > IDLE_CHAT_AFTER * (this.compact ? 2.2 : 1) && now - s.lastInput < 30000) {
       this.say(resolveLine(LINES.chatter, 'chatter'), { prio: 1 });
       this.lastTalk = now;
