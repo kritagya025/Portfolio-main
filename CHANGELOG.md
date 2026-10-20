@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.0.0] - 2026-10-20
+
+### Added
+- Complete visual redesign: HSL design-token system (violet / magenta / teal), Space Grotesk + Syne + JetBrains Mono typography, numbered section eyebrows, oversized outlined background words, glass cards, and grid overlays
+- Light theme with a persistent toggle (navbar, mobile, and `Ctrl+K` palette), applied before first paint
+- Cinematic hero: letter-by-letter name reveal, rotating role badge, count-up stats (83+ REST APIs, 55+ tests, 7.58 CGPA), side social rail, scroll parallax, and a decorative terminal card on wide screens
+- Dedicated About section with bio, focus areas, stat cards, and an `@Version` code snippet
+- Interactive skills explorer: accessible tab list with arrow-key navigation and animated tool tiles (stacked cards on mobile)
+- Pinned horizontal project showcase on desktop with a progress rail; filters recalculate the showcase length
+- Project detail modals with key metrics, highlights, tech stack, and links
+- Direct repository links for Event Booking System and LinkPulse, plus the LinkPulse live demo and LeetCode profile (sourced from the resume)
+- Contact bento grid (location + live IST time, LinkedIn, GitHub, LeetCode, phone) and a roles marquee
+- Time-based preloader with progress ring and circular reveal
+
+### Changed
+- All overlays (command palette, shortcuts, architecture deep dive, project details, mobile menu) now use native `<dialog>` elements for focus trapping, `Esc` handling, and focus restoration
+- In-page navigation smoothly scrolls via Lenis and moves keyboard focus to the target section
+- Mobile navigation is now a full-screen menu
+- Education and certifications merged into a single "Journey" bento section (`#education` and `#certifications` anchors preserved)
+- GitHub streak card moved to the official `streak-stats.demolab.com` host; stat cards show a fallback link if an image service is down
+- Particle constellation and ambient orbs now follow the active theme colour
+- 404 page, web manifest, and favicon restyled to the new palette
+- Updated sitemap.xml `lastmod` timestamps to 2026-10-20
+
+### Removed
+- `content-visibility` hints on below-fold sections (they made anchor targets land in the wrong place before first render)
+
+---
+
 ## [2.4.0] - 2026-10-08
 
 ### Added

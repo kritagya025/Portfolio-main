@@ -1,16 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 — Page Not Found | Kritagya Yadav</title>
   <meta name="description" content="The page you're looking for doesn't exist. Return to Kritagya Yadav's portfolio.">
   <meta name="robots" content="noindex, nofollow">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='25' fill='%23030712'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='42' fill='%23ffffff'%3EKY%3C/text%3E%3C/svg%3E">
+  <meta name="theme-color" content="#0e0d12">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23995af2'/%3E%3Cstop offset='1' stop-color='%23e052b1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='25' fill='%230e0d12'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='42' fill='url(%23g)'%3EKY%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Space+Grotesk:wght@600;700&family=Syne:wght@400;600&display=swap" rel="stylesheet">
+  <script>
+    // Match the theme chosen on the main site
+    try {
+      var saved = localStorage.getItem('ky-theme');
+      if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+    } catch (e) {}
+  </script>
   <style>
+    :root {
+      --background: 250 15% 6%;
+      --foreground: 60 10% 92%;
+      --muted-foreground: 250 8% 62%;
+      --primary: 265 85% 65%;
+      --primary-strong: 265 75% 56%;
+      --accent: 320 70% 60%;
+      --accent-strong: 320 65% 50%;
+      --neon: 170 80% 55%;
+      --line: 60 10% 92%;
+    }
+    [data-theme="light"] {
+      --background: 0 0% 98%;
+      --foreground: 250 15% 12%;
+      --muted-foreground: 250 8% 38%;
+      --primary: 265 85% 55%;
+      --primary-strong: 265 85% 55%;
+      --accent: 320 70% 48%;
+      --accent-strong: 320 70% 46%;
+      --neon: 170 80% 32%;
+      --line: 250 15% 12%;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
@@ -18,114 +49,147 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #030712;
-      color: #f8fafc;
-      font-family: 'Inter', sans-serif;
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: 'Syne', system-ui, sans-serif;
       overflow: hidden;
     }
 
+    /* Grid overlay and ambient orbs */
+    .grid {
+      position: fixed;
+      inset: 0;
+      opacity: 0.04;
+      pointer-events: none;
+      background-image:
+        linear-gradient(hsl(var(--line)) 1px, transparent 1px),
+        linear-gradient(90deg, hsl(var(--line)) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(90px);
+    }
+    .orb-1 { width: 32rem; height: 32rem; top: -10%; right: -6%; background: hsl(var(--primary) / 0.18); }
+    .orb-2 { width: 24rem; height: 24rem; bottom: -12%; left: -6%; background: hsl(var(--accent) / 0.12); }
+
     .container {
-      text-align: center;
-      padding: 2rem;
       position: relative;
       z-index: 1;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: hsl(var(--primary));
+    }
+    .eyebrow::before, .eyebrow::after {
+      content: '';
+      width: 2.5rem;
+      height: 1px;
+      background: hsl(var(--primary) / 0.6);
     }
 
     .error-code {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(6rem, 20vw, 12rem);
-      font-weight: 900;
-      letter-spacing: -0.04em;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(6rem, 22vw, 13rem);
+      font-weight: 700;
+      letter-spacing: -0.05em;
       line-height: 1;
-      background: linear-gradient(to right, #ffffff, #a1a1aa, #52525b);
+      background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--neon)));
+      background-size: 200% 200%;
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
+      animation: gradient-shift 4s ease infinite;
       margin-bottom: 1rem;
     }
 
     .error-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.4rem, 3.4vw, 2rem);
       font-weight: 700;
-      color: #f8fafc;
+      letter-spacing: -0.02em;
       margin-bottom: 0.75rem;
     }
 
     .error-desc {
-      font-size: 0.95rem;
-      color: #94a3b8;
       max-width: 420px;
-      margin: 0 auto 2rem;
-      line-height: 1.6;
+      margin: 0 auto 2.25rem;
+      font-size: 1rem;
+      line-height: 1.65;
+      color: hsl(var(--muted-foreground));
     }
 
     .home-link {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.85rem 2rem;
-      background: #ffffff;
-      color: #030712;
-      font-weight: 600;
-      font-size: 0.875rem;
+      gap: 0.6rem;
+      padding: 1rem 2rem;
       border-radius: 9999px;
+      background: hsl(var(--primary-strong));
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.9rem;
       text-decoration: none;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 0 30px rgba(255, 255, 255, 0.08);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    }
+    .home-link::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: hsl(var(--accent-strong));
+      transform: translateX(-101%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .home-link:hover { transform: scale(1.05); box-shadow: 0 0 40px hsl(var(--primary) / 0.35); }
+    .home-link:hover::before { transform: translateX(0); }
+    .home-link:focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 4px; }
+    .home-link svg { width: 16px; height: 16px; }
+
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
 
-    .home-link:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
-    }
-
-    .home-link svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    /* Subtle background glow */
-    .bg-glow {
-      position: fixed;
-      width: 40rem;
-      height: 40rem;
-      border-radius: 50%;
-      filter: blur(140px);
-      opacity: 0.15;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .bg-glow-1 {
-      top: -20%;
-      left: -10%;
-      background: #27272a;
-    }
-
-    .bg-glow-2 {
-      bottom: -20%;
-      right: -10%;
-      background: #18181b;
+    @media (prefers-reduced-motion: reduce) {
+      .error-code { animation: none; }
+      .home-link, .home-link::before { transition: none; }
     }
   </style>
 </head>
 <body>
-  <div class="bg-glow bg-glow-1"></div>
-  <div class="bg-glow bg-glow-2"></div>
+  <div class="grid" aria-hidden="true"></div>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
 
-  <div class="container">
-    <div class="error-code">404</div>
+  <main class="container">
+    <p class="eyebrow">Error</p>
+    <div class="error-code" aria-hidden="true">404</div>
     <h1 class="error-title">Page Not Found</h1>
     <p class="error-desc">
       The page you're looking for doesn't exist or has been moved. Let's get you back on track.
     </p>
     <a href="/Portfolio-main/" class="home-link">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
       </svg>
       Back to Portfolio
     </a>
-  </div>
+  </main>
 </body>
 </html>

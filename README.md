@@ -6,7 +6,7 @@
 [![Redis](https://img.shields.io/badge/Redis-Cache-red.svg?style=for-the-badge&logo=redis)](https://redis.io/)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-cyan.svg?style=for-the-badge&logo=docker)](https://www.docker.com/)
 
-A modern, high-performance personal developer portfolio showcasing software engineering projects, backend architecture experience, technical skills, education, and credentials. Built with a sleek dark-mode glassmorphism design aesthetic, interactive Bento Grid layout, smooth physics animations, and optimized SEO metadata.
+A modern, high-performance personal developer portfolio showcasing software engineering projects, backend architecture experience, technical skills, education, and credentials. Built around an editorial dark/light design system — oversized display typography, violet → magenta → teal gradients, glass cards, numbered sections, a pinned horizontal project showcase, and optimized SEO metadata.
 
 ---
 
@@ -22,19 +22,23 @@ A modern, high-performance personal developer portfolio showcasing software engi
 
 ## ✨ Features & User Experience
 
-- **💎 Glassmorphism UI**: Deep dark `#030712` aesthetic featuring film grain overlays, backdrop blur effects, animated gradient typography, and glowing card borders.
-- **🟢 Live Availability & Local Time**: Real-time hiring availability badge paired with dynamic Indian Standard Time (IST &middot; UTC+5:30) clock widget in the Hero section.
-- **🍱 Interactive Bento Grid & Category Filters**: Filter projects smoothly across categories (*All*, *High Concurrency*, *Cloud & DevOps*, *Security & APIs*) with animated cards and real-time counts.
+- **🎨 Design System with Light & Dark Themes**: HSL design tokens (`--primary`, `--accent`, `--neon`, …) drive both themes; the toggle is remembered per visitor and applied before first paint. Film grain, grid overlays, glass cards, and huge outlined section words give every section depth.
+- **🎬 Cinematic Hero**: Letter-by-letter name reveal (GSAP), rotating role badge, live stats (83+ REST APIs · 55+ automated tests · 7.58 CGPA), side social rail, scroll-linked parallax, and a decorative terminal card on wide screens.
+- **🟢 Live Availability & Local Time**: Real-time hiring availability badge paired with dynamic Indian Standard Time (IST &middot; UTC+5:30) clock widget in the Hero and Contact sections.
+- **🗂️ Pinned Horizontal Project Showcase**: On desktop, featured projects scroll sideways inside a pinned viewport with a progress rail; tablets and phones get stacked cards. Category filters (*All*, *High Concurrency*, *Cloud & DevOps*, *Security & APIs*) keep their live counts.
+- **🔎 Project Detail Modals**: Each card opens a detail view with key metrics, highlights, tech stack, and source/live links.
 - **🏛️ System Architecture Deep Dive**: Interactive architecture modal detailing the Event Booking Engine's high-concurrency lifecycle, `@Version` optimistic locking, Redis TTL locks, and STOMP WebSocket broadcasting.
-- **⌘ Command Palette & Shortcuts**: Fast navigation with `Ctrl+K` quick switcher (with category filtering and architecture deep-dive triggers) and `?` keyboard shortcuts cheatsheet modal.
+- **🧭 Interactive Skills Explorer**: Eight skill categories in an accessible tab list (arrow-key navigation) with animated tool tiles; stacked cards on mobile.
+- **⌘ Command Palette & Shortcuts**: Fast navigation with `Ctrl+K` quick switcher (sections, project filters, architecture deep dive, theme toggle, copy email, resume) and `?` keyboard shortcuts cheatsheet modal.
 - **📋 One-Click Copy & Toast**: Instant email copying to clipboard with floating animated glass toast feedback.
+- **♿ Accessible Dialogs**: All overlays use native `<dialog>` elements for focus trapping, `Esc` handling, and focus restoration.
 - **⚡ Interactive Micro-Animations**:
   - Smooth inertia scroll powered by [Lenis](https://lenis.darkroom.engineering/)
   - Reveal animations via [AOS (Animate On Scroll)](https://michalsnik.github.io/aos/)
-  - Physics-based tilt cards with glare effects via [Vanilla-Tilt.js](https://micku7.github.io/vanilla-tilt.js/)
+  - Physics-based tilt cards with glare effects via [Vanilla-Tilt.js](https://micku7.github.io/vanilla-tilt.js/) (fine pointers only)
   - Infinite skill badge marquees with dual scroll directions
   - Page Visibility API optimization pausing background particles when inactive
-- **📱 PWA & Mobile Ready**: Web App Manifest (`site.webmanifest`) for standalone home-screen installation, responsive drawer menu, and mobile status bar theming.
+- **📱 PWA & Mobile Ready**: Web App Manifest (`site.webmanifest`) for standalone home-screen installation, full-screen mobile menu, and mobile status bar theming.
 - **🔍 SEO & Social Card Ready**: Complete Open Graph, Twitter Cards, resource preconnects, and custom inline SVG branding favicon.
 - **🚀 Performance Optimized**: Resource hints, content-visibility containment, asynchronous script hydration, and lightweight vector assets.
 
@@ -44,22 +48,23 @@ A modern, high-performance personal developer portfolio showcasing software engi
 
 - **Core Technologies**: HTML5, Vanilla JavaScript (ES6+), CSS3
 - **CSS Utility Engine**: Tailwind CSS
-- **Design System & Typography**: Google Fonts (*Outfit*, *Inter*, *JetBrains Mono*) & FontAwesome 6
+- **Design System & Typography**: Google Fonts (*Space Grotesk* display, *Syne* body, *JetBrains Mono* labels) & FontAwesome 6
 - **Animation & Physics Libraries**: GSAP, AOS, Lenis Scroll, Vanilla-Tilt.js
 
 ---
 
 ## 📂 Featured Backend Systems
 
-1. **Enterprise Real-Time Chat & Notification System**
-   - Built with Spring Boot, WebSocket (STOMP), Redis Pub/Sub, and PostgreSQL.
-   - Supports role-based channel security and instant message persistence.
+1. **[Event Booking System](https://github.com/kritagya025/Event-Booking-System)**
+   - High-concurrency event reservation and e-ticketing backend: 83 REST endpoints across 16 controllers and 13 JPA entities.
+   - Optimistic locking (`@Version`), seat-lock expiration, Redis caching, real-time seat availability over STOMP WebSockets, and JWT/RBAC security — validated by 39 JUnit/Mockito tests.
 
-2. **High-Throughput E-Commerce Microservices Engine**
-   - Distributed inventory and order processing API with Spring Cloud, Kafka, and PostgreSQL indexing.
+2. **[LinkPulse – URL Shortener Platform](https://github.com/kritagya025/URL_SHORTNER-LinkPluse-)** · [Live Demo](https://linkpulse-frontend.onrender.com/)
+   - Production Spring Boot service on Render with a GitHub Actions → Docker Hub → Render CI/CD pipeline.
+   - Base62 short-code engine, indexed PostgreSQL lookups, HikariCP pooling, and 16 JUnit tests that gate every build.
 
-3. **Distributed Task Scheduler & Job Queue**
-   - Asynchronous job execution pipeline utilizing Redis locks and Spring Quartz Scheduler.
+3. **KeyVault**
+   - Focused Spring Boot service for key and credential management with a Controller-Service-Repository architecture and server-side validation.
 
 ---
 
@@ -91,6 +96,7 @@ Tested and optimized for modern evergreen browsers including Google Chrome, Micr
 
 - **LinkedIn**: [Kritagya Yadav](https://www.linkedin.com/in/kritagya-yadav/)
 - **GitHub**: [@kritagya025](https://github.com/kritagya025)
+- **LeetCode**: [Kritagya028](https://leetcode.com/u/Kritagya028)
 - **Email**: [kritagyay2006@gmail.com](mailto:kritagyay2006@gmail.com)
 
 ---
@@ -130,8 +136,9 @@ Portfolio-main/
 | **CDN-loaded libraries** | Avoids `node_modules` bloat; leverages browser caching from shared CDNs |
 | **JSON-LD structured data** | Improves search engine rich snippet rendering (Person schema) |
 | **Intersection Observer** | Efficient scroll-based nav highlighting without costly scroll listeners |
-| **CSS `contain` property** | Enables browser layout isolation for Bento Grid performance |
-| **`prefers-reduced-motion`** | WCAG 2.1 AA compliance for motion-sensitive users |
+| **HSL design tokens** | One set of CSS variables powers Tailwind colours, both themes, and the particle canvas |
+| **Native `<dialog>`** | Built-in focus trapping, `Esc` handling, and focus restoration for every overlay |
+| **`prefers-reduced-motion`** | WCAG 2.1 AA compliance: disables smooth scroll, pinning, parallax, and reveal animations |
 
 ---
 
@@ -140,7 +147,7 @@ Portfolio-main/
 - **Critical font preloading** via `<link rel="preload">` to eliminate render-blocking
 - **DNS prefetching** for all CDN origins (`fonts.googleapis.com`, `unpkg.com`, `cdnjs.cloudflare.com`)
 - **Lazy loading** with `loading="lazy"` and `decoding="async"` on below-fold images
-- **CSS containment** (`contain: layout style`) on the Bento Grid for isolated reflows
+- **rAF-throttled scroll handling** — one batched update per frame drives the navbar, progress bar, parallax, and pinned showcase
 - **`will-change`** hints on animated elements for GPU layer promotion
 - **Smooth scroll** via Lenis with custom easing for 60fps inertia scrolling
 
@@ -160,6 +167,6 @@ Alternatively, deploy to any static hosting provider (Netlify, Vercel, Cloudflar
 ---
 
 *Designed & Maintained by Kritagya Yadav.*
-> Last updated: 2026-10-08
+> Last updated: 2026-10-20
 
 
