@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.1.0] - 2026-10-20
+
+### Added
+- Bean, a floating three.js robot guide (`js/bean-bot.js`): LED-matrix face, cursor-following eyes, flies between the hero, section headings, and a corner dock; contextual speech bubbles; reactions to filters, skill tabs, theme, copy email, and pokes; persistent show/hide toggle; lazy-loaded, WebGL-gated, reduced-motion aware
+- Native code-only language breakdown card (bytes per language across public non-fork repos, excluding HTML/CSS markup and notebooks), refreshed from the GitHub API with a 24-hour cache and bundled snapshot fallback
+- Direct KeyVault repository link
+
+### Changed
+- Replaced the third-party "Most Used Languages" image (which counted HTML/CSS bytes and under-represented Java) with the native language breakdown
+
+### Fixed
+- Pinned project showcase: filtered-out cards are now actually hidden, and the frame can no longer be scrolled sideways by focus (keyboard focus on an off-screen card slides it into view)
+
+---
+
 ## [3.0.0] - 2026-10-20
 
 ### Added

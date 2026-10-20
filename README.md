@@ -27,6 +27,8 @@ A modern, high-performance personal developer portfolio showcasing software engi
 - **🟢 Live Availability & Local Time**: Real-time hiring availability badge paired with dynamic Indian Standard Time (IST &middot; UTC+5:30) clock widget in the Hero and Contact sections.
 - **🗂️ Pinned Horizontal Project Showcase**: On desktop, featured projects scroll sideways inside a pinned viewport with a progress rail; tablets and phones get stacked cards. Category filters (*All*, *High Concurrency*, *Cloud & DevOps*, *Security & APIs*) keep their live counts.
 - **🔎 Project Detail Modals**: Each card opens a detail view with key metrics, highlights, tech stack, and source/live links.
+- **🤖 Bean, the Floating Robot Guide**: A procedural three.js robot with an LED-matrix face (`js/bean-bot.js`, no model files). He floats beside the hero, hovers above each section heading as it scrolls in, docks in the corner while you read, follows the cursor with his eyes, and reacts to project filters, skill tabs, theme changes, copied email, and pokes. The robot button (bottom-left) hides/shows him and the choice is remembered. Lazy-loaded after the intro, skipped without WebGL, and docked/still for reduced-motion users.
+- **📊 Code-Only Language Breakdown**: A native card that sums bytes per language across public, non-fork repositories (excluding HTML/CSS markup and notebooks), refreshed live from the GitHub API with a day-long cache and a bundled snapshot fallback.
 - **🏛️ System Architecture Deep Dive**: Interactive architecture modal detailing the Event Booking Engine's high-concurrency lifecycle, `@Version` optimistic locking, Redis TTL locks, and STOMP WebSocket broadcasting.
 - **🧭 Interactive Skills Explorer**: Eight skill categories in an accessible tab list (arrow-key navigation) with animated tool tiles; stacked cards on mobile.
 - **⌘ Command Palette & Shortcuts**: Fast navigation with `Ctrl+K` quick switcher (sections, project filters, architecture deep dive, theme toggle, copy email, resume) and `?` keyboard shortcuts cheatsheet modal.
@@ -50,6 +52,7 @@ A modern, high-performance personal developer portfolio showcasing software engi
 - **CSS Utility Engine**: Tailwind CSS
 - **Design System & Typography**: Google Fonts (*Space Grotesk* display, *Syne* body, *JetBrains Mono* labels) & FontAwesome 6
 - **Animation & Physics Libraries**: GSAP, AOS, Lenis Scroll, Vanilla-Tilt.js
+- **3D**: three.js (r160, ES module via import map) for the Bean robot guide
 
 ---
 
@@ -63,7 +66,7 @@ A modern, high-performance personal developer portfolio showcasing software engi
    - Production Spring Boot service on Render with a GitHub Actions → Docker Hub → Render CI/CD pipeline.
    - Base62 short-code engine, indexed PostgreSQL lookups, HikariCP pooling, and 16 JUnit tests that gate every build.
 
-3. **KeyVault**
+3. **[KeyVault](https://github.com/kritagya025/KeyVault)**
    - Focused Spring Boot service for key and credential management with a Controller-Service-Repository architecture and server-side validation.
 
 ---
@@ -89,6 +92,7 @@ Tested and optimized for modern evergreen browsers including Google Chrome, Micr
      python -m http.server 8000
      ```
    - Navigate to `http://localhost:8000`.
+   - Use a local server rather than opening the file directly if you want to see Bean, the robot guide: browsers block ES modules on `file://` URLs (the rest of the site works either way).
 
 ---
 
@@ -112,6 +116,7 @@ This project is open-source and available under the [MIT License](LICENSE).
 ```
 Portfolio-main/
 ├── index.html              # Single-page application (all HTML, CSS, JS)
+├── js/bean-bot.js          # Bean, the floating 3D robot guide (lazy-loaded ES module)
 ├── 404.html                # Custom GitHub Pages 404 error page
 ├── Kritagya_Yadav_Resume.pdf  # Downloadable resume asset
 ├── robots.txt              # SEO crawler directives
@@ -132,7 +137,7 @@ Portfolio-main/
 
 | Decision | Rationale |
 |---|---|
-| **Single HTML file** | Zero build step, instant deployment via GitHub Pages, no framework overhead |
+| **Single HTML file** | Zero build step, instant deployment via GitHub Pages, no framework overhead (the optional robot guide lives in one lazy-loaded module) |
 | **CDN-loaded libraries** | Avoids `node_modules` bloat; leverages browser caching from shared CDNs |
 | **JSON-LD structured data** | Improves search engine rich snippet rendering (Person schema) |
 | **Intersection Observer** | Efficient scroll-based nav highlighting without costly scroll listeners |

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 3.0.0 -->
+<!-- Portfolio Version: 3.1.0 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
@@ -807,12 +807,14 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      overflow: clip; /* clip, not hidden: focus/scrollIntoView must not be able to scroll the frame sideways */
     }
     .projects-pin.is-pinned .projects-head { padding-top: 5.75rem; }
     .projects-pin.is-pinned .projects-sub { display: none; }
     .projects-pin.is-pinned .projects-viewport { flex: 1; min-height: 0; width: 100%; max-width: none; margin: 0; padding: 0; display: flex; align-items: center; align-items: safe center; }
     .projects-pin.is-pinned .projects-track { flex-direction: row; gap: 0; width: 100%; will-change: transform; }
     .projects-pin.is-pinned .project-slot { flex: 0 0 100%; display: flex; align-items: center; justify-content: center; padding: 0 5rem; }
+    .projects-pin.is-pinned .project-slot.is-filtered-out { display: none; }
     .projects-pin.is-pinned .project-card { width: 100%; max-width: 64rem; padding: 2.25rem 2.75rem; }
     .projects-pin.is-pinned .project-num { font-size: 7.5rem; }
     .projects-pin.is-pinned .project-desc { max-width: none; }
@@ -931,6 +933,15 @@
     .link-card:hover .link-arrow { color: hsl(var(--primary)); transform: translate(3px, -3px); }
     .link-card:hover .link-value { color: hsl(var(--primary)); }
 
+    /* Language breakdown (code-only bytes from the GitHub API) */
+    .lang-bar { display: flex; gap: 3px; height: 12px; border-radius: 9999px; overflow: hidden; background: hsl(var(--secondary)); }
+    .lang-bar span { width: var(--w); background: var(--c); transition: width 0.8s var(--ease-out); }
+    .lang-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.875rem; border: 1px solid hsl(var(--border) / 0.6); background: hsl(var(--secondary) / 0.4); }
+    .lang-dot { width: 10px; height: 10px; flex-shrink: 0; border-radius: 9999px; background: var(--c); box-shadow: 0 0 10px var(--c); }
+    .lang-name { font-size: 0.875rem; font-weight: 600; }
+    .lang-pct { margin-left: auto; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
+    .lang-bytes { min-width: 4.5rem; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: hsl(var(--muted-foreground)); }
+
     .stat-img { width: 100%; max-width: 28rem; height: auto; }
     .stat-fallback { display: none; }
     .stat-card-img.is-broken .stat-img { display: none; }
@@ -1042,6 +1053,67 @@
     .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
     .back-to-top:hover { border-color: hsl(var(--primary) / 0.5); color: hsl(var(--primary)); }
 
+    /* ---- Bean, the floating robot guide (js/bean-bot.js) ---- */
+    .bot-layer { position: fixed; inset: 0; z-index: 45; pointer-events: none; overflow: hidden; transition: opacity 0.4s ease; }
+    .bot-layer.is-hidden { opacity: 0; }
+    .bot-layer.is-hidden .bot-hit { pointer-events: none; }
+    .bot-body {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+    .bot-body canvas { display: block; width: 100%; height: 100%; }
+    .bot-hit { position: absolute; inset: 6% 26% 6% 26%; border-radius: 40%; pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .bot-layer.is-compact .bot-hit { inset: 4% 24% 50% 24%; } /* touch: only the head is tappable, so taps reach the page */
+    .bot-bubble {
+      position: absolute;
+      left: 0;
+      top: 0;
+      max-width: 260px;
+      padding: 0.55rem 0.85rem;
+      border-radius: 14px;
+      border: 1px solid hsl(var(--primary) / 0.45);
+      background: hsl(var(--card) / 0.96);
+      box-shadow: 0 10px 30px -12px hsl(var(--primary) / 0.45);
+      color: hsl(var(--foreground));
+      font-size: 13px;
+      line-height: 1.45;
+      opacity: 0;
+      transition: opacity 0.18s ease;
+      will-change: transform;
+    }
+    .bot-bubble.is-visible { opacity: 1; }
+    .bot-bubble::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      background: inherit;
+      border: inherit;
+      transform: translateY(-50%) rotate(45deg);
+    }
+    .bot-bubble.tail-left::before { left: -6px; border-top: 0; border-right: 0; }
+    .bot-bubble.tail-right::before { right: -6px; border-bottom: 0; border-left: 0; }
+    .bot-toggle {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 46;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      color: hsl(var(--muted-foreground));
+      transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+    .bot-toggle:hover { color: hsl(var(--primary)); border-color: hsl(var(--primary) / 0.5); transform: scale(1.08); }
+    .bot-toggle[aria-pressed="true"] { color: hsl(var(--primary)); }
+
     /* ---- Keyframes ---- */
     @keyframes gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
     @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -1070,7 +1142,7 @@
       body { background: #ffffff !important; color: #000000 !important; }
       .preloader, .film-grain, .ambient-layer, #particle-canvas, .back-to-top, .scroll-progress,
       #navbar, dialog, #toast, .bg-word, .hero-bg-text, .hero-terminal, .hero-scroll, .hero-rail,
-      .marquee, .projects-progress { display: none !important; }
+      .marquee, .projects-progress, .bot-layer, .bot-toggle { display: none !important; }
       .glass-card, .dialog-panel {
         background: transparent !important;
         -webkit-backdrop-filter: none !important;
@@ -1722,7 +1794,7 @@
                     </ul>
                     <div class="mt-6 flex flex-wrap items-center gap-3">
                       <button type="button" class="project-explore mr-2" data-project-open="keyvault"><span class="w-4 h-px bg-current" aria-hidden="true"></span>Explore details</button>
-                      <a href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer" class="project-action"><i class="fab fa-github" aria-hidden="true"></i> GitHub Profile</a>
+                      <a href="https://github.com/kritagya025/KeyVault" target="_blank" rel="noopener noreferrer" class="project-action"><i class="fab fa-github" aria-hidden="true"></i> Source</a>
                     </div>
                   </div>
                 </div>
@@ -1935,10 +2007,36 @@
         </div>
       </div>
 
-      <div class="stat-card-img mt-6 glass-card rounded-3xl p-6 flex items-center justify-center min-h-[160px]" data-aos="fade-up" data-aos-delay="150">
-        <img class="stat-img !max-w-lg" src="https://github-readme-stats.vercel.app/api/top-langs/?username=kritagya025&layout=compact&hide=jupyter%20notebook&hide_border=true&bg_color=00000000&title_color=995af2&text_color=807a93" alt="Top Languages" loading="lazy" decoding="async" fetchpriority="low" width="350" height="140">
-        <a class="stat-fallback items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors" href="https://github.com/kritagya025?tab=repositories" target="_blank" rel="noopener noreferrer"><i class="fas fa-code text-2xl" aria-hidden="true"></i> Language stats are unavailable right now — browse the repositories</a>
-      </div>
+      <!-- Language breakdown: code-only bytes across public repos. Ships with a snapshot; JS refreshes it from the GitHub API -->
+      <article id="lang-card" class="mt-6 glass-card rounded-3xl p-6 md:p-8" data-aos="fade-up" data-aos-delay="150" aria-labelledby="lang-card-title">
+        <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+          <div class="flex items-center gap-4">
+            <div class="icon-tile w-12 h-12 rounded-xl"><i class="fas fa-code text-lg" aria-hidden="true"></i></div>
+            <div>
+              <h3 id="lang-card-title" class="font-display text-xl font-bold">Language breakdown</h3>
+              <p class="font-mono text-xs text-muted-foreground mt-0.5">Bytes of code across my public GitHub repositories</p>
+            </div>
+          </div>
+          <span class="badge"><i class="fab fa-java text-xs" aria-hidden="true"></i> Primary · <span id="lang-primary">Java</span></span>
+        </div>
+        <div id="lang-bar" class="lang-bar" aria-hidden="true">
+          <span style="--w:53.71%; --c:hsl(var(--primary))"></span>
+          <span style="--w:42.47%; --c:hsl(var(--accent))"></span>
+          <span style="--w:3.51%; --c:hsl(var(--neon))"></span>
+          <span style="--w:0.31%; --c:hsl(var(--muted-foreground) / 0.7)"></span>
+        </div>
+        <ul id="lang-list" class="grid sm:grid-cols-2 gap-3 mt-6">
+          <li class="lang-row"><span class="lang-dot" style="--c:hsl(var(--primary))"></span><span class="lang-name">Java</span><span class="lang-pct">53.7%</span><span class="lang-bytes">776 KB</span></li>
+          <li class="lang-row"><span class="lang-dot" style="--c:hsl(var(--accent))"></span><span class="lang-name">JavaScript</span><span class="lang-pct">42.5%</span><span class="lang-bytes">614 KB</span></li>
+          <li class="lang-row"><span class="lang-dot" style="--c:hsl(var(--neon))"></span><span class="lang-name">Python</span><span class="lang-pct">3.5%</span><span class="lang-bytes">51 KB</span></li>
+          <li class="lang-row"><span class="lang-dot" style="--c:hsl(var(--muted-foreground) / 0.7)"></span><span class="lang-name">Dockerfile</span><span class="lang-pct">0.3%</span><span class="lang-bytes">4 KB</span></li>
+        </ul>
+        <p class="font-mono text-[11px] text-muted-foreground mt-6 leading-relaxed">
+          Code only: HTML/CSS markup, Jupyter notebooks and forked repositories are excluded.
+          <span id="lang-updated">Snapshot from Oct 2026 · 24 repositories.</span>
+          <a href="https://github.com/kritagya025?tab=repositories" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline whitespace-nowrap">Browse repositories <i class="fas fa-arrow-right -rotate-45 text-[9px]" aria-hidden="true"></i></a>
+        </p>
+      </article>
     </div>
   </section>
 
@@ -2392,7 +2490,7 @@
       <li class="chip">Java</li><li class="chip">Spring Boot</li><li class="chip">RESTful APIs</li><li class="chip">PostgreSQL</li><li class="chip">Spring Data JPA</li>
     </ul>
     <div class="flex flex-wrap gap-3 shrink-0">
-      <a href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer" class="project-action"><i class="fab fa-github" aria-hidden="true"></i> GitHub Profile</a>
+      <a href="https://github.com/kritagya025/KeyVault" target="_blank" rel="noopener noreferrer" class="project-action"><i class="fab fa-github" aria-hidden="true"></i> Source</a>
     </div>
   </div>
 </template>
@@ -2503,6 +2601,7 @@
       root.classList.add('has-dialog');
       if (lenis) lenis.stop();
       requestAnimationFrame(() => requestAnimationFrame(() => dialog.classList.add('is-open')));
+      document.dispatchEvent(new CustomEvent('ky:dialog', { detail: { id: dialog.id, open: true } }));
     },
     close(dialog) {
       return new Promise((resolve) => {
@@ -2534,6 +2633,7 @@
     dialog.addEventListener('close', () => {
       dialog.classList.remove('is-open');
       releaseScrollLockIfIdle();
+      document.dispatchEvent(new CustomEvent('ky:dialog', { detail: { id: dialog.id, open: false } }));
       // If the element that opened this dialog vanished, fall back to a sensible focus target
       requestAnimationFrame(() => {
         const active = document.activeElement;
@@ -2600,7 +2700,11 @@
       ? navigator.clipboard.writeText(EMAIL).catch(fallback)
       : fallback();
     return attempt
-      .then(() => { showToast('Email copied to clipboard!'); return true; })
+      .then(() => {
+        showToast('Email copied to clipboard!');
+        document.dispatchEvent(new CustomEvent('ky:copy-email'));
+        return true;
+      })
       .catch(() => { showToast('Failed to copy email'); return false; });
   }
   $$('.copy-email-btn').forEach((btn) => {
@@ -2709,6 +2813,8 @@
     }
     initCountUps();
     initRoleRotator();
+    root.dataset.ready = 'true';
+    document.dispatchEvent(new CustomEvent('ky:ready'));
 
     // Re-apply a deep link once layout (pinned projects) has settled
     if (location.hash && location.hash.length > 1) {
@@ -2886,7 +2992,7 @@
     }
     const dots = dotsEl ? $$('.skill-dot', dotsEl) : [];
 
-    function select(index, { focus = false } = {}) {
+    function select(index, { focus = false, announce = true } = {}) {
       tabs.forEach((tab, i) => {
         const active = i === index;
         tab.classList.toggle('is-active', active);
@@ -2904,6 +3010,11 @@
       void panel.offsetWidth;
       panel.classList.add('is-animating');
       if (focus) tabs[index].focus();
+      if (announce) {
+        document.dispatchEvent(new CustomEvent('ky:skill', {
+          detail: { id: tabs[index].id.replace('skill-tab-', ''), label: tabs[index].querySelector('.skill-tab-label').textContent },
+        }));
+      }
     }
 
     tabs.forEach((tab, i) => {
@@ -2919,7 +3030,7 @@
         select(next, { focus: true });
       });
     });
-    select(0);
+    select(0, { announce: false });
   })();
 
   // ---- Projects: filters, pinned horizontal showcase, detail modal ----
@@ -2998,6 +3109,10 @@
       });
       layout();
       if (typeof AOS !== 'undefined') AOS.refresh();
+      const activeBtn = filterBtns.find((btn) => btn.dataset.filter === filterId);
+      document.dispatchEvent(new CustomEvent('ky:filter', {
+        detail: { filter: filterId, label: activeBtn ? activeBtn.querySelector('span').textContent : filterId },
+      }));
       // Inside the pinned showcase, jump back to the first card of the new selection
       const rect = pin.getBoundingClientRect();
       if (scroll || (pinned && rect.top < 0)) {
@@ -3006,6 +3121,22 @@
     };
 
     filterBtns.forEach((btn) => btn.addEventListener('click', () => setActiveProjectFilter(btn.dataset.filter)));
+
+    // Browsers without overflow: clip can still scroll the pinned frame to reveal a focused element; undo that
+    const sticky = pin.querySelector('.projects-sticky');
+    sticky.addEventListener('scroll', () => { if (sticky.scrollLeft) sticky.scrollLeft = 0; });
+
+    // Keyboard focus on an off-screen card in the pinned showcase: scroll the page until that card slides in
+    track.addEventListener('focusin', (e) => {
+      if (!pinned) return;
+      const slot = e.target.closest('.project-slot');
+      const visible = visibleSlots();
+      const index = visible.indexOf(slot);
+      if (index < 0 || visible.length < 2) return;
+      const total = pin.offsetHeight - window.innerHeight;
+      const pinTop = pin.getBoundingClientRect().top + window.scrollY;
+      scrollToTarget(pinTop + (total * index) / (visible.length - 1), { immediate: true });
+    });
 
     // Detail modal
     function openProject(slug, opener) {
@@ -3243,6 +3374,95 @@
     if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) markBroken();
   });
 
+  // ---- Language breakdown: refresh the bundled snapshot from the GitHub API ----
+  // Sums bytes per language across public, non-fork repositories, skipping markup and notebooks.
+  // Cached for a day so repeat visits don't burn the API's unauthenticated rate limit (60/hour).
+  (function initLanguageCard() {
+    const card = $('#lang-card');
+    if (!card || !window.fetch || !('IntersectionObserver' in window)) return;
+    const USER = 'kritagya025';
+    const EXCLUDED = new Set(['HTML', 'CSS', 'SCSS', 'Less', 'Jupyter Notebook']);
+    const CACHE_KEY = 'ky-langs-v1';
+    const CACHE_TTL = 24 * 60 * 60 * 1000;
+    const MAX_ROWS = 5;
+    const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--neon))'];
+    const MUTED = 'hsl(var(--muted-foreground) / 0.7)';
+    const formatBytes = (bytes) => (bytes >= 1e6 ? `${(bytes / 1e6).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1000))} KB`);
+
+    function render({ totals, repoCount, fetchedAt }) {
+      const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+      const total = entries.reduce((sum, [, bytes]) => sum + bytes, 0);
+      if (!total) return;
+      const rows = entries.slice(0, MAX_ROWS);
+      const rest = entries.slice(MAX_ROWS).reduce((sum, [, bytes]) => sum + bytes, 0);
+      if (rest > 0) rows.push(['Other', rest]);
+      const colorFor = (i, name) => (name === 'Other' ? MUTED : COLORS[i] || MUTED);
+
+      $('#lang-bar').replaceChildren(...rows.map(([name, bytes], i) => {
+        const seg = document.createElement('span');
+        seg.style.setProperty('--w', `${((bytes / total) * 100).toFixed(2)}%`);
+        seg.style.setProperty('--c', colorFor(i, name));
+        return seg;
+      }));
+      $('#lang-list').replaceChildren(...rows.map(([name, bytes], i) => {
+        const row = document.createElement('li');
+        row.className = 'lang-row';
+        const dot = document.createElement('span');
+        dot.className = 'lang-dot';
+        dot.style.setProperty('--c', colorFor(i, name));
+        const label = document.createElement('span');
+        label.className = 'lang-name';
+        label.textContent = name;
+        const pct = document.createElement('span');
+        pct.className = 'lang-pct';
+        pct.textContent = `${((bytes / total) * 100).toFixed(1)}%`;
+        const size = document.createElement('span');
+        size.className = 'lang-bytes';
+        size.textContent = formatBytes(bytes);
+        row.append(dot, label, pct, size);
+        return row;
+      }));
+      $('#lang-primary').textContent = entries[0][0];
+      const date = new Date(fetchedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      $('#lang-updated').textContent = `Live from GitHub, ${date} · ${repoCount} repositories.`;
+    }
+
+    async function fetchLanguages() {
+      const res = await fetch(`https://api.github.com/users/${USER}/repos?per_page=100&type=owner`);
+      if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+      const repos = (await res.json()).filter((repo) => !repo.fork);
+      const perRepo = await Promise.all(repos.map((repo) => fetch(repo.languages_url).then((r) => {
+        if (!r.ok) throw new Error(`GitHub API ${r.status}`);
+        return r.json();
+      })));
+      const totals = {};
+      perRepo.forEach((langs) => Object.entries(langs).forEach(([name, bytes]) => {
+        if (!EXCLUDED.has(name)) totals[name] = (totals[name] || 0) + bytes;
+      }));
+      return { totals, repoCount: repos.length, fetchedAt: Date.now() };
+    }
+
+    function load() {
+      try {
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+        if (cached && Date.now() - cached.fetchedAt < CACHE_TTL) { render(cached); return; }
+      } catch (e) { /* ignore an unreadable cache */ }
+      fetchLanguages()
+        .then((data) => {
+          render(data);
+          try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) { /* storage unavailable */ }
+        })
+        .catch(() => { /* rate-limited or offline: keep the bundled snapshot */ });
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      io.disconnect();
+      load();
+    }, { rootMargin: '300px' });
+    io.observe(card);
+  })();
+
   // ---- Ambient orbs: mouse parallax (fine pointers only) ----
   if (finePointer && !prefersReducedMotion) {
     const parallaxBgs = $$('.parallax-bg');
@@ -3396,6 +3616,17 @@
   );
 })();
 </script>
+
+<!-- Bean, the floating robot guide: an ES module that lazy-loads three.js once the page intro finishes -->
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.min.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+<script type="module" src="js/bean-bot.js"></script>
 
 </body>
 </html>
