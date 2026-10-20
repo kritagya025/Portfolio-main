@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.12.0] - 2026-10-20
+
+### Changed
+- The robot guide is now named **Bella** (was Max): greeting ("I'm Bella, Kritagya's robo-wolf guide."), "Bella is back!", the show/hide button labels, code, comments, and docs; the module is renamed from `js/max-bot.js` to `js/bella-bot.js`
+- Bella's lines no longer guess Kritagya's pronouns: they use the name or neutral wording ("Kritagya's main language", "Kritagya graduates in 2027", "The internship at Compass")
+
+---
+
 ## [3.11.0] - 2026-10-20
 
 ### Added

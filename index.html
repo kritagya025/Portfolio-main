@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 3.11.0 -->
+<!-- Portfolio Version: 3.12.0 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
@@ -1212,7 +1212,7 @@
       100% { text-shadow: none; transform: none; }
     }
 
-    /* ---- Max, the wolf guide (js/max-bot.js) ---- */
+    /* ---- Bella, the robo-wolf guide (js/bella-bot.js) ---- */
     .bot-layer { position: fixed; inset: 0; z-index: 56; pointer-events: none; overflow: hidden; transition: opacity 0.4s ease; }
     .bot-layer.is-hidden { opacity: 0; }
     .bot-layer.is-hidden .bot-hit { pointer-events: none; }
@@ -2448,7 +2448,7 @@
   <span id="toast-message">Copied to clipboard!</span>
 </div>
 
-<!-- Section transition: the warp portal (driven by navigateTo; Max flies in beside the title) -->
+<!-- Section transition: the warp portal (driven by navigateTo; Bella flies in beside the title) -->
 <div id="section-portal" class="section-portal" aria-hidden="true">
   <div class="portal-surface">
     <div class="portal-grid"></div>
@@ -2830,7 +2830,7 @@
   // ---- Section transition: the warp portal ----
   // Jumping to a section opens a portal from the link you clicked (or the screen center), shows the
   // route loading inside it, moves the page while it covers the screen, then collapses it into the
-  // center. Max (js/max-bot.js) listens for 'ky:portal' and flies in beside the title.
+  // center. Bella (js/bella-bot.js) listens for 'ky:portal' and flies in beside the title.
   const SECTION_TITLES = {
     top: 'Home',
     about: 'About',
@@ -4013,7 +4013,7 @@
 })();
 </script>
 
-<!-- Max, the wolf guide: an ES module that lazy-loads three.js and his model once the page intro finishes -->
+<!-- Bella, the robo-wolf guide: an ES module that builds the robot with three.js while the page intro plays -->
 <script type="importmap">
   {
     "imports": {
@@ -4022,7 +4022,7 @@
     }
   }
 </script>
-<script type="module" src="js/max-bot.js"></script>
+<script type="module" src="js/bella-bot.js"></script>
 
 </body>
 </html>

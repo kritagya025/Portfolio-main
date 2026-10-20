@@ -1,39 +1,39 @@
 /**
- * Max: the hovering robo-wolf guide for Kritagya Yadav's portfolio.
+ * Bella: the hovering robo-wolf guide for Kritagya Yadav's portfolio.
  *
  * - Lazy-loads three.js (mapped by the import map in index.html) after the page intro finishes,
  *   and only when the browser supports WebGL.
  * - An original design built in code (no model file): a helmet head with metal wolf ears and a
- *   curved LED visor showing a wolf face (heart eyes when he says hello), a floating neck ring,
+ *   curved LED visor showing a wolf face (heart eyes when Bella says hello), a floating neck ring,
  *   an egg-shaped body with a pulsing core, paw hands, a segmented tail, a hover thruster that
  *   sheds sparks, twin back boosters, and a holographic orbit ring.
- * - Flies alongside the cursor while it moves and turns his body and eyes to look at it; flies to
+ * - Flies alongside the cursor while it moves and turns its body and eyes to look at it; flies to
  *   each section heading as it scrolls into view to introduce it; hovers by the hero terminal; flies
  *   into the section-transition portal; perches at the screen edge while you read; naps when you go idle.
- * - On touch screens and narrow windows he hovers in the empty middle of the navbar instead.
- * - The robot button in the bottom-left corner hides or shows Max; the choice is remembered.
- * - Honors prefers-reduced-motion: Max holds still, does not chase the cursor, and does not type letter by letter.
+ * - On touch screens and narrow windows Bella hovers in the empty middle of the navbar instead.
+ * - The robot button in the bottom-left corner hides or shows Bella; the choice is remembered.
+ * - Honors prefers-reduced-motion: Bella holds still, does not chase the cursor, and does not type letter by letter.
  */
 
 const HIDDEN_KEY = 'ky-bot-hidden';
 const root = document.documentElement;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-// Device profile: weaker hardware gets a lighter Max; data-saver connections don't download him unasked
+// Device profile: weaker hardware gets a lighter Bella; data-saver connections don't download Bella unasked
 const lowPower = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
 const connection = navigator.connection || {};
 const saveData = !!connection.saveData || /(^|-)2g$/.test(connection.effectiveType || '');
 
-const UNPROMPTED_GAP = 3500;   // minimum gap between lines Max starts on his own
-const HOVER_DWELL = 450;       // how long the pointer must rest on something before Max explains it
-const HOVER_COOLDOWN = 20000;  // before he explains the same element again
+const UNPROMPTED_GAP = 3500;   // minimum gap between lines Bella starts unprompted
+const HOVER_DWELL = 450;       // how long the pointer must rest on something before Bella explains it
+const HOVER_COOLDOWN = 20000;  // before Bella explains the same element again
 const SKILL_COOLDOWN = 4000;
 const SLEEP_AFTER = 45000;
 const IDLE_CHAT_AFTER = 8000;  // small talk after this long without speaking (while someone is around)
 const FOLLOW_IDLE = 4500;      // stop chasing the cursor once it has been still this long
-const PRESENT_MS = 4800;       // how long Max stays at a new section heading to introduce it
+const PRESENT_MS = 4800;       // how long Bella stays at a new section heading to introduce it
 const NAV_CLEARANCE = 84;      // keep clear of the fixed navbar
-const BOX = { desktop: 360, compact: 170 }; // size of Max's canvas in px (his on-screen scale multiplies it)
+const BOX = { desktop: 360, compact: 170 }; // size of Bella's canvas in px (the on-screen scale multiplies it)
 const FPS = { compact: 30, sleeping: 20 };   // frame-rate caps that save battery (desktop runs at the display rate)
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
@@ -63,7 +63,7 @@ const storage = {
 };
 
 /* ------------------------------------------------------------------------------------------------
- * Lines: everything Max says, written from the facts on this site
+ * Lines: everything Bella says, written from the facts on this site
  * ---------------------------------------------------------------------------------------------- */
 
 function timeOfDay() {
@@ -74,12 +74,12 @@ function timeOfDay() {
 }
 
 // A line is a string, or a list of parts { t: text, e: expression, g: gesture }. As the typing reaches
-// a part, Max switches to its expression (idle, happy, love, wow, think, cool, wink, surprised, sad,
-// cry, blush, dizzy, sleepy) and plays its gesture (nod, hop, spin, wave, wag), so he reacts mid-sentence.
+// a part, Bella switches to its expression (idle, happy, love, wow, think, cool, wink, surprised, sad,
+// cry, blush, dizzy, sleepy) and plays its gesture (nod, hop, spin, wave, wag), so Bella reacts mid-sentence.
 const LINES = {
   greet: () => [
     { t: `Good ${timeOfDay()}!`, e: 'love' },
-    { t: " I'm Max, Kritagya's robo-wolf guide.", e: 'love', g: 'wave' },
+    { t: " I'm Bella, Kritagya's robo-wolf guide.", e: 'love', g: 'wave' },
   ],
   greetFollow: {
     desktop: [[{ t: 'Point at anything on this page', e: 'think' }, { t: " and I'll tell you all about it!", e: 'happy', g: 'wag' }]],
@@ -89,23 +89,23 @@ const LINES = {
   sections: {
     about: [
       [{ t: "This is the 'who is Kritagya' part.", e: 'happy' }, { t: ' Short version: Java, Spring Boot, and lots of tests.', e: 'cool', g: 'nod' }],
-      [{ t: 'B.Tech CSE, graduating 2027.', e: 'happy' }, { t: ' Backend is his thing!', e: 'love', g: 'wag' }],
+      [{ t: 'B.Tech CSE, graduating 2027.', e: 'happy' }, { t: ' Backend is their thing!', e: 'love', g: 'wag' }],
     ],
     skills: [
-      [{ t: 'His toolbox:', e: 'happy' }, { t: ' 52 skills across 8 categories!', e: 'wow', g: 'hop' }],
+      [{ t: "Kritagya's toolbox:", e: 'happy' }, { t: ' 52 skills across 8 categories!', e: 'wow', g: 'hop' }],
       [{ t: 'Spring Boot, PostgreSQL, Redis, Docker...', e: 'cool' }, { t: " point at any tile and I'll explain it.", e: 'happy' }],
     ],
     experience: [
-      [{ t: 'His internship at Compass:', e: 'happy' }, { t: ' 50 merged commits and 25+ defects addressed!', e: 'wow', g: 'hop' }],
+      [{ t: "Kritagya's internship at Compass:", e: 'happy' }, { t: ' 50 merged commits and 25+ defects addressed!', e: 'wow', g: 'hop' }],
       [{ t: 'Software Engineering & QA Intern at an AI travel startup.', e: 'cool' }, { t: ' Real bugs, real fixes.', e: 'happy', g: 'nod' }],
     ],
     projects: [[{ t: 'Three backend builds!', e: 'wow' }, { t: ' Click any card for the full breakdown.', e: 'happy' }]],
-    learning: [[{ t: "What he's studying next:", e: 'think' }, { t: ' microservices, Kafka and Kubernetes.', e: 'happy' }]],
+    learning: [[{ t: 'What Kritagya is studying next:', e: 'think' }, { t: ' microservices, Kafka and Kubernetes.', e: 'happy' }]],
     education: [[{ t: 'B.Tech CSE at KCC ITM, CGPA 7.58.', e: 'happy' }, { t: ' Plus two certifications!', e: 'wow' }]],
     'github-activity': [[{ t: 'Live numbers straight from GitHub.', e: 'cool' }, { t: ' Java leads the pack!', e: 'love' }]],
     contact: [
-      [{ t: "Here's how to reach him.", e: 'happy' }, { t: " Email is fastest; there's a copy button!", e: 'love', g: 'wave' }],
-      [{ t: "He's open to backend roles and internships.", e: 'love' }, { t: ' Just saying!', e: 'wink' }],
+      [{ t: "Here's how to reach Kritagya.", e: 'happy' }, { t: " Email is fastest; there's a copy button!", e: 'love', g: 'wave' }],
+      [{ t: 'Kritagya is open to backend roles and internships.', e: 'love' }, { t: ' Just saying!', e: 'wink' }],
     ],
   },
   filters: {
@@ -114,7 +114,7 @@ const LINES = {
     devops: [{ t: 'Cloud & DevOps:', e: 'cool' }, { t: ' LinkPulse ships itself to Render.', e: 'happy', g: 'nod' }],
     security: [{ t: 'Security & APIs:', e: 'cool' }, { t: ' the Event Booking System and KeyVault.', e: 'happy', g: 'nod' }],
   },
-  copied: [[{ t: 'Fetched!', e: 'happy', g: 'hop' }, { t: ' His email is on your clipboard.', e: 'love', g: 'wag' }]],
+  copied: [[{ t: 'Fetched!', e: 'happy', g: 'hop' }, { t: " Kritagya's email is on your clipboard.", e: 'love', g: 'wag' }]],
   themeLight: [[{ t: 'Too bright!', e: 'surprised' }, { t: ' My LEDs are squinting.', e: 'wink' }]],
   themeDark: [[{ t: 'Ahh, night mode.', e: 'happy' }, { t: ' Wolf hours!', e: 'love', g: 'wag' }]],
   poke: [
@@ -127,7 +127,7 @@ const LINES = {
   dizzy: [[{ t: 'Okay, okay!', e: 'dizzy' }, { t: " I'm dizzy now...", e: 'dizzy' }]],
   wake: [[{ t: 'Huh?!', e: 'surprised', g: 'hop' }, { t: " I'm up, I'm up!", e: 'happy' }]],
   hide: [[{ t: 'W-wait...', e: 'sad' }, { t: ' you are hiding me?', e: 'sad' }, { t: ' *sniff*', e: 'cry' }, { t: ' Okay... the robot button brings me back.', e: 'cry', g: 'wave' }]],
-  show: [[{ t: 'Systems online!', e: 'wow', g: 'spin' }, { t: ' Max is back!', e: 'love', g: 'wave' }]],
+  show: [[{ t: 'Systems online!', e: 'wow', g: 'spin' }, { t: ' Bella is back!', e: 'love', g: 'wave' }]],
   petting: [
     [{ t: 'Hehe!', e: 'blush' }, { t: ' Head pats accepted.', e: 'love', g: 'wag' }],
     [{ t: 'Oh, hi!', e: 'surprised' }, { t: ' Need anything? Just point at it.', e: 'happy' }],
@@ -136,7 +136,7 @@ const LINES = {
   // Small talk when things are quiet (only while someone is actually around)
   chatter: [
     [{ t: 'Fun fact:', e: 'think' }, { t: ' LinkPulse runs its tests against a live database before every deploy.', e: 'wow' }],
-    [{ t: 'Did you know?', e: 'think' }, { t: ' At Compass he helped stop a 500-request burst from slipping past a limit of 10.', e: 'wow', g: 'hop' }],
+    [{ t: 'Did you know?', e: 'think' }, { t: ' At Compass, Kritagya helped stop a 500-request burst from slipping past a limit of 10.', e: 'wow', g: 'hop' }],
     [{ t: 'Tip:', e: 'wink' }, { t: ' click any project card for the full story.', e: 'happy' }],
     [{ t: 'Psst...', e: 'wink' }, { t: ' Ctrl+K jumps anywhere on this page.', e: 'happy' }],
     [{ t: 'Tip:', e: 'wink' }, { t: ' press ? to see every keyboard shortcut.', e: 'happy' }],
@@ -148,14 +148,14 @@ const LINES = {
       if (!row) return null;
       const name = row.querySelector('.lang-name').textContent;
       const pct = row.querySelector('.lang-pct').textContent;
-      return [{ t: `${name} makes up ${pct} of the code in his public repos.`, e: 'love' }, { t: ' Check the language card!', e: 'happy' }];
+      return [{ t: `${name} makes up ${pct} of the code in Kritagya's public repos.`, e: 'love' }, { t: ' Check the language card!', e: 'happy' }];
     },
-    [{ t: 'He graduates in 2027.', e: 'happy' }, { t: ' Recruiters, take note!', e: 'wink', g: 'wave' }],
+    [{ t: 'Kritagya graduates in 2027.', e: 'happy' }, { t: ' Recruiters, take note!', e: 'wink', g: 'wave' }],
     [{ t: 'Two kinds of locks,', e: 'cool' }, { t: ' one booking per seat. Concurrency is fun!', e: 'happy', g: 'nod' }],
-    [{ t: 'Want to say hi to him?', e: 'love' }, { t: ' The Contact section has a copy-email button.', e: 'happy' }],
+    [{ t: 'Want to say hi to Kritagya?', e: 'love' }, { t: ' The Contact section has a copy-email button.', e: 'happy' }],
     [{ t: "Still here? I'm enjoying the company.", e: 'blush', g: 'wag' }],
   ],
-  // Things Max notices about what you are doing
+  // Things Bella notices about what you are doing
   situations: {
     scrollFast: [
       [{ t: 'Whoa, whoa!', e: 'dizzy' }, { t: ' Speed-reading?', e: 'surprised' }],
@@ -174,29 +174,29 @@ const LINES = {
 };
 
 /* ------------------------------------------------------------------------------------------------
- * Explanations: what Max says when the pointer rests on something (or it is tapped on a phone)
+ * Explanations: what Bella says when the pointer rests on something (or it is tapped on a phone)
  * ---------------------------------------------------------------------------------------------- */
 
 // Every skill, chip, and tag on the page, keyed by its lowercase text
 const SKILL_TALK = {
-  java: [{ t: 'Java!', e: 'love', g: 'wag' }, { t: ' His main language: typed, fast, and the engine behind both of his Spring Boot systems.', e: 'happy' }],
-  sql: [{ t: 'SQL', e: 'cool' }, { t: ' is how he talks to databases: selects, joins, indexes, the works.', e: 'happy' }],
-  javascript: [{ t: 'JavaScript runs in the browser.', e: 'happy' }, { t: ' He knows the basics; his heart is in the backend.', e: 'wink' }],
+  java: [{ t: 'Java!', e: 'love', g: 'wag' }, { t: " Kritagya's main language: typed, fast, and the engine behind both Spring Boot systems.", e: 'happy' }],
+  sql: [{ t: 'SQL', e: 'cool' }, { t: ' is how Kritagya talks to databases: selects, joins, indexes, the works.', e: 'happy' }],
+  javascript: [{ t: 'JavaScript runs in the browser.', e: 'happy' }, { t: ' Kritagya knows the basics; the backend is the real love.', e: 'wink' }],
   react: [{ t: 'React builds interfaces from components.', e: 'think' }, { t: ' The Event Booking System has a React frontend.', e: 'happy' }],
-  html: [{ t: 'HTML is the skeleton of every web page.', e: 'happy' }, { t: ' He knows it at a basic level.', e: 'wink' }],
-  css: [{ t: 'CSS makes pages look good.', e: 'happy' }, { t: ' Basic level, but hey, he has me!', e: 'blush' }],
+  html: [{ t: 'HTML is the skeleton of every web page.', e: 'happy' }, { t: ' Kritagya knows it at a basic level.', e: 'wink' }],
+  css: [{ t: 'CSS makes pages look good.', e: 'happy' }, { t: ' Basic level, but hey, Kritagya has me!', e: 'blush' }],
   'spring boot': [{ t: 'Spring Boot!', e: 'love', g: 'hop' }, { t: ' A Java framework that gets a production-ready backend running fast. Both big projects use it.', e: 'happy' }],
   'spring mvc': [{ t: 'Spring MVC', e: 'think' }, { t: ' maps web requests to controller methods. That is how REST endpoints get wired up.', e: 'happy' }],
   'spring security': [{ t: 'Spring Security', e: 'cool' }, { t: ' guards the doors: logins, tokens and who may do what.', e: 'happy', g: 'nod' }],
   'spring data jpa': [{ t: 'Spring Data JPA', e: 'happy' }, { t: ' turns Java interfaces into database queries. Less boilerplate!', e: 'wow' }],
   hibernate: [{ t: 'Hibernate', e: 'think' }, { t: ' maps Java objects to database tables. It is what JPA uses under the hood.', e: 'happy' }],
-  'restful api design': [{ t: 'REST APIs:', e: 'cool' }, { t: ' clean URLs, the right HTTP verbs, predictable JSON.', e: 'happy' }, { t: ' He has built 83+ endpoints!', e: 'wow', g: 'hop' }],
-  'restful apis': [{ t: 'REST APIs:', e: 'cool' }, { t: ' clean URLs, the right HTTP verbs, predictable JSON.', e: 'happy' }, { t: ' He has built 83+ endpoints!', e: 'wow', g: 'hop' }],
+  'restful api design': [{ t: 'REST APIs:', e: 'cool' }, { t: ' clean URLs, the right HTTP verbs, predictable JSON.', e: 'happy' }, { t: ' Kritagya has built 83+ endpoints!', e: 'wow', g: 'hop' }],
+  'restful apis': [{ t: 'REST APIs:', e: 'cool' }, { t: ' clean URLs, the right HTTP verbs, predictable JSON.', e: 'happy' }, { t: ' Kritagya has built 83+ endpoints!', e: 'wow', g: 'hop' }],
   'websocket (stomp)': [{ t: 'WebSockets keep a live connection open.', e: 'think' }, { t: ' In the Event Booking System, seat updates arrive instantly!', e: 'wow' }],
-  postgresql: [{ t: 'PostgreSQL', e: 'love' }, { t: ' is his go-to database: reliable, relational, and great with indexes.', e: 'happy', g: 'nod' }],
-  mysql: [{ t: 'MySQL,', e: 'happy' }, { t: ' another popular relational database in his kit.', e: 'cool' }],
+  postgresql: [{ t: 'PostgreSQL', e: 'love' }, { t: ' is the go-to database here: reliable, relational, and great with indexes.', e: 'happy', g: 'nod' }],
+  mysql: [{ t: 'MySQL,', e: 'happy' }, { t: ' another popular relational database in the kit.', e: 'cool' }],
   redis: [{ t: 'Redis is lightning fast!', e: 'wow', g: 'hop' }, { t: ' It keeps data in memory, which makes it perfect for caching.', e: 'happy' }],
-  'sql queries & joins': [{ t: 'Joins', e: 'think' }, { t: ' stitch rows from different tables together. Simple ones, complex ones, he writes both.', e: 'cool' }],
+  'sql queries & joins': [{ t: 'Joins', e: 'think' }, { t: ' stitch rows from different tables together. Simple ones, complex ones, Kritagya writes both.', e: 'cool' }],
   indexing: [{ t: 'Indexes are like the index of a book:', e: 'think' }, { t: ' the database finds rows without reading everything. LinkPulse lookups are indexed.', e: 'cool', g: 'nod' }],
   'schema design': [{ t: 'Schema design', e: 'think' }, { t: ' means planning tables and relations before writing code. The Event Booking System has 13 JPA entities!', e: 'wow' }],
   'jwt authentication': [{ t: 'JWTs are signed tokens', e: 'cool' }, { t: ' that prove who you are, so every request can be checked without a session.', e: 'happy', g: 'nod' }],
@@ -208,8 +208,8 @@ const SKILL_TALK = {
   docker: [{ t: 'Docker', e: 'happy' }, { t: ' packs an app and everything it needs into a container that runs the same everywhere.', e: 'cool' }],
   'docker compose': [{ t: 'Docker Compose', e: 'happy' }, { t: ' starts several containers together, like an app plus its database.', e: 'cool' }],
   'multi-stage builds': [{ t: 'Multi-stage builds', e: 'think' }, { t: ' compile in one stage and ship only the result.', e: 'cool' }, { t: ' LinkPulse uses a 3-stage build!', e: 'wow' }],
-  'github actions (ci/cd)': [{ t: 'GitHub Actions', e: 'cool' }, { t: ' runs his tests automatically. LinkPulse tests against a live database before every deploy.', e: 'wow', g: 'nod' }],
-  'github actions': [{ t: 'GitHub Actions', e: 'cool' }, { t: ' runs his tests automatically. LinkPulse tests against a live database before every deploy.', e: 'wow', g: 'nod' }],
+  'github actions (ci/cd)': [{ t: 'GitHub Actions', e: 'cool' }, { t: ' runs the tests automatically. LinkPulse tests against a live database before every deploy.', e: 'wow', g: 'nod' }],
+  'github actions': [{ t: 'GitHub Actions', e: 'cool' }, { t: ' runs the tests automatically. LinkPulse tests against a live database before every deploy.', e: 'wow', g: 'nod' }],
   render: [{ t: 'Render', e: 'happy' }, { t: ' is the cloud host where LinkPulse runs live.', e: 'cool' }],
   nginx: [{ t: 'Nginx', e: 'cool' }, { t: ' is a fast web server and reverse proxy.', e: 'happy' }],
   'junit 5': [{ t: 'JUnit 5', e: 'happy' }, { t: " is Java's testing framework. LinkPulse alone has 39 JUnit and Mockito tests!", e: 'wow', g: 'hop' }],
@@ -217,14 +217,14 @@ const SKILL_TALK = {
   mockmvc: [{ t: 'MockMvc', e: 'cool' }, { t: ' tests REST controllers with pretend HTTP requests, no server needed.', e: 'happy' }],
   'unit testing': [{ t: 'Unit tests', e: 'happy' }, { t: ' check small pieces of code on their own.', e: 'cool', g: 'nod' }],
   'integration testing': [{ t: 'Integration tests', e: 'think' }, { t: ' check that the pieces work together, like code plus a real database.', e: 'happy' }],
-  'manual & exploratory testing': [{ t: 'Exploratory testing:', e: 'think' }, { t: ' poking at an app like a curious user to find bugs scripts miss.', e: 'wink' }, { t: ' He did that as a QA intern!', e: 'happy' }],
+  'manual & exploratory testing': [{ t: 'Exploratory testing:', e: 'think' }, { t: ' poking at an app like a curious user to find bugs scripts miss.', e: 'wink' }, { t: ' Kritagya did that as a QA intern!', e: 'happy' }],
   'bean validation': [{ t: 'Bean Validation', e: 'cool' }, { t: ' checks inputs with annotations like @NotNull, before bad data gets anywhere.', e: 'happy' }],
-  'git & github': [{ t: 'Git tracks every change;', e: 'happy' }, { t: ' GitHub hosts his repositories.', e: 'cool' }],
+  'git & github': [{ t: 'Git tracks every change;', e: 'happy' }, { t: ' GitHub hosts the repositories.', e: 'cool' }],
   maven: [{ t: 'Maven', e: 'happy' }, { t: ' builds Java projects and fetches their libraries.', e: 'cool' }],
   'intellij idea': [{ t: 'IntelliJ IDEA,', e: 'happy' }, { t: ' the Java IDE where the code gets written.', e: 'cool' }],
   postman: [{ t: 'Postman', e: 'happy' }, { t: ' sends test requests to APIs. Handy for poking endpoints!', e: 'wink' }],
   'swagger / openapi': [{ t: 'Swagger / OpenAPI', e: 'think' }, { t: ' documents an API so anyone can read and try every endpoint.', e: 'happy' }],
-  'claude code': [{ t: "Hey, that's a cousin of mine!", e: 'blush', g: 'wag' }, { t: ' Claude Code is an AI coding assistant. He used it during his internship and holds the Anthropic certification.', e: 'happy' }],
+  'claude code': [{ t: "Hey, that's a cousin of mine!", e: 'blush', g: 'wag' }, { t: ' Claude Code is an AI coding assistant. Kritagya used it during the internship and holds the Anthropic certification.', e: 'happy' }],
   'linux cli': [{ t: 'The Linux command line:', e: 'cool' }, { t: ' where servers live.', e: 'wink' }],
   'data structures & algorithms': [{ t: 'DSA:', e: 'think' }, { t: ' arrays, trees, graphs, and the clever ways to use them.', e: 'happy' }],
   'data structures': [{ t: 'Data structures:', e: 'think' }, { t: ' arrays, trees, graphs, and the clever ways to use them.', e: 'happy' }],
@@ -239,17 +239,17 @@ const SKILL_TALK = {
   'computer networks': [{ t: 'Computer networks:', e: 'think' }, { t: ' how data travels, from TCP to HTTP.', e: 'cool' }],
   'jwt & rbac': [{ t: 'JWT and RBAC:', e: 'cool' }, { t: ' tokens prove who you are; roles decide what you can do.', e: 'happy', g: 'nod' }],
   'junit 5 & mockito': [{ t: 'JUnit 5 and Mockito:', e: 'happy' }, { t: ' the testing duo. LinkPulse alone has 39 tests!', e: 'wow' }],
-  'java & spring boot': [{ t: 'His core:', e: 'love' }, { t: ' Java with Spring Boot.', e: 'happy', g: 'wag' }],
+  'java & spring boot': [{ t: 'The core:', e: 'love' }, { t: ' Java with Spring Boot.', e: 'happy', g: 'wag' }],
   'postgresql & redis': [{ t: 'PostgreSQL stores the data;', e: 'cool' }, { t: ' Redis makes it fast.', e: 'wow' }],
   'docker & ci/cd': [{ t: 'Containers plus automated pipelines:', e: 'cool' }, { t: ' code that ships itself!', e: 'wow' }],
   'jwt & rbac security': [{ t: 'Tokens prove who you are;', e: 'cool' }, { t: ' roles decide what you can do.', e: 'happy', g: 'nod' }],
-  'spring cloud': [{ t: 'Spring Cloud:', e: 'think' }, { t: ' tools for building microservices. On his learning list!', e: 'happy' }],
+  'spring cloud': [{ t: 'Spring Cloud:', e: 'think' }, { t: ' tools for building microservices. On the learning list!', e: 'happy' }],
   eureka: [{ t: 'Eureka', e: 'think' }, { t: ' lets microservices find each other.', e: 'happy' }],
   resilience4j: [{ t: 'Resilience4j', e: 'cool' }, { t: ' adds circuit breakers, so one failing service does not take down the rest.', e: 'happy' }],
   'apache kafka': [{ t: 'Kafka', e: 'wow' }, { t: ' streams events between services at huge scale.', e: 'cool' }],
   rabbitmq: [{ t: 'RabbitMQ', e: 'happy' }, { t: ' is a message broker: services drop messages, others pick them up.', e: 'cool' }],
   kubernetes: [{ t: 'Kubernetes', e: 'cool' }, { t: ' runs and scales containers automatically.', e: 'wow' }],
-  aws: [{ t: 'AWS:', e: 'happy' }, { t: " Amazon's cloud. Next on his list.", e: 'cool' }],
+  aws: [{ t: 'AWS:', e: 'happy' }, { t: " Amazon's cloud. Next on the list.", e: 'cool' }],
   terraform: [{ t: 'Terraform', e: 'think' }, { t: ' describes infrastructure as code.', e: 'cool' }],
   'concurrency testing': [{ t: 'Concurrency tests', e: 'cool' }, { t: ' fire many requests at once to catch race conditions,', e: 'think' }, { t: ' like that rate-limit bug!', e: 'wow' }],
   'api validation': [{ t: 'API validation', e: 'cool' }, { t: ' rejects bad input early, like checking what is really inside an upload.', e: 'happy' }],
@@ -257,13 +257,13 @@ const SKILL_TALK = {
 };
 
 const NAV_TALK = {
-  About: [{ t: 'About:', e: 'happy' }, { t: " who he is, in a nutshell. Click and I'll open a portal!", e: 'cool' }],
+  About: [{ t: 'About:', e: 'happy' }, { t: " who Kritagya is, in a nutshell. Click and I'll open a portal!", e: 'cool' }],
   Skills: [{ t: 'Skills:', e: 'happy' }, { t: ' 52 of them in 8 categories.', e: 'wow' }],
-  Experience: [{ t: 'Experience:', e: 'happy' }, { t: ' his internship at Compass.', e: 'cool' }],
+  Experience: [{ t: 'Experience:', e: 'happy' }, { t: ' the internship at Compass.', e: 'cool' }],
   Projects: [{ t: 'Projects:', e: 'happy' }, { t: ' three backend builds. My favorite part!', e: 'love' }],
-  Learning: [{ t: 'Learning:', e: 'think' }, { t: " what he's studying next.", e: 'happy' }],
-  Education: [{ t: 'Education:', e: 'happy' }, { t: ' his B.Tech and two certifications.', e: 'cool' }],
-  Contact: [{ t: 'Contact:', e: 'love' }, { t: ' how to reach him!', e: 'happy', g: 'wave' }],
+  Learning: [{ t: 'Learning:', e: 'think' }, { t: ' what Kritagya is studying next.', e: 'happy' }],
+  Education: [{ t: 'Education:', e: 'happy' }, { t: ' the B.Tech and two certifications.', e: 'cool' }],
+  Contact: [{ t: 'Contact:', e: 'love' }, { t: ' how to reach Kritagya!', e: 'happy', g: 'wave' }],
 };
 
 const FILTER_TALK = {
@@ -275,7 +275,7 @@ const FILTER_TALK = {
 
 const SKILL_TAB_TALK = {
   languages: [{ t: 'Languages:', e: 'happy' }, { t: ' Java and SQL first, plus basic JavaScript, React, HTML and CSS.', e: 'cool' }],
-  backend: [{ t: 'Backend & APIs:', e: 'love' }, { t: ' the Spring family and REST. His home turf.', e: 'happy', g: 'wag' }],
+  backend: [{ t: 'Backend & APIs:', e: 'love' }, { t: ' the Spring family and REST. Home turf!', e: 'happy', g: 'wag' }],
   databases: [{ t: 'Databases:', e: 'happy' }, { t: ' PostgreSQL for truth, Redis for speed.', e: 'cool' }],
   security: [{ t: 'Security & Concurrency:', e: 'cool' }, { t: ' tokens, roles, hashing and locks.', e: 'happy', g: 'nod' }],
   devops: [{ t: 'Cloud & DevOps:', e: 'happy' }, { t: ' Docker in, Render out, GitHub Actions in between.', e: 'cool' }],
@@ -304,7 +304,7 @@ const NUMBER_TALK = [
 
 // The internship highlights, one by one
 const BULLET_TALK = [
-  [/50 merged commits/, [{ t: '50 merged commits', e: 'wow' }, { t: ' with Claude as his AI pair programmer.', e: 'blush' }, { t: ' Every fix was reviewed and tested.', e: 'cool', g: 'nod' }]],
+  [/50 merged commits/, [{ t: '50 merged commits', e: 'wow' }, { t: ' with Claude as an AI pair programmer.', e: 'blush' }, { t: ' Every fix was reviewed and tested.', e: 'cool', g: 'nod' }]],
   [/race condition/, [{ t: 'Picture this:', e: 'think' }, { t: ' 500 requests rushing past a limit of 10!', e: 'surprised' }, { t: ' An atomic database update made check-and-count a single step, and the limit held.', e: 'cool', g: 'nod' }]],
   [/trip editing/, [{ t: 'Real product fixes:', e: 'happy' }, { t: ' trip access vs traveler count, upload checks,', e: 'think' }, { t: ' and flight fares that got multiplied by passengers. Oops!', e: 'surprised' }]],
   [/25 km/, [{ t: 'One itinerary day spanned about 130 km!', e: 'surprised' }, { t: ' A 25 km rule keeps each day realistic now.', e: 'happy', g: 'nod' }]],
@@ -324,22 +324,22 @@ const TALK = [
   { sel: '.theme-toggle', say: () => (root.getAttribute('data-theme') === 'light'
     ? [{ t: 'Back to night mode?', e: 'happy' }, { t: ' Wolf hours!', e: 'love', g: 'wag' }]
     : [{ t: 'Light mode?', e: 'surprised' }, { t: ' My LEDs will squint!', e: 'wink' }]) },
-  { sel: '#cmd-palette-trigger', say: [[{ t: 'The command palette!', e: 'wow' }, { t: ' Ctrl+K finds sections, filters, the theme switch and his resume.', e: 'happy' }]] },
+  { sel: '#cmd-palette-trigger', say: [[{ t: 'The command palette!', e: 'wow' }, { t: ' Ctrl+K finds sections, filters, the theme switch and the resume.', e: 'happy' }]] },
   { sel: 'a[download]', say: [
-    [{ t: 'His resume!', e: 'love', g: 'hop' }, { t: ' One page, all signal.', e: 'cool', g: 'nod' }],
+    [{ t: 'The resume!', e: 'love', g: 'hop' }, { t: ' One page, all signal.', e: 'cool', g: 'nod' }],
     [{ t: 'The PDF version of everything here.', e: 'happy' }, { t: ' Recruiters love this button.', e: 'love', g: 'wag' }],
   ] },
-  { sel: 'a.btn-primary[href="#contact"]', say: [[{ t: 'Ooh, hiring?', e: 'love', g: 'hop' }, { t: " He's open to backend roles and internships!", e: 'happy', g: 'wave' }]] },
-  { sel: '.copy-email-btn', say: [[{ t: 'One click', e: 'happy' }, { t: ' and his email is on your clipboard!', e: 'love', g: 'wag' }]] },
-  { sel: 'a[href^="mailto:"]', say: [[{ t: 'His inbox!', e: 'love', g: 'wave' }, { t: ' kritagyay2006@gmail.com. Say hi!', e: 'happy' }]] },
-  { sel: 'a[href^="tel:"]', say: [[{ t: 'His phone:', e: 'happy' }, { t: ' +91-8368099806.', e: 'cool' }]] },
-  { sel: 'a[href*="linkedin.com"]', say: [[{ t: 'His LinkedIn:', e: 'happy' }, { t: ' the professional side of things.', e: 'cool', g: 'nod' }]] },
+  { sel: 'a.btn-primary[href="#contact"]', say: [[{ t: 'Ooh, hiring?', e: 'love', g: 'hop' }, { t: ' Kritagya is open to backend roles and internships!', e: 'happy', g: 'wave' }]] },
+  { sel: '.copy-email-btn', say: [[{ t: 'One click', e: 'happy' }, { t: ' and the email is on your clipboard!', e: 'love', g: 'wag' }]] },
+  { sel: 'a[href^="mailto:"]', say: [[{ t: 'Straight to the inbox!', e: 'love', g: 'wave' }, { t: ' kritagyay2006@gmail.com. Say hi!', e: 'happy' }]] },
+  { sel: 'a[href^="tel:"]', say: [[{ t: 'Phone:', e: 'happy' }, { t: ' +91-8368099806.', e: 'cool' }]] },
+  { sel: 'a[href*="linkedin.com"]', say: [[{ t: 'LinkedIn:', e: 'happy' }, { t: ' the professional side of things.', e: 'cool', g: 'nod' }]] },
   { sel: 'a[href*="leetcode.com"]', say: [[{ t: 'LeetCode!', e: 'cool' }, { t: ' Where the algorithms get practiced.', e: 'think' }]] },
   { sel: 'a[href*="linkpulse-frontend"]', say: [[{ t: "LinkPulse's live demo!", e: 'wow' }, { t: ' It runs on Render. Go on, shorten a link.', e: 'wink', g: 'wave' }]] },
   { sel: '[data-open-arch]', say: [[{ t: 'The architecture deep dive!', e: 'wow' }, { t: ' Seat locks, versions and live updates in one diagram.', e: 'happy', g: 'nod' }]] },
   { sel: '.project-explore', say: [[{ t: 'Opens the full story:', e: 'happy' }, { t: ' metrics, highlights and the tech stack.', e: 'cool' }]] },
   { sel: 'a.project-action[href*="github.com"]', say: [[{ t: 'The source code,', e: 'happy' }, { t: ' open on GitHub.', e: 'cool', g: 'nod' }]] },
-  { sel: 'a[href*="github.com/kritagya025"]', say: [[{ t: 'His GitHub:', e: 'happy' }, { t: ' where all the source code lives.', e: 'cool', g: 'nod' }]] },
+  { sel: 'a[href*="github.com/kritagya025"]', say: [[{ t: 'GitHub:', e: 'happy' }, { t: ' where all the source code lives.', e: 'cool', g: 'nod' }]] },
   { sel: '#shortcuts-trigger-btn', say: [[{ t: 'Press ? anytime', e: 'wink' }, { t: ' to see every keyboard shortcut.', e: 'happy' }]] },
   { sel: '.brand', say: [[{ t: 'KY: Kritagya Yadav.', e: 'happy' }, { t: ' Click it to fly back to the top.', e: 'wink' }]] },
   { sel: '#navbar .nav-link', say: (el) => NAV_TALK[el.textContent.trim()] },
@@ -347,7 +347,7 @@ const TALK = [
   { sel: '.skill-tab', say: (el) => SKILL_TAB_TALK[el.id.replace('skill-tab-', '')] },
   { sel: '.skill-tile, .chip, .course-chip, .focus-chip, .marquee-item', say: (el) => {
     const name = el.textContent.replace(/\s+/g, ' ').trim();
-    return SKILL_TALK[name.toLowerCase()] || [{ t: `${name}!`, e: 'happy' }, { t: ' Part of his toolkit.', e: 'cool' }];
+    return SKILL_TALK[name.toLowerCase()] || [{ t: `${name}!`, e: 'happy' }, { t: ' Part of the toolkit.', e: 'cool' }];
   } },
   { sel: '.metric, #top dl > div, .stat-card, .exp-card dl > div', say: (el) => {
     const found = NUMBER_TALK.find(([pattern]) => pattern.test(el.textContent));
@@ -357,36 +357,36 @@ const TALK = [
     const found = BULLET_TALK.find(([pattern]) => pattern.test(el.textContent));
     return found ? found[1] : null;
   } },
-  { sel: '.exp-card', say: [[{ t: 'His internship:', e: 'happy' }, { t: ' Software Engineering & QA Intern at Compass (HeyCompass), an AI travel-planning startup, Aug to Oct 2026.', e: 'cool', g: 'nod' }]] },
+  { sel: '.exp-card', say: [[{ t: 'The internship:', e: 'happy' }, { t: ' Software Engineering & QA Intern at Compass (HeyCompass), an AI travel-planning startup, Aug to Oct 2026.', e: 'cool', g: 'nod' }]] },
   { sel: '[data-project-card="event-booking"]', say: [[{ t: 'The Event Booking System!', e: 'love' }, { t: ' 83 endpoints for seats, payments and tickets.', e: 'wow' }, { t: ' Two kinds of locks make sure nobody grabs the same seat.', e: 'cool', g: 'nod' }]] },
   { sel: '[data-project-card="linkpulse"]', say: [[{ t: 'LinkPulse:', e: 'happy' }, { t: ' a URL shortener live in production!', e: 'wow' }, { t: ' Every deploy waits for its tests to pass.', e: 'cool', g: 'nod' }]] },
   { sel: '[data-project-card="keyvault"]', say: [[{ t: 'KeyVault:', e: 'think' }, { t: ' a focused Spring Boot service for keys and credentials, with clean layers.', e: 'happy' }]] },
   { sel: '.code-card', say: [[{ t: 'See that @Version field?', e: 'think' }, { t: ' Every save bumps it.', e: 'happy' }, { t: ' If two bookings race, the slower one sees a stale version and fails. No double-booking!', e: 'cool', g: 'nod' }]] },
-  { sel: '.hero-terminal', say: [[{ t: 'A tiny terminal:', e: 'think' }, { t: ' whoami, his stack, his projects, his tests.', e: 'happy' }, { t: ' Very on-brand.', e: 'wink' }]] },
-  { sel: '.hero-name', say: [[{ t: "That's him!", e: 'love', g: 'hop' }, { t: ' Kritagya Yadav, Java backend developer.', e: 'happy', g: 'wag' }]] },
+  { sel: '.hero-terminal', say: [[{ t: 'A tiny terminal:', e: 'think' }, { t: ' whoami, the stack, the projects, the tests.', e: 'happy' }, { t: ' Very on-brand.', e: 'wink' }]] },
+  { sel: '.hero-name', say: [[{ t: 'Meet the developer!', e: 'love', g: 'hop' }, { t: ' Kritagya Yadav, Java backend developer.', e: 'happy', g: 'wag' }]] },
   { sel: '.role-pill', say: (el) => [{ t: `"${el.textContent.trim()}"`, e: 'cool' }, { t: ' is one of the roles that rotate here.', e: 'happy' }] },
-  { sel: '.glass-card', text: /Available for Backend/, say: [[{ t: 'He is available', e: 'love' }, { t: ' for backend roles and internships!', e: 'happy', g: 'wave' }]] },
+  { sel: '.glass-card', text: /Available for Backend/, say: [[{ t: 'Kritagya is available', e: 'love' }, { t: ' for backend roles and internships!', e: 'happy', g: 'wave' }]] },
   { sel: '.glass-card', text: /Noida/, say: () => {
     const hour = Number(new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Asia/Kolkata' }).format(new Date()));
     const late = hour >= 23 || hour < 6;
-    return [{ t: `It's ${istTime()} in Noida right now.`, e: 'happy' }, { t: late ? ' He might be asleep... or debugging.' : ' A fine time to send an email!', e: late ? 'sleepy' : 'wink' }];
+    return [{ t: `It's ${istTime()} in Noida right now.`, e: 'happy' }, { t: late ? ' Kritagya might be asleep... or debugging.' : ' A fine time to send an email!', e: late ? 'sleepy' : 'wink' }];
   } },
   { sel: '.glass-card', text: /KCC ITM/, say: [[{ t: 'B.Tech in Computer Science & Engineering', e: 'happy' }, { t: ' at KCC ITM, AKTU. Class of 2027!', e: 'love' }]] },
-  { sel: '.glass-card', text: /Compass/, say: [[{ t: 'His internship at Compass!', e: 'wow' }, { t: ' The Experience section has the whole story.', e: 'happy' }]] },
-  { sel: '#learning article', text: /Microservices/, say: [[{ t: 'Microservices:', e: 'think' }, { t: ' one big app split into small services that talk over the network.', e: 'cool' }, { t: " He's learning it now!", e: 'happy' }]] },
-  { sel: '#learning article', text: /Message Queues/, say: [[{ t: 'Message queues!', e: 'think' }, { t: ' Services drop messages and others pick them up. Kafka and RabbitMQ are on his list.', e: 'happy' }]] },
+  { sel: '.glass-card', text: /Compass/, say: [[{ t: 'The internship at Compass!', e: 'wow' }, { t: ' The Experience section has the whole story.', e: 'happy' }]] },
+  { sel: '#learning article', text: /Microservices/, say: [[{ t: 'Microservices:', e: 'think' }, { t: ' one big app split into small services that talk over the network.', e: 'cool' }, { t: ' Learning it right now!', e: 'happy' }]] },
+  { sel: '#learning article', text: /Message Queues/, say: [[{ t: 'Message queues!', e: 'think' }, { t: ' Services drop messages and others pick them up. Kafka and RabbitMQ are on the list.', e: 'happy' }]] },
   { sel: '#learning article', text: /Kubernetes/, say: [[{ t: 'Kubernetes', e: 'cool' }, { t: ' runs and scales containers automatically; AWS and Terraform come along for the ride.', e: 'happy' }]] },
   { sel: '#education article', text: /Claude Code in Action/, say: [[{ t: 'Claude Code in Action, from Anthropic!', e: 'blush', g: 'wag' }, { t: " That's family. Agentic coding workflows, March 2026.", e: 'happy' }]] },
   { sel: '#education article', text: /Cyber Job Simulation/, say: [[{ t: "Deloitte Australia's cyber job simulation", e: 'cool' }, { t: ' on Forage, 2024: vulnerabilities, risks and defenses.', e: 'think' }]] },
-  { sel: '#education article', text: /KCC/, say: [[{ t: 'His degree:', e: 'happy' }, { t: ' B.Tech CSE at KCC Institute of Technology & Management, 2023 to 2027.', e: 'cool' }, { t: ' CGPA 7.58!', e: 'love' }]] },
+  { sel: '#education article', text: /KCC/, say: [[{ t: 'The degree:', e: 'happy' }, { t: ' B.Tech CSE at KCC Institute of Technology & Management, 2023 to 2027.', e: 'cool' }, { t: ' CGPA 7.58!', e: 'love' }]] },
   { sel: '.lang-row', say: (el) => {
     const name = el.querySelector('.lang-name').textContent;
-    return [{ t: `${name}:`, e: name === 'Java' ? 'love' : 'happy' }, { t: ` ${el.querySelector('.lang-pct').textContent} of the code in his public repos.`, e: 'cool' }];
+    return [{ t: `${name}:`, e: name === 'Java' ? 'love' : 'happy' }, { t: ` ${el.querySelector('.lang-pct').textContent} of the code in Kritagya's public repos.`, e: 'cool' }];
   } },
   { sel: '#lang-card', say: () => [{ t: 'Bytes of code, not opinions.', e: 'cool' }, { t: ` ${(document.getElementById('lang-primary') || {}).textContent || 'Java'} leads the pack!`, e: 'love', g: 'wag' }] },
   { sel: '.stat-card-img', say: (el) => (el.querySelector('img[alt*="Streak"]')
-    ? [{ t: 'His GitHub streak!', e: 'wow' }, { t: ' Consistency is a superpower.', e: 'love' }]
-    : [{ t: 'His live GitHub stats,', e: 'cool' }, { t: ' fetched fresh from his profile.', e: 'happy' }]) },
+    ? [{ t: 'The GitHub streak!', e: 'wow' }, { t: ' Consistency is a superpower.', e: 'love' }]
+    : [{ t: 'Live GitHub stats,', e: 'cool' }, { t: ' fetched fresh from the profile.', e: 'happy' }]) },
   { sel: '.section-title', say: (el) => {
     const section = el.closest('section');
     return section ? LINES.sections[section.id] : null;
@@ -414,7 +414,7 @@ function resolveLine(source, key) {
 }
 
 /* ------------------------------------------------------------------------------------------------
- * Face: an LED dot matrix on Max's curved visor, showing a wolf
+ * Face: an LED dot matrix on Bella's curved visor, showing a wolf
  * ---------------------------------------------------------------------------------------------- */
 
 const COLS = 26;
@@ -582,7 +582,7 @@ class WolfFace {
 }
 
 /* ------------------------------------------------------------------------------------------------
- * Engine: Max's robot body, built from primitives: a helmet head with a curved LED visor and wolf
+ * Engine: Bella's robot body, built from primitives: a helmet head with a curved LED visor and wolf
  * ears, a floating neck ring, an egg-shaped body with a pulsing core, paw hands, a segmented tail,
  * a hover thruster that sheds sparks, twin back boosters, and a holographic orbit ring
  * ---------------------------------------------------------------------------------------------- */
@@ -838,7 +838,7 @@ class Engine {
       this.jets.push({ point, size, main, glow, flame, core });
     };
     addJet(body, new T.Vector3(0, -1.2, 0), 0.34, true);
-    // Twin back boosters, angled back and down, that fire up when Max moves fast
+    // Twin back boosters, angled back and down, that fire up when Bella moves fast
     [-1, 1].forEach((side) => {
       const pod = new T.Group();
       pod.position.set(side * 0.38, -0.3, -0.56);
@@ -903,7 +903,7 @@ class Engine {
     this.pivot.add(orbit);
     this.orbit = orbit;
 
-    // ---- Tear drops that roll off the visor when Max cries ----
+    // ---- Tear drops that roll off the visor when Bella cries ----
     const tearGeo = new T.SphereGeometry(0.065, 10, 8);
     tearGeo.scale(1, 1.4, 1);
     this.tears = Array.from({ length: 12 }, () => {
@@ -929,7 +929,7 @@ class Engine {
     this.sparkNext = 0;
   }
 
-  /** A ring of sparks from the hover thruster, e.g. when Max lands. */
+  /** A ring of sparks from the hover thruster, e.g. when Bella lands. */
   burst(count) {
     this.burstCount = count;
   }
@@ -965,7 +965,7 @@ class Engine {
     const crying = p.expr === 'cry' && !p.still;
     const sad = p.expr === 'sad' || p.expr === 'cry';
 
-    // Body leans and turns; the head turns further, so he really looks at things
+    // Body leans and turns; the head turns further, so Bella really looks at things
     let ty = p.sleepy ? 0 : p.lookX * 0.55;
     let tp = p.sleepy ? 0.3 : p.lookY * 0.3;
     if (p.nod) tp += Math.sin(t / 110) * 0.25 * s;
@@ -1169,10 +1169,10 @@ class Engine {
 }
 
 /* ------------------------------------------------------------------------------------------------
- * Max: placement, flight, speech, expressions, and reactions
+ * Bella: placement, flight, speech, expressions, and reactions
  * ---------------------------------------------------------------------------------------------- */
 
-class Max {
+class Bella {
   constructor(THREE, RoomEnvironment) {
     this.layer = document.createElement('div');
     this.layer.className = 'bot-layer is-hidden';
@@ -1189,7 +1189,7 @@ class Max {
     this.body = document.createElement('div');
     this.body.className = 'bot-body';
     this.canvas = document.createElement('canvas');
-    // Only Max himself is clickable, not the transparent space around him
+    // Only the robot itself is clickable, not the transparent space around it
     this.hit = document.createElement('div');
     this.hit.className = 'bot-hit';
     this.body.append(this.canvas, this.hit);
@@ -1218,7 +1218,7 @@ class Max {
     this.presenting = null;       // { section, until, said } while introducing a heading
     this.entry = null;            // the flying entrance while it plays
     this.portal = null;           // 'open' while the section portal opens, 'hold' while it covers the page
-    this.petting = false;         // pointer is over Max: hold still so he can be clicked
+    this.petting = false;         // pointer is over Bella: hold still so the robot can be clicked
     this.hidden = true;
     this.dialogOpen = false;
     this.speaking = false;
@@ -1228,7 +1228,7 @@ class Max {
     this.lastTalk = now;
     this.speechStart = 0;
     this.speechEnd = 0;
-    this.focus = null;            // { el, until }: what Max is explaining, so he looks at it
+    this.focus = null;            // { el, until }: what Bella is explaining, so Bella looks at it
     this.introduced = new Set();
     this.talkCooldowns = new WeakMap();
     this.reactedAt = new Map();
@@ -1269,7 +1269,7 @@ class Max {
       return;
     }
     // Flying entrance: launch from below the screen, swoop high across it with a barrel roll at the top
-    // of the arc, then glide into place. The path's end follows the live target, so he always lands right.
+    // of the arc, then glide into place. The path's end follows the live target, so Bella always lands right.
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const box = this.R * this.target.scale;
@@ -1284,7 +1284,7 @@ class Max {
     s.scale = this.entry.scale0;
     s.spinFrom = now + this.entry.dur * 0.2;
     if (greet) {
-      // Heart eyes from the moment he launches, and he starts saying hello mid-flight
+      // Heart eyes from launch, and the hello starts mid-flight
       this.setExpr('love', this.entry.dur + 4000);
       setTimeout(() => this.greet(), this.entry.dur * 0.3);
     } else {
@@ -1306,7 +1306,7 @@ class Max {
     }
   }
 
-  /** Goodbye: he looks sad, bursts into tears (sobbing, wiping his visor), waves, then shrinks away. */
+  /** Goodbye: Bella looks sad, bursts into tears (sobbing, wiping the visor), waves, then shrinks away. */
   hide() {
     this.entry = null;
     this.focus = null;
@@ -1451,10 +1451,10 @@ class Max {
       }
     });
 
-    // Pat Max: he holds still, blushes, and says hi while the pointer is on him
+    // Pat Bella: the robot holds still, blushes, and says hi while the pointer is on it
     this.hit.addEventListener('pointerenter', () => {
       const now = performance.now();
-      // Only when the visitor moves onto Max, not when he flies under a resting cursor
+      // Only when the visitor moves onto Bella, not when Bella flies under a resting cursor
       if (now - this.s.cursorMovedAt > 150) return;
       this.petting = true;
       if (now - (this.reactedAt.get('petting') || -1e9) > 9000 && this.say(pick(LINES.petting, 'petting'), { prio: 2 })) this.reactedAt.set('petting', now);
@@ -1463,7 +1463,7 @@ class Max {
     this.hit.addEventListener('pointerleave', () => { this.petting = false; });
     this.hit.addEventListener('click', () => this.poke());
 
-    // Explanations: rest the pointer on something (or tap it on a touch screen) and Max tells you about it
+    // Explanations: rest the pointer on something (or tap it on a touch screen) and Bella tells you about it
     let hoverTimer = 0;
     let hoverEl = null;
     const explain = (match) => {
@@ -1527,7 +1527,7 @@ class Max {
         this.setExpr('happy', 1600);
         this.s.nodUntil = performance.now() + 700;
       } else if ((phase === 'reveal' || phase === 'end') && this.portal) {
-        // Take off as the portal collapses, then introduce the section he just led you to
+        // Take off as the portal collapses, then introduce the section Bella just led you to
         this.portal = null;
         this.hideBubble();
         if (id) this.introduced.delete(id);
@@ -1596,7 +1596,7 @@ class Max {
     this.s.exprUntil = performance.now() + ms;
   }
 
-  /** Little body-language moves that punctuate what Max says. */
+  /** Little body-language moves that punctuate what Bella says. */
   gesture(name) {
     if (reducedMotion) return;
     const s = this.s;
@@ -1610,7 +1610,7 @@ class Max {
 
   /**
    * Show a speech bubble. `line` is a string or a list of parts { t, e, g }; as the typing reaches each
-   * part, Max switches to its expression and plays its gesture, so he reacts while he talks.
+   * part, Bella switches to its expression and plays its gesture, reacting while talking.
    * prio 1 = unprompted (chatter, sections), 2 = explanations and reactions, 3 = show/hide/portal.
    * Returns false when the line was skipped (cooldown, a more important line is playing, or hidden).
    */
@@ -1662,7 +1662,7 @@ class Max {
 
     const finish = () => {
       this.typing = false;
-      // Keep the last reaction on his face while the bubble stays up
+      // Keep the last reaction on the face while the bubble stays up
       if (!exprMs && !then) this.s.exprUntil = performance.now() + hold + 300;
       this.hideTimer = setTimeout(() => this.hideBubble(), hold);
     };
@@ -1701,7 +1701,7 @@ class Max {
   /* ---- placement ---- */
 
   /**
-   * Where Max should fly right now, in priority order: flying into the section portal, introducing a new
+   * Where Bella should fly right now, in priority order: flying into the section portal, introducing a new
    * section heading, following the moving cursor, hovering by the hero terminal, napping in the
    * corner, or perching at the nearest screen edge while you read.
    */
@@ -1754,8 +1754,8 @@ class Max {
       }
     }
 
-    // Follow the cursor while it is moving (and hold still while it is on Max, so he can be patted).
-    // Not while it is up in the navbar: he would only hover over the headings below it.
+    // Follow the cursor while it is moving (and hold still while it is on Bella, to allow pats).
+    // Not while it is up in the navbar: Bella would only hover over the headings below it.
     const cursorInPage = s.cursor && s.cursor.y > NAV_CLEARANCE;
     const explaining = this.focus && now < this.focus.until;
     if (cursorInPage && !s.sleeping && (this.petting || explaining || now - s.cursorMovedAt < FOLLOW_IDLE)) {
@@ -1786,7 +1786,7 @@ class Max {
       return { mode: 'dock', scale, cx: 64 + R * scale * 0.3, cy: vh - 24 - R * scale * 0.32 };
     }
 
-    // Reading: perch at the nearest screen edge, at the height he was
+    // Reading: perch at the nearest screen edge, at the current height
     const scale = 0.62;
     const box = R * scale;
     const edge = s.cx < vw / 2 ? box * 0.3 + 16 : vw - box * 0.3 - 16;
@@ -1891,7 +1891,7 @@ class Max {
       this.layer.classList.toggle('is-docked', docked);
     }
 
-    // Introduce the section once he has arrived at its heading (with a nod)
+    // Introduce the section once Bella has arrived at its heading (with a nod)
     if (this.presenting && !this.presenting.said && tg.mode === 'present' && Math.hypot(tx - s.cx, ty - s.cy) < 60) {
       if (this.say(pick(LINES.sections[this.presenting.section], `section-${this.presenting.section}`), { prio: 2, expr: 'happy' })) {
         this.presenting.said = true;
@@ -1899,7 +1899,7 @@ class Max {
         s.nodUntil = now + 700;
       }
     }
-    // On small screens Max stays in the navbar, so introduce sections as they come into view
+    // On small screens Bella stays in the navbar, so introduce sections as they come into view
     if (this.compact && tg.section && LINES.sections[tg.section] && !this.introduced.has(tg.section) && this.frame % 15 === 0) {
       if (this.say(pick(LINES.sections[tg.section], `section-${tg.section}`), { prio: 1, expr: 'happy' })) this.introduced.add(tg.section);
     }
@@ -1928,7 +1928,7 @@ class Max {
       lookX = clamp((tg.lookAt.left + tg.lookAt.width / 2 - head.x) / (vw * 0.3), -1, 1);
       lookY = clamp((tg.lookAt.top - head.y) / (vh * 0.35), -1, 1);
     } else if (this.focus && now < this.focus.until && this.focus.el.isConnected) {
-      // Looking at whatever he is explaining
+      // Looking at whatever Bella is explaining
       const r = this.focus.el.getBoundingClientRect();
       lookX = clamp((r.left + r.width / 2 - head.x) / (vw * 0.25), -1, 1);
       lookY = clamp((r.top + r.height / 2 - head.y) / (vh * 0.3), -1, 1);
@@ -1963,7 +1963,7 @@ class Max {
       still: reducedMotion,
     });
 
-    // Speech bubble beside his face, and "zzz" while he naps
+    // Speech bubble beside the face, and "zzz" during a nap
     if (this.bubble.classList.contains('is-visible')) this.placeBubble(head.x, head.y, box, vw, vh);
     this.zzz.classList.toggle('is-visible', s.sleeping && !this.hidden);
     if (s.sleeping) this.zzz.style.transform = `translate3d(${(head.x + box * 0.12).toFixed(1)}px, ${(head.y - box * 0.3).toFixed(1)}px, 0)`;
@@ -2022,19 +2022,19 @@ function whenPageReady() {
   });
 }
 
-async function loadMax() {
+async function loadBella() {
   const [THREE, { RoomEnvironment }] = await Promise.all([
     import('three'),
     import('three/addons/environments/RoomEnvironment.js'),
   ]);
-  return new Max(THREE, RoomEnvironment);
+  return new Bella(THREE, RoomEnvironment);
 }
 
 (function boot() {
   if (!webglAvailable()) return;
 
   let hidden = storage.hidden();
-  let max = null;
+  let bella = null;
   let loading = null;
 
   const toggle = document.createElement('button');
@@ -2043,19 +2043,19 @@ async function loadMax() {
   toggle.innerHTML = '<i class="fas fa-robot text-sm" aria-hidden="true"></i>';
   const syncToggle = () => {
     toggle.setAttribute('aria-pressed', hidden ? 'false' : 'true');
-    toggle.setAttribute('aria-label', hidden ? 'Show Max, the robot guide' : 'Hide Max, the robot guide');
-    toggle.title = hidden ? 'Show Max' : 'Hide Max';
+    toggle.setAttribute('aria-label', hidden ? 'Show Bella, the robot guide' : 'Hide Bella, the robot guide');
+    toggle.title = hidden ? 'Show Bella' : 'Hide Bella';
   };
   syncToggle();
   document.body.appendChild(toggle);
 
-  function ensureMax() {
-    if (max) return Promise.resolve(max);
+  function ensureBella() {
+    if (bella) return Promise.resolve(bella);
     if (!loading) {
-      loading = loadMax()
-        .then((instance) => { max = instance; return max; })
+      loading = loadBella()
+        .then((instance) => { bella = instance; return bella; })
         .catch((err) => {
-          console.warn('[Max] could not start:', err);
+          console.warn('[Bella] could not start:', err);
           toggle.remove();
           return null;
         });
@@ -2068,13 +2068,13 @@ async function loadMax() {
     storage.setHidden(hidden);
     syncToggle();
     if (hidden) {
-      if (max) max.hide();
+      if (bella) bella.hide();
       return;
     }
-    ensureMax().then((m) => { if (m) m.show(); });
+    ensureBella().then((m) => { if (m) m.show(); });
   });
 
-  // Data-saver or 2G connections: skip the three.js download until the visitor asks for Max
+  // Data-saver or 2G connections: skip the three.js download until the visitor asks for Bella
   if (hidden || saveData) {
     if (saveData && !hidden) {
       hidden = true;
@@ -2082,12 +2082,12 @@ async function loadMax() {
     }
     return;
   }
-  // Build Max while the intro plays, so he flies in (with heart eyes) the moment the page is ready. On phones
-  // and tablets, wait for the page's own assets first so he never slows down the first paint.
+  // Build Bella while the intro plays, so the robot flies in (with heart eyes) the moment the page is ready. On phones
+  // and tablets, wait for the page's own assets first so Bella never slows down the first paint.
   const pageLoaded = document.readyState === 'complete' || !window.matchMedia('(pointer: coarse)').matches
     ? Promise.resolve()
     : new Promise((resolve) => window.addEventListener('load', resolve, { once: true }));
-  const building = pageLoaded.then(ensureMax);
+  const building = pageLoaded.then(ensureBella);
   whenPageReady()
     .then(() => building)
     .then((m) => { if (m && !hidden) m.show({ greet: true }); });
