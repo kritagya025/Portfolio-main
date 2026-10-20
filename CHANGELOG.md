@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.16.1] - 2026-10-20
+
+### Fixed
+- The intro no longer stutters. Measured in Chrome, the animated part of the intro went from several main-thread stalls (up to 620 ms) to none; the door opening and hero entrance no longer stall either:
+  - Bella is no longer built while the intro animates. three.js downloads during the intro, but runs, and the robot is built, while the intro holds on "Access granted" (when nothing that needs the main thread is moving). The doors open once that work is done, up to 1.5 s later (0.9 s on the short intro). The build is split into one stage per frame, the shaders compile in the background where the browser supports it, and a hidden first frame is drawn in advance, so Bella's first visible frame no longer stalls the doors
+  - The warp star field draws in a worker (OffscreenCanvas), so it keeps flying even while the page is busy; browsers without it draw on the page as before
+  - The perspective grids, the corner brackets, and the shockwave now animate only GPU-friendly properties (transform and opacity) instead of repainting every frame
+  - Tailwind's CDN rebuilds every style on the page whenever it sees a class name for the first time. The intro's states, Bella's speech bubble and docking, and the hero's rotating role badge now use data attributes instead of new classes. The intro's per-frame text updates no longer make it rescan the page. Bella's elements and the scroll-reveal setup (AOS) start during the "Access granted" hold, so the one remaining rebuild happens there
+  - The background particle field waits until the intro ends (it was drawing behind it), and the page no longer creates a throwaway WebGL context at load just to check for support
+
+---
+
 ## [3.16.0] - 2026-10-20
 
 ### Added

@@ -1,8 +1,8 @@
 /**
  * Bella: the hovering robo-wolf guide for Kritagya Yadav's portfolio.
  *
- * - Lazy-loads three.js (mapped by the import map in index.html) after the page intro finishes,
- *   and only when the browser supports WebGL.
+ * - Lazy-loads three.js (mapped by the import map in index.html) while the page intro plays, only
+ *   when the browser supports WebGL, and builds the robot one stage per frame so the intro never stalls.
  * - An original design built in code (no model file): a helmet head with metal wolf ears and a
  *   curved LED visor showing a wolf face (heart eyes when Bella says hello), a floating neck ring,
  *   an egg-shaped body with a pulsing core, paw hands, a segmented tail, a hover thruster that
@@ -34,7 +34,9 @@ const FOLLOW_IDLE = 4500;      // stop chasing the cursor once it has been still
 const PRESENT_MS = 4800;       // how long Bella stays at a new section heading to introduce it
 const NAV_CLEARANCE = 84;      // keep clear of the fixed navbar
 const BOX = { desktop: 360, compact: 170 }; // size of Bella's canvas in px (the on-screen scale multiplies it)
+const compactLayout = () => reducedMotion || !finePointer || window.innerWidth < 1024; // small Bella, docked
 const FPS = { compact: 30, sleeping: 20 };   // frame-rate caps that save battery (desktop runs at the display rate)
+const HERO_SETTLE = reducedMotion ? 0 : 1200; // how long the hero's entrance animation runs after the intro
 
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 // Sound effects (js/sound.js; silent unless the visitor turned sound on)
@@ -49,13 +51,20 @@ const bezier = (a, b, c, d, u) => {
   return v * v * v * a + 3 * v * v * u * b + 3 * v * u * u * c + u * u * u * d;
 };
 
+// Only checks that the API exists: creating a test context costs a visible pause at page load. If the real
+// context can't be created later, the toggle removes itself (see ensureBella).
 function webglAvailable() {
-  try {
-    const canvas = document.createElement('canvas');
-    return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
-  } catch (e) {
-    return false;
-  }
+  return typeof WebGLRenderingContext !== 'undefined';
+}
+
+let setupPausedUntil = 0; // set when the intro ends: a build still running waits out the hero's entrance
+
+/** Resolves just after the browser paints its next frame: the gap between two chunks of setup work. */
+function nextFrame() {
+  return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0))).then(() => {
+    const wait = setupPausedUntil - performance.now();
+    return wait > 0 ? new Promise((resolve) => setTimeout(resolve, wait)) : undefined;
+  });
 }
 
 const storage = {
@@ -643,6 +652,27 @@ function cssColor(name) {
 class Engine {
   /** quality.low: fewer polygons and sparks, no antialiasing, and a lower pixel ratio (phones, weak hardware). */
   constructor(THREE, RoomEnvironment, canvas, size, quality = { low: false }) {
+    const stages = this.setup(THREE, RoomEnvironment, canvas, size, quality);
+    while (!stages.next().done); // all stages back to back
+  }
+
+  /**
+   * How the site builds Bella: the same stages, one per frame, so the intro never freezes. Then the shaders
+   * compile in the background (where the browser supports it) and one frame is drawn while Bella is still
+   * hidden, so the first visible frame costs nothing.
+   */
+  static async create(THREE, RoomEnvironment, canvas, size, quality) {
+    const engine = Object.create(Engine.prototype);
+    const stages = engine.setup(THREE, RoomEnvironment, canvas, size, quality);
+    while (!stages.next().done) await nextFrame();
+    await engine.renderer.compileAsync(engine.scene, engine.camera);
+    await nextFrame();
+    engine.renderer.render(engine.scene, engine.camera);
+    return engine;
+  }
+
+  /** Renderer, reflections, then lights, textures, and the model; pauses after each slow stage. */
+  *setup(THREE, RoomEnvironment, canvas, size, quality = { low: false }) {
     const T = THREE;
     this.T = T;
     this.quality = quality;
@@ -653,11 +683,14 @@ class Engine {
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.toneMapping = T.ACESFilmicToneMapping;
     this.setSize(size);
+    yield;
 
     this.scene = new T.Scene();
     const pmrem = new T.PMREMGenerator(this.renderer);
     this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
     pmrem.dispose();
+    yield;
+
     this.camera = new T.PerspectiveCamera(30, 1, 0.1, 100);
     this.camera.position.set(0, 0.55, 11);
     this.camera.lookAt(0, 0.2, 0);
@@ -688,6 +721,8 @@ class Engine {
     this.burstCount = 0;
     this.coreA = new T.Color(PURPLE); // the core pulses between these two
     this.coreB = new T.Color(EMERALD);
+    yield;
+
     this.build();
   }
 
@@ -1261,34 +1296,48 @@ class Engine {
  * ---------------------------------------------------------------------------------------------- */
 
 class Bella {
-  constructor(THREE, RoomEnvironment) {
-    this.layer = document.createElement('div');
-    this.layer.className = 'bot-layer is-hidden';
-    this.layer.setAttribute('aria-hidden', 'true');
-    this.bubble = document.createElement('div');
-    this.bubble.className = 'bot-bubble tail-left';
-    this.bubble.title = 'Tap to dismiss';
-    this.bubble.addEventListener('click', () => this.hideBubble());
-    this.bubbleText = document.createElement('span');
-    this.bubble.appendChild(this.bubbleText);
-    this.zzz = document.createElement('div');
-    this.zzz.className = 'bot-zzz';
-    this.zzz.innerHTML = '<span>z</span><span>z</span><span>z</span>';
-    this.body = document.createElement('div');
-    this.body.className = 'bot-body';
-    this.canvas = document.createElement('canvas');
+  /** Bella's elements, added to the page hidden (see loadBella). */
+  static mount(compact) {
+    const size = compact ? BOX.compact : BOX.desktop;
+    const layer = document.createElement('div');
+    layer.className = compact ? 'bot-layer is-hidden is-compact' : 'bot-layer is-hidden';
+    layer.setAttribute('aria-hidden', 'true');
+    const bubble = document.createElement('div');
+    // Changing states live in data attributes: a new class name makes Tailwind's CDN rebuild every style
+    bubble.className = 'bot-bubble';
+    bubble.dataset.tail = 'left';
+    bubble.title = 'Tap to dismiss';
+    const bubbleText = document.createElement('span');
+    bubble.appendChild(bubbleText);
+    const zzz = document.createElement('div');
+    zzz.className = 'bot-zzz';
+    zzz.innerHTML = '<span>z</span><span>z</span><span>z</span>';
+    const body = document.createElement('div');
+    body.className = 'bot-body';
+    body.style.width = body.style.height = `${size}px`;
+    const canvas = document.createElement('canvas');
     // Only the robot itself is clickable, not the transparent space around it
-    this.hit = document.createElement('div');
-    this.hit.className = 'bot-hit';
-    this.body.append(this.canvas, this.hit);
-    this.layer.append(this.bubble, this.zzz, this.body);
-    document.body.appendChild(this.layer);
+    const hit = document.createElement('div');
+    hit.className = 'bot-hit';
+    body.append(canvas, hit);
+    layer.append(bubble, zzz, body);
+    document.body.appendChild(layer);
+    return { compact, size, layer, bubble, bubbleText, zzz, body, canvas, hit };
+  }
 
-    this.compact = this.isCompact();
-    this.R = this.compact ? BOX.compact : BOX.desktop;
-    this.layer.classList.toggle('is-compact', this.compact);
-    this.body.style.width = this.body.style.height = `${this.R}px`;
-    this.engine = new Engine(THREE, RoomEnvironment, this.canvas, this.R, { low: lowPower || this.compact });
+  constructor(engine, dom) {
+    this.layer = dom.layer;
+    this.bubble = dom.bubble;
+    this.bubble.addEventListener('click', () => this.hideBubble());
+    this.bubbleText = dom.bubbleText;
+    this.zzz = dom.zzz;
+    this.body = dom.body;
+    this.canvas = dom.canvas;
+    this.hit = dom.hit;
+
+    this.compact = dom.compact;
+    this.R = dom.size;
+    this.engine = engine;
     this.perf = { frames: 0, time: 0, checks: 0 };
     this.lastRender = 0;
     this.docked = false;
@@ -1328,10 +1377,6 @@ class Bella {
     this.raf = 0;
     this.loop = this.loop.bind(this);
     this.bind();
-  }
-
-  isCompact() {
-    return reducedMotion || !finePointer || window.innerWidth < 1024;
   }
 
   /* ---- lifecycle ---- */
@@ -1521,7 +1566,7 @@ class Bella {
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => react('resize', 60000), 500);
-      const compact = this.isCompact();
+      const compact = compactLayout();
       if (compact === this.compact) return;
       this.compact = compact;
       this.R = compact ? BOX.compact : BOX.desktop;
@@ -1757,7 +1802,7 @@ class Bella {
     this.bubbleW = this.bubble.offsetWidth;
     this.bubbleH = this.bubble.offsetHeight;
     this.bubble.style.width = `${this.bubbleW}px`;
-    this.bubble.classList.add('is-visible');
+    this.bubble.toggleAttribute('data-visible', true);
 
     const finish = () => {
       this.typing = false;
@@ -1795,7 +1840,7 @@ class Bella {
     this.typing = false;
     this.speaking = false;
     this.speakingPrio = 0;
-    this.bubble.classList.remove('is-visible');
+    this.bubble.toggleAttribute('data-visible', false);
   }
 
   /* ---- placement ---- */
@@ -1988,7 +2033,7 @@ class Bella {
     const docked = this.compact && !this.entry && tg.mode === 'dock';
     if (docked !== this.docked) {
       this.docked = docked;
-      this.layer.classList.toggle('is-docked', docked);
+      this.layer.toggleAttribute('data-docked', docked);
     }
 
     // Introduce the section once Bella has arrived at its heading (with a nod)
@@ -2065,8 +2110,8 @@ class Bella {
     });
 
     // Speech bubble beside the face, and "zzz" during a nap
-    if (this.bubble.classList.contains('is-visible')) this.placeBubble(head.x, head.y, box, vw, vh);
-    this.zzz.classList.toggle('is-visible', s.sleeping && !this.hidden);
+    if (this.bubble.hasAttribute('data-visible')) this.placeBubble(head.x, head.y, box, vw, vh);
+    this.zzz.toggleAttribute('data-visible', s.sleeping && !this.hidden);
     if (s.sleeping) this.zzz.style.transform = `translate3d(${(head.x + box * 0.12).toFixed(1)}px, ${(head.y - box * 0.3).toFixed(1)}px, 0)`;
   }
 
@@ -2097,17 +2142,14 @@ class Bella {
     const fitsLeft = headX - half - 12 - bw >= 8;
     if ((preferRight && fitsRight) || !fitsLeft) {
       left = headX + half + 10;
-      tail = 'tail-left';
+      tail = 'left';
     } else {
       left = headX - half - 10 - bw;
-      tail = 'tail-right';
+      tail = 'right';
     }
     left = clamp(left, 8, vw - bw - 8);
     const top = clamp(headY - bh * 0.6, NAV_CLEARANCE - 8, vh - bh - 8);
-    if (!this.bubble.classList.contains(tail)) {
-      this.bubble.classList.remove('tail-left', 'tail-right');
-      this.bubble.classList.add(tail);
-    }
+    if (this.bubble.dataset.tail !== tail) this.bubble.dataset.tail = tail;
     this.bubble.style.transform = `translate3d(${left.toFixed(1)}px, ${top.toFixed(1)}px, 0)`;
   }
 }
@@ -2123,12 +2165,39 @@ function whenPageReady() {
   });
 }
 
+const THREE_MODULES = ['three', 'three/addons/environments/RoomEnvironment.js'];
+let threeModules = null;
+/** three.js and its room environment, loaded and run once. */
+function loadThree() {
+  if (!threeModules) threeModules = Promise.all(THREE_MODULES.map((name) => import(name)));
+  return threeModules;
+}
+
+/** Downloads three.js into the cache without running it yet: running it is a pause, saved for the intro's hold. */
+function prefetchThree() {
+  if (!import.meta.resolve) return loadThree();
+  return Promise.all(THREE_MODULES.map((name) => fetch(import.meta.resolve(name)).then((res) => {
+    if (!res.ok) throw new Error(`${name}: HTTP ${res.status}`);
+    return res.text();
+  })));
+}
+
+/**
+ * Puts Bella's elements on the page (hidden) right away, then runs three.js and builds the robot over several
+ * frames (see Engine.create). New class names make Tailwind's CDN restyle the whole page a moment later; adding
+ * the elements first (together with the intro's other new elements) lets that finish while the robot builds,
+ * instead of right as Bella appears.
+ */
 async function loadBella() {
-  const [THREE, { RoomEnvironment }] = await Promise.all([
-    import('three'),
-    import('three/addons/environments/RoomEnvironment.js'),
-  ]);
-  return new Bella(THREE, RoomEnvironment);
+  const dom = Bella.mount(compactLayout());
+  try {
+    const [THREE, { RoomEnvironment }] = await loadThree();
+    const engine = await Engine.create(THREE, RoomEnvironment, dom.canvas, dom.size, { low: lowPower || dom.compact });
+    return new Bella(engine, dom);
+  } catch (err) {
+    dom.layer.remove();
+    throw err;
+  }
 }
 
 (function boot() {
@@ -2137,6 +2206,7 @@ async function loadBella() {
   let hidden = storage.hidden();
   let bella = null;
   let loading = null;
+  let failed = false;
 
   const toggle = document.createElement('button');
   toggle.type = 'button';
@@ -2148,7 +2218,12 @@ async function loadBella() {
     toggle.title = hidden ? 'Show Bella' : 'Hide Bella';
   };
   syncToggle();
-  document.body.appendChild(toggle);
+  const placeToggle = () => { if (!failed && !toggle.isConnected) document.body.appendChild(toggle); };
+  if (root.dataset.ready === 'true') placeToggle();
+  else {
+    document.addEventListener('ky:granted', placeToggle, { once: true });
+    document.addEventListener('ky:ready', placeToggle, { once: true });
+  }
 
   function ensureBella() {
     if (bella) return Promise.resolve(bella);
@@ -2157,6 +2232,7 @@ async function loadBella() {
         .then((instance) => { bella = instance; return bella; })
         .catch((err) => {
           console.warn('[Bella] could not start:', err);
+          failed = true;
           toggle.remove();
           return null;
         });
@@ -2183,13 +2259,25 @@ async function loadBella() {
     }
     return;
   }
-  // Build Bella while the intro plays, so the robot flies in (with heart eyes) the moment the page is ready. On phones
-  // and tablets, wait for the page's own assets first so Bella never slows down the first paint.
+  // three.js downloads while the intro plays. It runs, and the robot is built, while the intro holds still on
+  // "Access granted" (ky:granted), where the work can't stutter anything, so Bella flies in (with heart eyes) the
+  // moment the page is ready. Whatever isn't done by then (a slow download or device) waits until the hero
+  // animation has settled. On phones and tablets, wait for the page's own assets first so Bella never slows down
+  // the first paint.
   const pageLoaded = document.readyState === 'complete' || !window.matchMedia('(pointer: coarse)').matches
     ? Promise.resolve()
     : new Promise((resolve) => window.addEventListener('load', resolve, { once: true }));
-  const building = pageLoaded.then(ensureBella);
+  let downloaded = false;
+  pageLoaded.then(prefetchThree).then(() => { downloaded = true; }, () => { /* reported when Bella is built */ });
+  document.addEventListener('ky:granted', (e) => {
+    if (downloaded && !hidden) e.detail.waitFor(ensureBella());
+  }, { once: true });
   whenPageReady()
-    .then(() => building)
+    .then(() => {
+      setupPausedUntil = performance.now() + HERO_SETTLE;
+      return loading || new Promise((resolve) => setTimeout(resolve, HERO_SETTLE))
+        .then(() => pageLoaded)
+        .then(() => (hidden ? null : ensureBella()));
+    })
     .then((m) => { if (m && !hidden) m.show({ greet: true }); });
 })();

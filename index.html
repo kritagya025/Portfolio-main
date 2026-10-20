@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 3.16.0 -->
+<!-- Portfolio Version: 3.16.1 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
@@ -498,38 +498,44 @@
     }
     .preloader-half.is-top { top: 0; background-position: 0 0; }
     .preloader-half.is-bottom { bottom: 0; background-position: 0 100%; }
-    .preloader.is-exiting .preloader-half.is-top { transform: translateY(-101%); box-shadow: 0 2px 0 hsl(var(--primary)), 0 14px 44px -6px hsl(var(--primary) / 0.75); }
-    .preloader.is-exiting .preloader-half.is-bottom { transform: translateY(101%); box-shadow: 0 -2px 0 hsl(var(--primary)), 0 -14px 44px -6px hsl(var(--primary) / 0.75); }
-    /* Perspective grid: a floor on the bottom door and a ceiling on the top one, running toward the viewer */
-    .preloader-half::before {
-      content: '';
+    .preloader[data-exiting] .preloader-half.is-top { transform: translateY(-101%); box-shadow: 0 2px 0 hsl(var(--primary)), 0 14px 44px -6px hsl(var(--primary) / 0.75); }
+    .preloader[data-exiting] .preloader-half.is-bottom { transform: translateY(101%); box-shadow: 0 -2px 0 hsl(var(--primary)), 0 -14px 44px -6px hsl(var(--primary) / 0.75); }
+    /* Perspective grid: a floor on the bottom door and a ceiling on the top one, running toward the viewer.
+       The tiles move with a transform inside the tilted plane, so the GPU animates them without repainting. */
+    .preloader-grid {
       position: absolute;
       inset-inline: -60%;
       height: 150%;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .preloader-grid::before {
+      content: '';
+      position: absolute;
+      inset: -64px 0;
       background-image:
         linear-gradient(hsl(var(--primary) / 0.32) 1px, transparent 1px),
         linear-gradient(90deg, hsl(var(--accent) / 0.26) 1px, transparent 1px);
       background-size: 64px 64px;
       animation: grid-run 1.4s linear infinite;
-      pointer-events: none;
     }
-    .preloader-half.is-bottom::before {
+    .is-bottom > .preloader-grid {
       top: 0;
       transform-origin: 50% 0;
       transform: perspective(380px) rotateX(64deg);
       -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%);
       mask-image: linear-gradient(to bottom, transparent, #000 35%);
     }
-    .preloader-half.is-top::before {
+    .is-top > .preloader-grid {
       bottom: 0;
       transform-origin: 50% 100%;
       transform: perspective(380px) rotateX(-64deg);
       -webkit-mask-image: linear-gradient(to top, transparent, #000 35%);
       mask-image: linear-gradient(to top, transparent, #000 35%);
-      animation-direction: reverse;
     }
+    .is-top > .preloader-grid::before { animation-direction: reverse; }
     .preloader-stars { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity 0.7s ease 0.3s; }
-    .preloader.is-exiting .preloader-stars { opacity: 0; }
+    .preloader[data-exiting] .preloader-stars { opacity: 0; }
     .preloader-glow {
       position: absolute;
       width: 60vmin;
@@ -559,14 +565,14 @@
       transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.5s ease 0.25s;
       pointer-events: none;
     }
-    .preloader.is-done .preloader-seam { transform: translateY(-50%) scaleX(1); }
-    .preloader.is-exiting .preloader-seam,
-    .preloader.is-exiting .preloader-glow,
-    .preloader.is-exiting .preloader-scan,
-    .preloader.is-exiting .preloader-log,
-    .preloader.is-exiting .preloader-hud,
-    .preloader.is-exiting .preloader-sound,
-    .preloader.is-exiting .preloader-skip { opacity: 0; }
+    .preloader[data-done] .preloader-seam { transform: translateY(-50%) scaleX(1); }
+    .preloader[data-exiting] .preloader-seam,
+    .preloader[data-exiting] .preloader-glow,
+    .preloader[data-exiting] .preloader-scan,
+    .preloader[data-exiting] .preloader-log,
+    .preloader[data-exiting] .preloader-hud,
+    .preloader[data-exiting] .preloader-sound,
+    .preloader[data-exiting] .preloader-skip { opacity: 0; }
     .preloader-sound {
       position: absolute;
       z-index: 2;
@@ -627,7 +633,7 @@
       padding: 0 1.5rem;
       transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.55s ease, filter 0.7s ease;
     }
-    .preloader.is-exiting .preloader-core { transform: scale(1.25); opacity: 0; filter: blur(8px); }
+    .preloader[data-exiting] .preloader-core { transform: scale(1.25); opacity: 0; filter: blur(8px); }
     .preloader-emblem { position: relative; width: clamp(150px, 26vmin, 210px); aspect-ratio: 1; display: grid; place-items: center; }
     /* Brackets that lock onto the emblem */
     .preloader-brackets {
@@ -648,9 +654,9 @@
       animation: brackets-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both 0.25s;
     }
     /* Shockwave when access is granted */
-    .preloader-shock { position: absolute; inset: 0; border-radius: 50%; border: 2px solid hsl(var(--primary)); opacity: 0; pointer-events: none; }
-    .preloader.is-done .preloader-shock { animation: shock 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .preloader.is-done .preloader-shock + .preloader-shock { animation-delay: 0.12s; border-color: hsl(var(--accent)); }
+    .preloader-shock { position: absolute; inset: 0; border-radius: 50%; border: 2px solid hsl(var(--primary)); box-shadow: 0 0 30px hsl(var(--primary) / 0.8); opacity: 0; pointer-events: none; }
+    .preloader[data-done] .preloader-shock { animation: shock 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .preloader[data-done] .preloader-shock + .preloader-shock { animation-delay: 0.12s; border-color: hsl(var(--accent)); }
     .preloader-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
     .preloader-ring circle { fill: none; }
     .preloader-ring .ring-track { stroke: hsl(var(--border)); stroke-width: 2; }
@@ -695,7 +701,7 @@
     .preloader-mono path:nth-of-type(3) { animation-delay: 0.24s; }
     .preloader-mono path:nth-of-type(4) { animation-delay: 0.36s; }
     .preloader-mono path:nth-of-type(5) { animation-delay: 0.48s; }
-    .preloader.is-done .preloader-mono { filter: drop-shadow(0 0 16px hsl(var(--primary) / 0.75)); transform: scale(1.06); animation: mono-glitch 0.36s steps(2) 1; }
+    .preloader[data-done] .preloader-mono { filter: drop-shadow(0 0 16px hsl(var(--primary) / 0.75)); transform: scale(1.06); animation: mono-glitch 0.36s steps(2) 1; }
     .intro-stop-a { stop-color: hsl(var(--primary)); }
     .intro-stop-b { stop-color: hsl(var(--accent)); }
     .preloader-name {
@@ -707,7 +713,7 @@
       color: hsl(var(--foreground));
       white-space: nowrap;
     }
-    .preloader-name .scramble { color: hsl(var(--primary) / 0.8); text-shadow: 0 0 14px hsl(var(--primary) / 0.65); }
+    .preloader-name [data-scramble] { color: hsl(var(--primary) / 0.8); text-shadow: 0 0 14px hsl(var(--primary) / 0.65); }
     .preloader-status {
       display: flex;
       align-items: center;
@@ -720,7 +726,7 @@
       transition: color 0.3s ease;
     }
     .preloader-status .preloader-count { min-width: 4ch; font-weight: 700; letter-spacing: 0.05em; font-variant-numeric: tabular-nums; }
-    .preloader.is-done .preloader-status { color: hsl(var(--primary)); }
+    .preloader[data-done] .preloader-status { color: hsl(var(--primary)); }
     .preloader-log {
       position: absolute;
       left: clamp(1rem, 4vw, 3rem);
@@ -734,7 +740,7 @@
       transition: opacity 0.4s ease;
     }
     .preloader-log span { display: block; white-space: pre; animation: log-type 0.28s steps(28, end) both; }
-    .preloader-log .ok { color: hsl(var(--primary)); }
+    .preloader-log b { color: hsl(var(--primary)); }
     .preloader-skip {
       position: absolute;
       right: clamp(1rem, 4vw, 3rem);
@@ -748,9 +754,9 @@
       transition: opacity 0.4s ease;
     }
     @keyframes mono-draw { to { stroke-dashoffset: 0; } }
-    @keyframes grid-run { from { background-position: 0 0; } to { background-position: 0 64px; } }
-    @keyframes brackets-in { from { inset: -60px; opacity: 0; } to { inset: -22px; opacity: 0.8; } }
-    @keyframes shock { from { transform: scale(0.95); opacity: 0.95; box-shadow: 0 0 30px hsl(var(--primary) / 0.8); } to { transform: scale(3); opacity: 0; box-shadow: 0 0 0 transparent; } }
+    @keyframes grid-run { from { transform: translateY(0); } to { transform: translateY(64px); } }
+    @keyframes brackets-in { from { transform: scale(1.3); opacity: 0; } to { transform: none; opacity: 0.8; } }
+    @keyframes shock { from { transform: scale(0.95); opacity: 0.95; } to { transform: scale(3); opacity: 0; } }
     @keyframes hud-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
     @keyframes mono-glitch {
       0% { filter: drop-shadow(4px 0 hsl(var(--accent))) drop-shadow(-4px 0 hsl(var(--neon))); transform: translateX(3px) skewX(-8deg) scale(1.06); }
@@ -900,8 +906,8 @@
     }
     @media (min-width: 768px) { .role-pill { height: 3.25rem; padding: 0 1.5rem; font-size: 0.875rem; } }
     .role-rotator { display: inline-block; transition: transform 0.45s var(--ease-out), opacity 0.35s ease; }
-    .role-rotator.is-out { transform: translateY(-140%); opacity: 0; }
-    .role-rotator.is-in-start { transform: translateY(140%); opacity: 0; transition: none; }
+    .role-rotator[data-phase="out"] { transform: translateY(-140%); opacity: 0; }
+    .role-rotator[data-phase="in-start"] { transform: translateY(140%); opacity: 0; transition: none; }
 
     .terminal-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .terminal-caret { display: inline-block; width: 0.55em; height: 1.05em; vertical-align: -0.15em; background: hsl(var(--primary)); animation: blink 1s step-end infinite; }
@@ -1448,7 +1454,7 @@
     /* top/bottom are set from the model's measured height in JS */
     .bot-hit { position: absolute; inset: 20% 31% 22% 31%; border-radius: 38%; pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .bot-layer.is-compact .bot-hit { pointer-events: none; } /* touch / small screens: never swallow taps meant for the page */
-    .bot-layer.is-compact.is-docked .bot-hit { pointer-events: auto; } /* parked in the empty middle of the navbar: tap to poke */
+    .bot-layer.is-compact[data-docked] .bot-hit { pointer-events: auto; } /* parked in the empty middle of the navbar: tap to poke */
     .bot-zzz {
       position: absolute;
       left: 0;
@@ -1464,7 +1470,7 @@
       transition: opacity 0.3s ease;
       pointer-events: none;
     }
-    .bot-zzz.is-visible { opacity: 1; }
+    .bot-zzz[data-visible] { opacity: 1; }
     .bot-zzz span { display: inline-block; animation: zzz-float 2.4s ease-in-out infinite; }
     .bot-zzz span:nth-child(2) { font-size: 1.2em; animation-delay: 0.4s; }
     .bot-zzz span:nth-child(3) { font-size: 1.45em; animation-delay: 0.8s; }
@@ -1486,7 +1492,7 @@
       transition: opacity 0.18s ease;
       will-change: transform;
     }
-    .bot-bubble.is-visible { opacity: 1; pointer-events: auto; cursor: pointer; } /* tap or click to dismiss */
+    .bot-bubble[data-visible] { opacity: 1; pointer-events: auto; cursor: pointer; } /* tap or click to dismiss */
     .bot-layer.is-compact .bot-bubble { max-width: min(280px, calc(100vw - 24px)); font-size: 12.5px; }
     .bot-bubble::before {
       content: '';
@@ -1498,8 +1504,8 @@
       border: inherit;
       transform: translateY(-50%) rotate(45deg);
     }
-    .bot-bubble.tail-left::before { left: -6px; border-top: 0; border-right: 0; }
-    .bot-bubble.tail-right::before { right: -6px; border-bottom: 0; border-left: 0; }
+    .bot-bubble[data-tail="left"]::before { left: -6px; border-top: 0; border-right: 0; }
+    .bot-bubble[data-tail="right"]::before { right: -6px; border-bottom: 0; border-left: 0; }
     .bot-toggle {
       position: fixed;
       left: 16px;
@@ -1577,8 +1583,8 @@
 
 <!-- Page intro: a "system boot" (script: initPreloader). Click or press any key to skip. -->
 <div class="preloader" id="preloader" aria-hidden="true">
-  <div class="preloader-half is-top"></div>
-  <div class="preloader-half is-bottom"></div>
+  <div class="preloader-half is-top"><i class="preloader-grid"></i></div>
+  <div class="preloader-half is-bottom"><i class="preloader-grid"></i></div>
   <canvas class="preloader-stars" id="preloader-stars"></canvas>
   <div class="preloader-glow"></div>
   <div class="preloader-scan"></div>
@@ -3477,13 +3483,13 @@
       index = (index + 1) % roles.length;
       if (live) live.textContent = roles[index];
       if (prefersReducedMotion) { el.textContent = roles[index]; return; }
-      el.classList.add('is-out');
+      // A data attribute, not a class: a class Tailwind's CDN hasn't seen yet makes it rebuild every style
+      el.dataset.phase = 'out';
       setTimeout(() => {
         el.textContent = roles[index];
-        el.classList.remove('is-out');
-        el.classList.add('is-in-start');
+        el.dataset.phase = 'in-start';
         void el.offsetWidth;
-        el.classList.remove('is-in-start');
+        delete el.dataset.phase;
       }, 320);
     }, 3000);
   }
@@ -3535,6 +3541,7 @@
     const MIN_TIME = prefersReducedMotion ? 0 : seen ? 700 : 1900;
     const MAX_TIME = 3200;
     const FINISH_TIME = 250;
+    const HOLD_MAX = seen ? 900 : 1500; // longest the doors wait for startup work on "Access granted"
     let progress = 0;
     let finishStart = null;
     let finishFrom = 0;
@@ -3542,6 +3549,16 @@
     // Boot log: lines appear as progress passes each threshold (facts from this page)
     const logEl = $('#preloader-log');
     const stateEl = $('#preloader-state');
+    // Text that changes every frame goes through a text node: Tailwind's CDN rescans the whole page whenever
+    // elements change (textContent swaps them), but not when a text node's data changes
+    const liveText = (el) => {
+      if (!el) return { set() {} };
+      const node = document.createTextNode(el.textContent);
+      el.replaceChildren(node);
+      return { set(value) { if (node.data !== value) node.data = value; } };
+    };
+    const stateText = liveText(stateEl);
+    const countText = liveText(countEl);
     const BOOT = [
       [0, 'Booting', '$ boot kritagya.portfolio'],
       [22, 'Loading modules', 'java · spring boot · postgresql · redis', true],
@@ -3553,7 +3570,7 @@
     function logUpTo(value) {
       while (logged < BOOT.length && value >= BOOT[logged][0]) {
         const [, state, text, ok] = BOOT[logged];
-        if (stateEl) stateEl.textContent = state;
+        stateText.set(state);
         sfx('tick');
         if (ok) setTimeout(() => { if (preloader.isConnected) sfx('check'); }, 260);
         if (logEl && !seen) {
@@ -3561,7 +3578,6 @@
           line.textContent = ok ? `> ${text}  ` : text;
           if (ok) {
             const mark = document.createElement('b');
-            mark.className = 'ok';
             mark.textContent = '✓';
             line.appendChild(mark);
           }
@@ -3578,7 +3594,9 @@
     const decodeTime = seen ? 350 : 950;
     const locked = document.createElement('span');
     const scrambling = document.createElement('span');
-    scrambling.className = 'scramble';
+    scrambling.dataset.scramble = '';
+    const lockedText = liveText(locked);
+    const scrambleText = liveText(scrambling);
     if (nameEl && !prefersReducedMotion) {
       nameEl.textContent = '';
       nameEl.append(locked, scrambling);
@@ -3588,8 +3606,8 @@
       const solved = Math.floor(NAME.length * Math.min(1, Math.max(0, elapsed - 150) / decodeTime));
       let tail = '';
       for (let i = solved; i < NAME.length; i++) tail += NAME[i] === ' ' ? ' ' : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-      locked.textContent = NAME.slice(0, solved);
-      scrambling.textContent = tail;
+      lockedText.set(NAME.slice(0, solved));
+      scrambleText.set(tail);
     }
 
     // Live local time in the top-right readout
@@ -3601,19 +3619,18 @@
       } catch (e) { /* keep the static label */ }
     }
 
-    // Star field: drifts out from the center while loading, then streaks into warp as the doors open
-    const starCanvas = $('#preloader-stars');
-    if (starCanvas && !prefersReducedMotion) {
-      const ctx = starCanvas.getContext('2d');
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-      const w = starCanvas.clientWidth;
-      const h = starCanvas.clientHeight;
-      starCanvas.width = Math.round(w * dpr);
-      starCanvas.height = Math.round(h * dpr);
+    // Star field: drifts out from the center while loading, then streaks into warp as the doors open. It draws
+    // in a worker where the browser allows it, so the stars keep flying while the page is busy starting up.
+    function starField(canvas, { w, h, dpr, colors }) {
+      // Self-contained (it may run inside a worker): only its arguments and worker-safe globals
+      const ctx = canvas.getContext('2d');
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.lineCap = 'round';
-      const tone = (name) => getComputedStyle(root).getPropertyValue(name).trim().split(/\s+/).join(', ');
-      const colors = [tone('--primary'), tone('--accent'), tone('--neon')];
+      const nextFrame = self.requestAnimationFrame
+        ? (callback) => self.requestAnimationFrame(callback)
+        : (callback) => setTimeout(() => callback(performance.now()), 16);
       const spawn = (star) => {
         star.x = (Math.random() - 0.5) * 2;
         star.y = (Math.random() - 0.5) * 2;
@@ -3621,13 +3638,15 @@
         return star;
       };
       const stars = Array.from({ length: w < 640 ? 70 : 150 }, (_, i) => Object.assign(spawn({ c: colors[i % 3] }), { z: Math.random() }));
+      let running = true;
+      let warping = false;
       let warp = 0;
       let last = performance.now();
       const draw = (now) => {
-        if (!preloader.isConnected) return;
+        if (!running) return;
         const dt = Math.min(0.05, (now - last) / 1000);
         last = now;
-        if (preloader.classList.contains('is-done')) warp = Math.min(1, warp + dt * 2);
+        if (warping) warp = Math.min(1, warp + dt * 2);
         const speed = 0.14 + warp * warp * 2.6;
         const reach = Math.max(w, h) * 0.5;
         ctx.clearRect(0, 0, w, h);
@@ -3646,14 +3665,38 @@
           ctx.lineTo(x, y);
           ctx.stroke();
         });
-        requestAnimationFrame(draw);
+        nextFrame(draw);
       };
-      requestAnimationFrame(draw);
+      nextFrame(draw);
+      return { warp: () => { warping = true; }, stop: () => { running = false; } };
+    }
+    let stars = null;
+    const starCanvas = $('#preloader-stars');
+    if (starCanvas && !prefersReducedMotion) {
+      const tone = (name) => getComputedStyle(root).getPropertyValue(name).trim().split(/\s+/).join(', ');
+      const options = {
+        w: starCanvas.clientWidth,
+        h: starCanvas.clientHeight,
+        dpr: Math.min(window.devicePixelRatio || 1, 1.5),
+        colors: [tone('--primary'), tone('--accent'), tone('--neon')],
+      };
+      if (starCanvas.transferControlToOffscreen && window.Worker) {
+        try {
+          const source = `let field = null;
+            self.onmessage = (e) => { if (e.data.canvas) field = (${starField})(e.data.canvas, e.data.options); else if (field) field[e.data](); };`;
+          const url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
+          const worker = new Worker(url);
+          const offscreen = starCanvas.transferControlToOffscreen();
+          worker.postMessage({ canvas: offscreen, options }, [offscreen]);
+          stars = { warp: () => worker.postMessage('warp'), stop: () => { worker.terminate(); URL.revokeObjectURL(url); } };
+        } catch (e) { /* no worker: draw on the page instead */ }
+      }
+      if (!stars) stars = starField(starCanvas, options);
     }
 
     // The hum starts as soon as sound is on (turning it on mid-intro picks it up right away)
     const drone = window.KYSound ? window.KYSound.drone : null;
-    const startDrone = () => { if (drone && preloader.isConnected && !preloader.classList.contains('is-exiting')) drone.start(); };
+    const startDrone = () => { if (drone && preloader.isConnected && !preloader.hasAttribute('data-exiting')) drone.start(); };
     startDrone();
     document.addEventListener('ky:soundchange', (e) => { if (e.detail.enabled) setTimeout(startDrone, 80); });
 
@@ -3661,24 +3704,44 @@
       sfx('granted');
       setTimeout(() => sfx('glitch'), 60);
       if (nameEl) {
-        locked.textContent = NAME;
-        scrambling.textContent = '';
+        lockedText.set(NAME);
+        scrambleText.set('');
       }
-      if (stateEl) stateEl.textContent = 'Access granted';
+      stateText.set('Access granted');
       logUpTo(100);
-      preloader.classList.add('is-done');
+      preloader.setAttribute('data-done', '');
+      if (stars) stars.warp();
+      // "Access granted" holds still: everything still moving runs on the GPU or in the stars' worker, so heavy
+      // startup work (building Bella, measuring scroll reveals) happens now instead of stuttering the boot.
+      // ky:granted listeners hand over their work; the doors open when it's done (or at the cap).
+      const holds = [new Promise((resolve) => setTimeout(resolve, prefersReducedMotion ? 0 : 480))];
+      const waitFor = (work) => { holds.push(Promise.resolve(work).catch(() => {})); };
+      // A short beat first, so the shockwave and seam start on the GPU before the page gets busy
       setTimeout(() => {
-        preloader.classList.add('is-exiting');
-        sfx('doors');
-        sfx('warp');
-        if (drone) drone.stop();
-        startHero();
-        setTimeout(() => preloader.remove(), prefersReducedMotion ? 0 : 1050);
-      }, prefersReducedMotion ? 0 : 480);
+        document.dispatchEvent(new CustomEvent('ky:granted', { detail: { waitFor } }));
+        const cap = new Promise((resolve) => setTimeout(resolve, HOLD_MAX));
+        Promise.race([Promise.all(holds), cap]).then(openDoors);
+      }, prefersReducedMotion ? 0 : 120);
+    }
+
+    function openDoors() {
+      preloader.setAttribute('data-exiting', '');
+      sfx('doors');
+      sfx('warp');
+      if (drone) drone.stop();
+      startHero();
+      setTimeout(() => {
+        preloader.remove();
+        if (stars) stars.stop();
+      }, prefersReducedMotion ? 0 : 1050);
     }
 
     function tick(now) {
-      if (!preloader.isConnected) { startHero(); return; }
+      if (!preloader.isConnected) {
+        if (stars) stars.stop();
+        startHero();
+        return;
+      }
       const elapsed = now - startTime;
       const canFinish = skipped || (loaded && elapsed >= MIN_TIME) || elapsed >= MAX_TIME;
       if (!canFinish) {
@@ -3687,7 +3750,7 @@
         if (finishStart === null) { finishStart = now; finishFrom = progress; }
         progress = finishFrom + (100 - finishFrom) * Math.min(1, (now - finishStart) / (skipped ? 120 : FINISH_TIME));
       }
-      if (countEl) countEl.textContent = Math.round(progress) + '%';
+      countText.set(Math.round(progress) + '%');
       preloader.style.setProperty('--progress', progress.toFixed(1));
       if (drone) drone.level(progress / 100);
       logUpTo(progress);
@@ -4405,10 +4468,11 @@
     }
 
     // Pause animation when tab is not visible to save CPU/battery
+    let started = false;
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
-      } else if (!animFrameId) {
+      } else if (!animFrameId && started) {
         animFrameId = requestAnimationFrame(draw);
       }
     });
@@ -4419,11 +4483,22 @@
     readColor();
     resize();
     createParticles();
-    animFrameId = requestAnimationFrame(draw);
+    // The intro covers the page at first, so start drifting when it ends
+    const begin = () => {
+      started = true;
+      if (!animFrameId && !document.hidden) animFrameId = requestAnimationFrame(draw);
+    };
+    if (root.dataset.ready === 'true') begin();
+    else document.addEventListener('ky:ready', begin, { once: true });
   })();
 
   // ---- Reveal-on-scroll animations ----
-  if (typeof AOS !== 'undefined') {
+  // AOS measures every element when it starts (a noticeable pause), so it starts while the intro holds on
+  // "Access granted"; the reveals begin below the hero, so nothing visible waits on it.
+  let aosStarted = false;
+  const startAOS = () => {
+    if (aosStarted || typeof AOS === 'undefined') return;
+    aosStarted = true;
     AOS.init({
       duration: 900,
       once: true,
@@ -4431,6 +4506,11 @@
       easing: 'ease-out-quart',
       disable: prefersReducedMotion,
     });
+  };
+  if (root.dataset.ready === 'true') startAOS();
+  else {
+    document.addEventListener('ky:granted', startAOS, { once: true });
+    document.addEventListener('ky:ready', startAOS, { once: true }); // the intro was cut short
   }
 
   // ---- Smooth Hash Navigation Error Recovery ----
