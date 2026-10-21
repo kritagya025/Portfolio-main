@@ -131,11 +131,11 @@ const LINES = {
   copied: [[{ t: 'Fetched!', e: 'happy', g: 'hop' }, { t: " Kritagya's email is on your clipboard.", e: 'love', g: 'wag' }]],
   themeLight: [
     [{ t: 'Daylight mode!', e: 'surprised' }, { t: ' New outfit... how do I look?', e: 'blush', g: 'spin' }],
-    [{ t: 'Ooh, midnight indigo!', e: 'wow' }, { t: ' Very fancy for daytime.', e: 'wink', g: 'wag' }],
+    [{ t: 'Ooh, dark roast!', e: 'wow' }, { t: ' Very fancy for daytime.', e: 'wink', g: 'wag' }],
   ],
   themeDark: [
     [{ t: 'Night mode!', e: 'happy' }, { t: ' Back in my glow-in-the-dark suit.', e: 'love', g: 'spin' }],
-    [{ t: 'Ahh, wolf hours.', e: 'cool' }, { t: ' Pearl white suits me, right?', e: 'blush', g: 'wag' }],
+    [{ t: 'Ahh, wolf hours.', e: 'cool' }, { t: ' Ivory white suits me, right?', e: 'blush', g: 'wag' }],
   ],
   poke: [
     [{ t: 'Beep-awoo!', e: 'surprised', g: 'hop' }, { t: ' That tickles!', e: 'blush' }],
@@ -467,7 +467,7 @@ const PAT = {
   mouthSad: ['.####.', '#....#'],
   mouthSob: ['..##..', '.#..#.', '#....#'],
 };
-const LED = { on: '#d1fae5', glow: '#34d399', dim: 'rgba(52, 211, 153, 0.5)', heart: '#ffe4e6', heartGlow: '#fb7185', blush: 'rgba(251, 113, 133, 0.85)', tear: '#e0f2fe', tearGlow: '#38bdf8', tearTrail: 'rgba(125, 211, 252, 0.55)', off: '#0e1626', screen: '#03060c' };
+const LED = { on: '#fef3c7', glow: '#fbbf24', dim: 'rgba(251, 191, 36, 0.5)', heart: '#ffe4e6', heartGlow: '#fb7185', blush: 'rgba(251, 113, 133, 0.85)', tear: '#e0f2fe', tearGlow: '#38bdf8', tearTrail: 'rgba(125, 211, 252, 0.55)', off: '#1a1411', screen: '#060403' };
 
 const mirror = (pattern) => pattern.map((row) => Array.from(row).reverse().join(''));
 
@@ -607,13 +607,13 @@ class WolfFace {
  * a hover thruster that sheds sparks, twin back boosters, and a holographic orbit ring
  * ---------------------------------------------------------------------------------------------- */
 
-const EMERALD = 0x34d399;
-const PURPLE = 0xa855f7;
-// Bella's colors per theme. Dark pages: pearl shell, gunmetal armor, neon emerald and purple lights.
-// Light pages: glossy midnight-indigo shell, silver armor, deeper emerald and violet so she stands out.
+const AMBER = 0xf97316;
+const CORAL = 0xf43f5e;
+// Bella's colors per theme. Dark pages: ivory shell, warm gunmetal armor, amber and coral lights.
+// Light pages: glossy espresso shell, warm silver armor, deeper orange and rose so she stands out.
 const LIVERY = {
-  dark: { shell: 0xe8edf5, metal: 0x1e293b, green: 0x34d399, purple: 0xa855f7, holo: 0x34d399, holoOpacity: 0.32, tear: 0x7dd3fc, scan: 0xa7f3d0 },
-  light: { shell: 0x1e1b4b, metal: 0xcbd5e1, green: 0x10b981, purple: 0x7c3aed, holo: 0x7c3aed, holoOpacity: 0.55, tear: 0x0ea5e9, scan: 0xc4b5fd },
+  dark: { shell: 0xf3eee8, metal: 0x292524, led: 0xf97316, accent: 0xf43f5e, holo: 0xf59e0b, holoOpacity: 0.32, tear: 0x7dd3fc, scan: 0xfde68a },
+  light: { shell: 0x2a1d17, metal: 0xd6d3d1, led: 0xea580c, accent: 0xe11d48, holo: 0xe11d48, holoOpacity: 0.55, tear: 0x0ea5e9, scan: 0xfda4af },
 };
 const LIVERY_MS = 1100; // how long the outfit change takes
 
@@ -695,22 +695,22 @@ class Engine {
     this.camera.position.set(0, 0.55, 11);
     this.camera.lookAt(0, 0.2, 0);
 
-    this.scene.add(new T.HemisphereLight(0xf0f4ff, 0x1e293b, 0.9));
+    this.scene.add(new T.HemisphereLight(0xfff7ed, 0x1c1917, 0.9));
     const key = new T.DirectionalLight(0xffffff, 1.8);
     key.position.set(3, 4, 6);
-    const fill = new T.DirectionalLight(0xc7d2fe, 0.5);
+    const fill = new T.DirectionalLight(0xffedd5, 0.5);
     fill.position.set(-4, 1, 3);
-    this.rim = new T.PointLight(PURPLE, 36, 16, 2);
+    this.rim = new T.PointLight(CORAL, 36, 16, 2);
     this.rim.position.set(-3, 2.5, -2.5);
-    this.rim2 = new T.PointLight(EMERALD, 26, 16, 2);
+    this.rim2 = new T.PointLight(AMBER, 26, 16, 2);
     this.rim2.position.set(3, 1.2, -2.5);
     this.scene.add(key, fill, this.rim, this.rim2);
 
     this.face = new WolfFace(T);
-    this.dotTex = glowTexture(T, '110, 231, 183', false);
-    this.purpleDotTex = glowTexture(T, '192, 132, 252', false);
-    this.flameTex = glowTexture(T, '110, 231, 183', true);
-    this.purpleFlameTex = glowTexture(T, '192, 132, 252', true);
+    this.dotTex = glowTexture(T, '251, 191, 36', false);
+    this.accentDotTex = glowTexture(T, '251, 113, 133', false);
+    this.flameTex = glowTexture(T, '251, 191, 36', true);
+    this.accentFlameTex = glowTexture(T, '251, 113, 133', true);
     this.st = { y: 0, p: 0, r: 0, blinkAt: 0, twitchAt: 0, twitchSide: 0, sw: 0, swV: 0, prevYaw: 0, sparkAt: 0 };
     this.tmp = new T.Vector3();
     this.tmp2 = new T.Vector3();
@@ -719,8 +719,8 @@ class Engine {
     this.mainDir = new T.Vector3();
     this.mainPower = 0;
     this.burstCount = 0;
-    this.coreA = new T.Color(PURPLE); // the core pulses between these two
-    this.coreB = new T.Color(EMERALD);
+    this.coreA = new T.Color(CORAL); // the core pulses between these two
+    this.coreB = new T.Color(AMBER);
     yield;
 
     this.build();
@@ -743,13 +743,13 @@ class Engine {
   build() {
     const T = this.T;
     const M = {
-      shell: new T.MeshPhysicalMaterial({ color: 0xe8edf5, roughness: 0.32, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.14 }),
-      metal: new T.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.85 }),
-      green: new T.MeshStandardMaterial({ color: EMERALD, emissive: EMERALD, emissiveIntensity: 2.2, toneMapped: false }),
-      purple: new T.MeshStandardMaterial({ color: PURPLE, emissive: PURPLE, emissiveIntensity: 2.4, toneMapped: false }),
-      core: new T.MeshStandardMaterial({ color: PURPLE, emissive: PURPLE, emissiveIntensity: 2.6, toneMapped: false }),
+      shell: new T.MeshPhysicalMaterial({ color: 0xf3eee8, roughness: 0.32, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.14 }),
+      metal: new T.MeshStandardMaterial({ color: 0x292524, roughness: 0.3, metalness: 0.85 }),
+      led: new T.MeshStandardMaterial({ color: AMBER, emissive: AMBER, emissiveIntensity: 2.2, toneMapped: false }),
+      accent: new T.MeshStandardMaterial({ color: CORAL, emissive: CORAL, emissiveIntensity: 2.4, toneMapped: false }),
+      core: new T.MeshStandardMaterial({ color: CORAL, emissive: CORAL, emissiveIntensity: 2.6, toneMapped: false }),
       visor: new T.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffff, emissiveMap: this.face.texture, emissiveIntensity: 1.3, roughness: 0.32, metalness: 0.3, envMapIntensity: 0.3 }),
-      holo: new T.MeshBasicMaterial({ color: EMERALD, transparent: true, opacity: 0.32, depthWrite: false, toneMapped: false }),
+      holo: new T.MeshBasicMaterial({ color: AMBER, transparent: true, opacity: 0.32, depthWrite: false, toneMapped: false }),
     };
     this.M = M;
     // Fewer segments on the low-quality profile; the silhouette barely changes at that size
@@ -778,7 +778,7 @@ class Engine {
       const turn = new T.Group();
       turn.rotation.y = -(Math.PI / 2 - VISOR_ARC / 2 - 0.03);
       turn.position.y = side * VISOR_R * Math.sin(VISOR_TILT / 2);
-      const rail = mesh(new T.TorusGeometry(ringR + 0.006, 0.022, 8, 48, VISOR_ARC + 0.06), M.green);
+      const rail = mesh(new T.TorusGeometry(ringR + 0.006, 0.022, 8, 48, VISOR_ARC + 0.06), M.led);
       rail.rotation.x = Math.PI / 2;
       turn.add(rail);
       head.add(turn);
@@ -809,7 +809,7 @@ class Engine {
       ear.position.set(side * 0.38, 0.46, -0.04);
       ear.rotation.set(-0.1, 0, -side * 0.26);
       ear.add(mesh(earGeo, M.shell));
-      const inner = mesh(innerGeo, M.green);
+      const inner = mesh(innerGeo, M.led);
       inner.position.z = 0.09;
       ear.add(inner);
       head.add(ear);
@@ -821,14 +821,14 @@ class Engine {
       stud.rotation.z = Math.PI / 2;
       stud.position.set(side * 0.88, -0.05, 0);
       head.add(stud);
-      const lamp = mesh(new T.CircleGeometry(0.055, 20), M.purple);
+      const lamp = mesh(new T.CircleGeometry(0.055, 20), M.accent);
       lamp.position.set(side * 0.915, -0.05, 0);
       lamp.rotation.y = (side * Math.PI) / 2;
       head.add(lamp);
     });
 
     // ---- Neck: a floating energy ring (the head hovers above the body) ----
-    this.neck = mesh(new T.TorusGeometry(0.3, 0.035, 10, 40), M.green);
+    this.neck = mesh(new T.TorusGeometry(0.3, 0.035, 10, 40), M.led);
     this.neck.rotation.x = Math.PI / 2;
     this.neck.position.y = 0.3;
     this.pivot.add(this.neck);
@@ -841,12 +841,12 @@ class Engine {
     body.add(mesh(lathe([[0.24, -1.0], [0.27, -0.98], [0.4, -0.88], [0.56, -0.7], [0.665, -0.45], [0.68, -0.2], [0.638, -0.05]]), M.metal));
     // Glowing vents around the lower body (leaving the chest core clear)
     [-2.5, -1.75, -1.0, 1.0, 1.75, 2.5].forEach((angle) => {
-      const vent = mesh(new T.BoxGeometry(0.035, 0.2, 0.03), M.green);
+      const vent = mesh(new T.BoxGeometry(0.035, 0.2, 0.03), M.led);
       vent.position.set(Math.sin(angle) * 0.6, -0.62, Math.cos(angle) * 0.6);
       vent.rotation.set(0.4, angle, 0, 'YXZ'); // follow the body's slope
       body.add(vent);
     });
-    const belt = mesh(new T.TorusGeometry(0.638, 0.018, 8, seg(64)), M.purple);
+    const belt = mesh(new T.TorusGeometry(0.638, 0.018, 8, seg(64)), M.accent);
     belt.rotation.x = Math.PI / 2;
     belt.position.y = -0.05;
     body.add(belt);
@@ -857,10 +857,10 @@ class Engine {
     this.core.position.set(0, -0.3, 0.62);
     body.add(this.core);
     // Reactor ring spinning around the core
-    this.reactor = mesh(new T.TorusGeometry(0.235, 0.012, 6, 40, Math.PI * 1.5), M.green);
+    this.reactor = mesh(new T.TorusGeometry(0.235, 0.012, 6, 40, Math.PI * 1.5), M.led);
     this.reactor.position.set(0, -0.3, 0.63);
     body.add(this.reactor);
-    this.coreGlow = glowSprite(T, this.purpleDotTex, 0.75);
+    this.coreGlow = glowSprite(T, this.accentDotTex, 0.75);
     this.coreGlow.position.set(0, -0.3, 0.72);
     this.coreGlow.scale.setScalar(0.62);
     body.add(this.coreGlow);
@@ -869,11 +869,11 @@ class Engine {
     const nozzle = mesh(new T.CylinderGeometry(0.26, 0.2, 0.2, 32), M.metal);
     nozzle.position.y = -1.08;
     body.add(nozzle);
-    const ring = mesh(new T.TorusGeometry(0.2, 0.04, 10, 40), M.green);
+    const ring = mesh(new T.TorusGeometry(0.2, 0.04, 10, 40), M.led);
     ring.rotation.x = Math.PI / 2;
     ring.position.y = -1.18;
     body.add(ring);
-    const disc = mesh(new T.CircleGeometry(0.17, 32), M.green);
+    const disc = mesh(new T.CircleGeometry(0.17, 32), M.led);
     disc.rotation.x = Math.PI / 2;
     disc.position.y = -1.17;
     body.add(disc);
@@ -884,9 +884,9 @@ class Engine {
       const point = new T.Object3D();
       point.position.copy(position);
       parent.add(point);
-      const glow = glowSprite(T, main ? this.dotTex : this.purpleDotTex, 0.55);
-      const flame = glowSprite(T, main ? this.flameTex : this.purpleFlameTex, 0.95);
-      const core = glowSprite(T, main ? this.dotTex : this.purpleDotTex, 1);
+      const glow = glowSprite(T, main ? this.dotTex : this.accentDotTex, 0.55);
+      const flame = glowSprite(T, main ? this.flameTex : this.accentFlameTex, 0.95);
+      const core = glowSprite(T, main ? this.dotTex : this.accentDotTex, 1);
       flame.center.set(0.5, 0.92);
       [glow, flame, core].forEach((s) => this.scene.add(s));
       this.jets.push({ point, size, main, glow, flame, core });
@@ -901,7 +901,7 @@ class Engine {
       const cap = mesh(new T.SphereGeometry(0.085, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), M.shell);
       cap.position.y = 0.18;
       pod.add(cap);
-      const podRing = mesh(new T.TorusGeometry(0.12, 0.022, 8, 28), M.purple);
+      const podRing = mesh(new T.TorusGeometry(0.12, 0.022, 8, 28), M.accent);
       podRing.rotation.x = Math.PI / 2;
       podRing.position.y = -0.18;
       pod.add(podRing);
@@ -915,12 +915,12 @@ class Engine {
       const palm = mesh(new T.SphereGeometry(0.15, seg(24), seg(16)), M.shell);
       palm.scale.set(1, 0.92, 0.86);
       paw.add(palm);
-      const cuff = mesh(new T.TorusGeometry(0.115, 0.02, 8, 24), M.green);
+      const cuff = mesh(new T.TorusGeometry(0.115, 0.02, 8, 24), M.led);
       cuff.rotation.x = Math.PI / 2;
       cuff.position.y = 0.06;
       paw.add(cuff);
       [-0.06, 0, 0.06].forEach((x, i) => {
-        const pad = mesh(new T.SphereGeometry(0.03, 10, 8), M.green);
+        const pad = mesh(new T.SphereGeometry(0.03, 10, 8), M.led);
         pad.position.set(x, -0.05 + (i === 1 ? -0.015 : 0), 0.12);
         paw.add(pad);
       });
@@ -935,7 +935,7 @@ class Engine {
       this.pivot.add(seg);
       return seg;
     });
-    this.tailTip = glowSprite(T, this.purpleDotTex, 0.9);
+    this.tailTip = glowSprite(T, this.accentDotTex, 0.9);
     this.tailTip.scale.setScalar(0.3);
     this.pivot.add(this.tailTip);
 
@@ -947,7 +947,7 @@ class Engine {
     orbitRing.rotation.x = Math.PI / 2;
     orbit.add(orbitRing);
     this.satellites = [0, 1, 2].map(() => {
-      const dot = mesh(new T.SphereGeometry(0.035, 10, 8), M.green);
+      const dot = mesh(new T.SphereGeometry(0.035, 10, 8), M.led);
       const halo = glowSprite(T, this.dotTex, 0.6);
       halo.scale.setScalar(0.22);
       dot.add(halo);
@@ -1001,7 +1001,7 @@ class Engine {
   currentLivery() {
     const M = this.M;
     return {
-      shell: M.shell.color.clone(), metal: M.metal.color.clone(), green: M.green.color.clone(), purple: M.purple.color.clone(),
+      shell: M.shell.color.clone(), metal: M.metal.color.clone(), led: M.led.color.clone(), accent: M.accent.color.clone(),
       holo: M.holo.color.clone(), holoOpacity: M.holo.opacity, tear: this.tears[0].drop.material.color.clone(),
       rim: this.rim.color.clone(), rim2: this.rim2.color.clone(),
     };
@@ -1015,7 +1015,7 @@ class Engine {
     const accent = cssColor('--accent');
     const primary = cssColor('--primary');
     const target = {
-      shell: new T.Color(livery.shell), metal: new T.Color(livery.metal), green: new T.Color(livery.green), purple: new T.Color(livery.purple),
+      shell: new T.Color(livery.shell), metal: new T.Color(livery.metal), led: new T.Color(livery.led), accent: new T.Color(livery.accent),
       holo: new T.Color(livery.holo), holoOpacity: livery.holoOpacity, tear: new T.Color(livery.tear),
       rim: accent ? new T.Color().setStyle(accent) : this.rim.color.clone(),
       rim2: primary ? new T.Color().setStyle(primary) : this.rim2.color.clone(),
@@ -1032,17 +1032,17 @@ class Engine {
     const k = easeInOut(clamp(progress, 0, 1));
     M.shell.color.copy(from.shell).lerp(to.shell, k);
     M.metal.color.copy(from.metal).lerp(to.metal, k);
-    M.green.color.copy(from.green).lerp(to.green, k);
-    M.green.emissive.copy(M.green.color);
-    M.purple.color.copy(from.purple).lerp(to.purple, k);
-    M.purple.emissive.copy(M.purple.color);
+    M.led.color.copy(from.led).lerp(to.led, k);
+    M.led.emissive.copy(M.led.color);
+    M.accent.color.copy(from.accent).lerp(to.accent, k);
+    M.accent.emissive.copy(M.accent.color);
     M.holo.color.copy(from.holo).lerp(to.holo, k);
     M.holo.opacity = from.holoOpacity + (to.holoOpacity - from.holoOpacity) * k;
     this.tears.forEach((tear) => tear.drop.material.color.copy(from.tear).lerp(to.tear, k));
     this.rim.color.copy(from.rim).lerp(to.rim, k);
     this.rim2.color.copy(from.rim2).lerp(to.rim2, k);
-    this.coreA.copy(M.purple.color);
-    this.coreB.copy(M.green.color);
+    this.coreA.copy(M.accent.color);
+    this.coreB.copy(M.led.color);
   }
 
   /** Where the visor is on the page, for the speech bubble (canvas = `box` px centered at cx, cy). */
@@ -1172,7 +1172,7 @@ class Engine {
       if (progress >= 1) tween.duration = 0;
     }
 
-    // Core pulses between purple and emerald; orbit ring spins
+    // Core pulses between coral and amber; orbit ring spins
     const pulse = 0.5 + 0.5 * Math.sin(t / 700);
     this.M.core.emissive.copy(this.coreA).lerp(this.coreB, pulse * 0.6);
     this.M.core.emissiveIntensity = p.sleepy || crying ? 1 : 2.2 + pulse;

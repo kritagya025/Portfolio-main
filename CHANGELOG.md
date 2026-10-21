@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.18.0] - 2026-10-21
+
+### Changed
+- New color theme, "Ember": warm amber and coral on deep charcoal, replacing neon emerald and purple on dark slate
+  - Dark theme: charcoal background (`#0C0A09`), warm graphite cards, soft-white text, amber primary (`#F59E0B`), coral accent (`#FB7185`), and gold as the third highlight; gradients run amber to coral to gold, and buttons are amber with dark text, sweeping to light coral on hover
+  - Light theme: paper white background with burnt amber (`#B45309`), deep rose (`#E11D48`), and dark gold
+  - Bella: amber LED face and lights with a coral core; an ivory and warm-gunmetal outfit on dark pages, and a glossy espresso and warm-silver outfit on light pages (Bella's theme lines now mention "dark roast" and "ivory white")
+  - The intro, background particles, favicon, browser theme color, web app manifest, 404 page, GitHub stat cards, social preview image, and console greeting all follow the new palette
+
+---
+
 ## [3.17.0] - 2026-10-20
 
 ### Changed
