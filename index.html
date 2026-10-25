@@ -95,8 +95,8 @@
   <link rel="dns-prefetch" href="https://unpkg.com">
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 
-  <!-- Typography: Space Grotesk (display), Syne (body), JetBrains Mono (labels) -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;500;600;700&display=swap">
+  <!-- Typography: Plus Jakarta Sans (display), Syne (body), JetBrains Mono (labels) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Syne:wght@400;500;600;700&display=swap">
 
   <!-- Preload render-critical GSAP library for hero animations -->
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" as="script">
@@ -112,7 +112,7 @@
         extend: {
           fontFamily: {
             sans: ['Syne', 'system-ui', 'sans-serif'],
-            display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
           },
           colors: {
@@ -121,7 +121,8 @@
             card: 'hsl(var(--card) / <alpha-value>)',
             primary: 'hsl(var(--primary) / <alpha-value>)',
             accent: 'hsl(var(--accent) / <alpha-value>)',
-            neon: 'hsl(var(--neon) / <alpha-value>)',
+            gold: 'hsl(var(--gold) / <alpha-value>)',
+            neon: 'hsl(var(--gold) / <alpha-value>)',
             secondary: 'hsl(var(--secondary) / <alpha-value>)',
             muted: {
               DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
@@ -153,6 +154,7 @@
       --muted-foreground: 24 5% 64%;
       --accent: 351 95% 71%;
       --accent-strong: 353 96% 82%;
+      --gold: 46 97% 65%;
       --neon: 46 97% 65%;
       --border: 30 6% 22%;
       --particle-rgb: 245, 158, 11;
@@ -172,6 +174,7 @@
       --muted-foreground: 25 6% 33%;
       --accent: 347 77% 50%;
       --accent-strong: 353 96% 82%;
+      --gold: 45 96% 31%;
       --neon: 45 96% 31%;
       --border: 24 8% 85%;
       --particle-rgb: 180, 83, 9;
@@ -198,7 +201,7 @@
       overflow-x: clip;
       transition: background-color 0.4s ease, color 0.4s ease;
     }
-    h1, h2, h3, h4, h5, h6, .font-display { font-family: 'Space Grotesk', system-ui, sans-serif; }
+    h1, h2, h3, h4, h5, h6, .font-display { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
     ::selection { background: hsl(var(--primary) / 0.3); color: hsl(var(--foreground)); }
 
     /* ---- Custom Scrollbar Styling ---- */
@@ -227,27 +230,22 @@
 
     /* ---- Surfaces ---- */
     .glass-card {
-      background: hsl(var(--card) / 0.6);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-      border: 1px solid hsl(var(--border) / 0.6);
+      background: hsl(var(--card) / 0.88);
+      border: 1px solid hsl(var(--border) / 0.65);
     }
     [data-theme="light"] .glass-card {
       box-shadow: 0 1px 2px hsl(24 30% 15% / 0.05), 0 10px 30px -18px hsl(24 35% 15% / 0.18);
     }
     .glow-box {
-      box-shadow: 0 0 60px -15px hsl(var(--primary) / 0.25), 0 0 120px -30px hsl(var(--accent) / 0.15);
+      box-shadow: 0 0 60px -15px hsl(var(--primary) / 0.15), 0 0 120px -30px hsl(var(--accent) / 0.1);
     }
     .bg-grid {
-      background-image:
-        linear-gradient(hsl(var(--foreground)) 1px, transparent 1px),
-        linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px);
-      background-size: 80px 80px;
+      display: none;
     }
 
     /* ---- Gradient & Outline Typography ---- */
     .text-gradient {
-      background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--neon)));
+      background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--gold)));
       background-size: 200% 200%;
       -webkit-background-clip: text;
       background-clip: text;
@@ -309,7 +307,7 @@
       white-space: nowrap;
       pointer-events: none;
       user-select: none;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 700;
       font-size: 15vw;
       line-height: 1;
@@ -367,11 +365,9 @@
       box-shadow: 0 0 30px hsl(var(--primary) / 0.15);
     }
     .icon-tile.is-accent { background: hsl(var(--accent) / 0.1); border-color: hsl(var(--accent) / 0.2); color: hsl(var(--accent)); }
-    .icon-tile.is-neon { background: hsl(var(--neon) / 0.1); border-color: hsl(var(--neon) / 0.22); color: hsl(var(--neon)); }
+    .icon-tile.is-gold, .icon-tile.is-neon { background: hsl(var(--gold) / 0.1); border-color: hsl(var(--gold) / 0.22); color: hsl(var(--gold)); }
 
-    .card-strip { height: 4px; background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)), transparent); }
-    .card-strip.is-accent { background: linear-gradient(90deg, hsl(var(--accent)), hsl(var(--accent) / 0.5), transparent); }
-    .card-strip.is-neon { background: linear-gradient(90deg, hsl(var(--neon)), hsl(var(--primary) / 0.5), transparent); }
+    .card-strip { display: none; }
 
     .hover-glow { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.7s ease; background: linear-gradient(135deg, hsl(var(--primary) / 0.08), transparent 60%); }
     .group:hover .hover-glow { opacity: 1; }
@@ -459,7 +455,7 @@
       color: hsl(var(--muted-foreground));
       transition: color 0.3s ease, border-color 0.3s ease, transform 0.3s var(--ease-out);
     }
-    .social-btn:hover { color: hsl(var(--primary)); border-color: hsl(var(--primary) / 0.5); transform: translateY(-2px) scale(1.12); }
+    .social-btn:hover { color: hsl(var(--primary)); border-color: hsl(var(--primary) / 0.5); transform: translateY(-2px); }
 
     .kbd {
       font-family: 'JetBrains Mono', monospace;
@@ -492,8 +488,6 @@
       height: 50.5%;
       overflow: hidden;
       background-color: hsl(var(--background));
-      background-image: radial-gradient(hsl(var(--primary) / 0.12) 1px, transparent 1.7px);
-      background-size: 26px 26px;
       transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1), box-shadow 0.4s ease;
     }
     .preloader-half.is-top { top: 0; background-position: 0 0; }
@@ -537,14 +531,7 @@
     .preloader-stars { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity 0.7s ease 0.3s; }
     .preloader[data-exiting] .preloader-stars { opacity: 0; }
     .preloader-glow {
-      position: absolute;
-      width: 60vmin;
-      height: 60vmin;
-      border-radius: 50%;
-      background: radial-gradient(circle, hsl(var(--primary) / 0.18), hsl(var(--accent) / 0.08) 45%, transparent 70%);
-      filter: blur(20px);
-      pointer-events: none;
-      transition: opacity 0.6s ease;
+      display: none;
     }
     .preloader-scan {
       position: absolute;
@@ -716,7 +703,7 @@
     .intro-stop-a { stop-color: hsl(var(--primary)); }
     .intro-stop-b { stop-color: hsl(var(--accent)); }
     .preloader-name {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: clamp(1.25rem, 3.6vw, 2.25rem);
       font-weight: 700;
       letter-spacing: 0.3em;
@@ -770,7 +757,7 @@
     @keyframes shock { from { transform: scale(0.95); opacity: 0.95; } to { transform: scale(3); opacity: 0; } }
     @keyframes hud-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
     @keyframes mono-glitch {
-      0% { filter: drop-shadow(4px 0 hsl(var(--accent))) drop-shadow(-4px 0 hsl(var(--neon))); transform: translateX(3px) skewX(-8deg) scale(1.06); }
+      0% { filter: drop-shadow(4px 0 hsl(var(--accent))) drop-shadow(-4px 0 hsl(var(--gold))); transform: translateX(3px) skewX(-8deg) scale(1.06); }
       50% { filter: drop-shadow(-4px 0 hsl(var(--accent))) drop-shadow(4px 0 hsl(var(--primary))); transform: translateX(-3px) skewX(6deg) scale(1.06); }
       100% { filter: drop-shadow(0 0 16px hsl(var(--primary) / 0.75)); transform: scale(1.06); }
     }
@@ -792,7 +779,7 @@
       z-index: 9999;
       transform-origin: left center;
       transform: scaleX(0);
-      background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--neon)));
+      background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--gold)));
       box-shadow: 0 0 10px hsl(var(--primary) / 0.5);
     }
 
@@ -833,7 +820,7 @@
         linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
         linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))) border-box;
       color: hsl(var(--foreground));
-      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       font-size: 1rem;
       font-weight: 700;
       letter-spacing: 0.02em;
@@ -842,7 +829,7 @@
     }
     .brand:hover .brand-mark { transform: rotate(-6deg) scale(1.06); box-shadow: 0 0 28px -6px hsl(var(--primary) / 0.8); }
     .brand-name {
-      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       font-size: 1.05rem;
       font-weight: 700;
       letter-spacing: -0.01em;
@@ -883,7 +870,7 @@
       white-space: nowrap;
       pointer-events: none;
       user-select: none;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 700;
       font-size: 20vw;
       line-height: 1;
@@ -949,7 +936,7 @@
     .tok-com { color: hsl(var(--muted-foreground)); font-style: italic; }
     .tok-ann { color: hsl(var(--primary)); }
     .tok-kw { color: hsl(var(--accent)); }
-    .tok-type { color: hsl(var(--neon)); }
+    .tok-type { color: hsl(var(--gold)); }
 
     /* ---- Infinite Skill Marquees ---- */
     .marquee {
@@ -1002,7 +989,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
     .skill-tab.is-active .skill-icon, .skill-panel-head .skill-icon { background: hsl(var(--primary) / 0.2); color: hsl(var(--primary)); }
-    .skill-tab-label { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 0.875rem; font-weight: 600; color: hsl(var(--muted-foreground)); transition: color 0.3s ease; }
+    .skill-tab-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; font-weight: 600; color: hsl(var(--muted-foreground)); transition: color 0.3s ease; }
     .skill-tab:hover .skill-tab-label, .skill-tab.is-active .skill-tab-label { color: hsl(var(--foreground)); }
     .skill-tab-meta { display: block; margin-top: 2px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: hsl(var(--muted-foreground)); }
     .skill-tab-indicator { width: 6px; height: 2rem; flex-shrink: 0; border-radius: 9999px; background: hsl(var(--primary)); transform: scaleY(0); transition: transform 0.35s var(--ease-out); }
@@ -1137,7 +1124,7 @@
     .project-card:hover .project-card-glow { opacity: 1; }
     .project-num {
       flex-shrink: 0;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 700;
       font-size: 3.5rem;
       line-height: 1;
@@ -1152,10 +1139,10 @@
     @media (min-width: 1024px) { .project-num { font-size: 9rem; } }
     .project-card:hover .project-num {
       -webkit-text-stroke-color: transparent;
-      background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--neon)));
+      background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--gold)));
     }
     .metric { display: inline-flex; align-items: baseline; gap: 0.5rem; padding: 0.375rem 0.875rem; border-radius: 0.75rem; border: 1px solid hsl(var(--border) / 0.6); background: hsl(var(--secondary) / 0.5); }
-    .metric-value { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1rem; }
+    .metric-value { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem; }
     .metric-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: hsl(var(--muted-foreground)); }
     .project-explore {
       display: inline-flex;
@@ -1187,9 +1174,9 @@
 
     /* ---- Feature / Info Cards ---- */
     .lift-card { transition: transform 0.4s var(--ease-out), border-color 0.4s ease; }
-    .lift-card:hover { transform: translateY(-4px); border-color: hsl(var(--primary) / 0.3); }
+    .lift-card:hover { transform: translateY(-2px); border-color: hsl(var(--primary) / 0.3); }
     .link-card { transition: transform 0.4s var(--ease-out), border-color 0.4s ease; }
-    .link-card:hover { transform: translateY(-4px); border-color: hsl(var(--primary) / 0.3); }
+    .link-card:hover { transform: translateY(-2px); border-color: hsl(var(--primary) / 0.3); }
     .link-card .link-arrow { color: hsl(var(--muted-foreground) / 0.4); transition: transform 0.3s ease, color 0.3s ease; }
     .link-card:hover .link-arrow { color: hsl(var(--primary)); transform: translate(3px, -3px); }
     .link-card:hover .link-value { color: hsl(var(--primary)); }
@@ -1200,7 +1187,7 @@
     .lang-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.875rem; border: 1px solid hsl(var(--border) / 0.6); background: hsl(var(--secondary) / 0.4); }
     .lang-dot { width: 10px; height: 10px; flex-shrink: 0; border-radius: 9999px; background: var(--c); box-shadow: 0 0 10px var(--c); }
     .lang-name { font-size: 0.875rem; font-weight: 600; }
-    .lang-pct { margin-left: auto; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
+    .lang-pct { margin-left: auto; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
     .lang-bytes { min-width: 4.5rem; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: hsl(var(--muted-foreground)); }
 
     .stat-img { width: 100%; max-width: 28rem; height: auto; }
@@ -1283,7 +1270,7 @@
     .mobile-menu-panel { width: 100%; height: 100%; display: flex; flex-direction: column; border: 0; border-radius: 0; background: hsl(var(--background) / 0.96); box-shadow: none; transform: none; }
     .mobile-menu-nav { gap: clamp(0.5rem, 2.2vh, 1.25rem); overflow-y: auto; }
     .mobile-nav-link {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: clamp(1.5rem, 4.4vh, 2rem);
       font-weight: 700;
       letter-spacing: -0.02em;
@@ -1333,22 +1320,9 @@
         hsl(var(--background));
       clip-path: circle(0px at 50% 50%);
     }
-    /* LED dot field with a scanline sweeping down it */
+    /* Portal grid */
     .portal-grid {
-      position: absolute;
-      inset: 0;
-      background-image: radial-gradient(hsl(var(--primary) / 0.32) 1px, transparent 1.7px);
-      background-size: 24px 24px;
-      -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 12%, transparent 74%);
-      mask-image: radial-gradient(circle at 50% 50%, #000 12%, transparent 74%);
-    }
-    .portal-grid::after {
-      content: '';
-      position: absolute;
-      inset: 0 0 auto;
-      height: 28%;
-      background: linear-gradient(transparent, hsl(var(--primary) / 0.1) 50%, transparent);
-      animation: portal-scan 2.2s linear infinite;
+      display: none;
     }
     /* Orbiting rings: a dashed ring, a faint solid ring, and a comet arc racing around */
     .portal-rings span {
@@ -1388,7 +1362,7 @@
     .portal-heading { display: grid; place-items: center; margin: 1.5rem 0 1.9rem; }
     .portal-num, .portal-title { grid-area: 1 / 1; }
     .portal-num {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: clamp(9rem, 30vw, 24rem);
       font-weight: 700;
       line-height: 0.8;
@@ -1399,7 +1373,7 @@
     }
     .portal-title {
       position: relative;
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: clamp(3.25rem, 11vw, 8.5rem);
       font-weight: 700;
       line-height: 0.95;
@@ -1440,7 +1414,7 @@
     @keyframes portal-caret { 50% { opacity: 0; } }
     @keyframes portal-glitch {
       0% { text-shadow: 3px 0 hsl(var(--accent)), -3px 0 hsl(var(--primary)); transform: translateX(2px) skewX(-8deg); }
-      50% { text-shadow: -4px 0 hsl(var(--neon)), 4px 0 hsl(var(--accent)); transform: translateX(-3px) skewX(6deg); }
+      50% { text-shadow: -4px 0 hsl(var(--gold)), 4px 0 hsl(var(--accent)); transform: translateX(-3px) skewX(6deg); }
       100% { text-shadow: none; transform: none; }
     }
 
@@ -1654,13 +1628,6 @@
 <!-- Film Grain Visual Overlay Effect -->
 <div class="film-grain" aria-hidden="true"></div>
 
-<!-- ====== Ambient Background Orbs (mouse parallax) ====== -->
-<div class="ambient-layer fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none hidden md:block" aria-hidden="true">
-  <div class="ambient-orb parallax-bg w-[500px] h-[500px] blur-[90px] top-[6%] right-[4%] bg-primary/15" data-speed="2"></div>
-  <div class="ambient-orb parallax-bg w-[340px] h-[340px] blur-[80px] bottom-[16%] left-[8%] bg-accent/10" data-speed="-2"></div>
-  <div class="ambient-orb parallax-bg w-[240px] h-[240px] blur-[60px] top-[42%] left-[48%] bg-neon/[0.07]" data-speed="1.5"></div>
-</div>
-
 <!-- Particle Constellation Canvas -->
 <canvas id="particle-canvas" aria-hidden="true"></canvas>
 
@@ -1668,7 +1635,7 @@
 <header>
   <nav id="navbar" class="fixed top-0 inset-x-0 z-50" aria-label="Main Navigation">
     <div id="nav-inner" class="mx-4 md:mx-8 xl:mx-12 px-4 md:px-6 py-2.5 rounded-full flex items-center justify-between gap-4">
-      <a href="#top" class="brand" aria-label="Kritagya Yadav — back to top">
+      <a href="#top" class="brand" aria-label="Kritagya Yadav - back to top">
         <span class="brand-mark" aria-hidden="true">KY</span>
         <span class="brand-name hidden sm:inline lg:hidden xl:inline" aria-hidden="true">Kritagya<span class="text-primary">.</span></span>
       </a>
@@ -1736,8 +1703,8 @@
       <div class="hero-reveal flex flex-wrap items-center gap-3 mb-8 text-xs font-mono">
         <div class="glass-card px-4 py-2 rounded-full flex items-center gap-2.5 text-foreground/85">
           <span class="relative flex h-2 w-2" aria-hidden="true">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-neon"></span>
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-gold"></span>
           </span>
           <span>Available for Backend Roles & Internships</span>
         </div>
@@ -1763,7 +1730,7 @@
       <p class="sr-only" id="role-live" aria-live="polite" role="status"></p>
 
       <p class="hero-reveal max-w-xl text-muted-foreground text-base md:text-lg leading-relaxed mb-10">
-        Java backend developer specializing in Spring Boot, RESTful API design, database architecture, and scalable backend engineering — driven by core CS principles, robust software design, and automated testing.
+        Java backend developer specializing in Spring Boot, RESTful API design, database architecture, and scalable backend engineering - driven by core CS principles, robust software design, and automated testing.
       </p>
 
       <div class="hero-reveal flex flex-wrap items-center gap-4 md:gap-5">
@@ -1812,30 +1779,6 @@
         <a href="mailto:kritagyay2006@gmail.com" class="social-btn" aria-label="Send an email"><i class="fas fa-envelope text-[13px]"></i></a>
       </div>
 
-      <!-- Decorative terminal (wide screens) -->
-      <div class="hero-terminal hidden min-[1400px]:block absolute right-24 top-1/2 -translate-y-1/2 w-[360px]" aria-hidden="true">
-        <div class="hero-reveal">
-          <div class="float-slow glass-card rounded-2xl overflow-hidden glow-box">
-            <div class="flex items-center gap-2 px-4 py-3 border-b border-border/60">
-              <span class="w-2.5 h-2.5 rounded-full bg-accent/70"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-primary/70"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-neon/70"></span>
-              <span class="ml-2 font-mono text-[11px] text-muted-foreground">~/kritagya — bash</span>
-            </div>
-            <div class="p-5 font-mono text-[12px] leading-6">
-              <p class="terminal-line"><span class="text-neon">$</span> whoami</p>
-              <p class="terminal-line text-muted-foreground mb-2">kritagya · java backend developer</p>
-              <p class="terminal-line"><span class="text-neon">$</span> cat stack.txt</p>
-              <p class="terminal-line text-muted-foreground mb-2">Java · Spring Boot · PostgreSQL · Redis</p>
-              <p class="terminal-line"><span class="text-neon">$</span> ls ./projects</p>
-              <p class="terminal-line text-primary mb-2">event-booking/  linkpulse/  keyvault/</p>
-              <p class="terminal-line"><span class="text-neon">$</span> ./run-tests</p>
-              <p class="terminal-line text-muted-foreground"><span class="text-neon">✓</span> 45+ JUnit &amp; Mockito tests</p>
-              <p class="terminal-line"><span class="text-neon">$</span> <span class="terminal-caret"></span></p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Rotating scroll badge -->
@@ -1853,19 +1796,19 @@
 
     <!-- Scroll indicator -->
     <div class="hero-fade hero-scroll hidden md:block absolute bottom-8 left-1/2 -translate-x-1/2" aria-hidden="true">
-      <div class="bob flex flex-col items-center gap-2">
+      <div class="flex flex-col items-center gap-2">
         <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">Scroll</span>
         <i class="fas fa-arrow-down text-xs text-muted-foreground"></i>
       </div>
     </div>
   </section>
 
-  <!-- ====== 01 — ABOUT ====== -->
+  <!-- ====== 01 - ABOUT ====== -->
   <section id="about" class="section" tabindex="-1">
     <div class="bg-word top-16" data-parallax="2,-8" aria-hidden="true">ABOUT ME</div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-      <p class="eyebrow mb-14 md:mb-16" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>01 — About</span></p>
+      <p class="eyebrow mb-14 md:mb-16" data-aos="fade-right"><i class="fas fa-user text-primary" aria-hidden="true"></i><span>01 - About</span></p>
 
       <div class="grid lg:grid-cols-12 gap-12 lg:gap-10 items-start">
         <div class="lg:col-span-7 min-w-0 space-y-8">
@@ -1879,7 +1822,7 @@
               B.Tech Computer Science &amp; Engineering student (2023–2027) at KCC Institute of Technology &amp; Management (AKTU, CGPA: 7.58), specializing in Java, Spring Boot, RESTful API design, database architectures, and scalable backend engineering.
             </p>
             <p>
-              Hands-on across the full software development life cycle — from database design and implementation through automated testing and CI/CD deployment. I've independently designed and shipped 83+ RESTful APIs across two full-stack Java/Spring Boot systems: a concurrency-safe event booking platform and a URL shortener live in production on Render.
+              Hands-on across the full software development life cycle - from database design and implementation through automated testing and CI/CD deployment. I've independently designed and shipped 83+ RESTful APIs across two full-stack Java/Spring Boot systems: a concurrency-safe event booking platform and a URL shortener live in production on Render.
             </p>
             <p>
               Most recently, as a Software Engineering &amp; QA Intern at Compass (HeyCompass), an AI travel-planning startup, I delivered 50 merged commits addressing 25+ QA-reported defects with Claude as an AI coding assistant. Comfortable working independently, solving problems end-to-end, and quickly picking up new tools and technologies.
@@ -1888,13 +1831,13 @@
 
           <div class="flex flex-wrap gap-3" data-aos="fade-up" data-aos-delay="150">
             <span class="glass-card inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm text-muted-foreground">
-              <i class="fas fa-graduation-cap text-primary text-xs" aria-hidden="true"></i> B.Tech CSE — KCC ITM (AKTU)
+              <i class="fas fa-graduation-cap text-primary text-xs" aria-hidden="true"></i> B.Tech CSE · KCC ITM (AKTU)
             </span>
             <span class="glass-card inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm text-muted-foreground">
               <i class="fas fa-location-dot text-accent text-xs" aria-hidden="true"></i> Noida, India
             </span>
             <span class="glass-card inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm text-muted-foreground">
-              <i class="fas fa-briefcase text-primary text-xs" aria-hidden="true"></i> Ex-SE &amp; QA Intern — Compass
+              <i class="fas fa-briefcase text-primary text-xs" aria-hidden="true"></i> Ex-SE &amp; QA Intern · Compass
             </span>
           </div>
 
@@ -1972,12 +1915,12 @@
     </div>
   </section>
 
-  <!-- ====== 02 — SKILLS ====== -->
+  <!-- ====== 02 - SKILLS ====== -->
   <section id="skills" class="section" tabindex="-1">
     <div class="bg-word top-16" data-parallax="-6,10" aria-hidden="true">TOOLS &amp; SKILLS</div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>02 — Skills &amp; Tools</span></p>
+      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-layer-group text-primary" aria-hidden="true"></i><span>02 - Skills &amp; Tools</span></p>
       <h2 class="section-title mb-4" data-aos="fade-up">Technical stack &amp; <span class="text-gradient">competencies</span></h2>
       <p class="text-muted-foreground text-base md:text-lg max-w-2xl mb-12" data-aos="fade-up" data-aos-delay="80">
         Verified technical skills and tools applied across backend software development, database optimization, system architecture, and automated testing pipelines.
@@ -2139,12 +2082,12 @@
     </div>
   </section>
 
-  <!-- ====== 03 — EXPERIENCE ====== -->
+  <!-- ====== 03 - EXPERIENCE ====== -->
   <section id="experience" class="section" tabindex="-1">
     <div class="bg-word top-16" data-parallax="5,-9" aria-hidden="true">EXPERIENCE</div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>03 — Experience</span></p>
+      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-briefcase text-primary" aria-hidden="true"></i><span>03 - Experience</span></p>
       <h2 class="section-title mb-4" data-aos="fade-up">Where I've <span class="text-gradient">shipped</span></h2>
       <p class="text-muted-foreground text-base md:text-lg max-w-2xl mb-14" data-aos="fade-up" data-aos-delay="80">
         Industry experience fixing real defects, hardening APIs, and testing AI-powered product workflows.
@@ -2189,14 +2132,14 @@
     </div>
   </section>
 
-  <!-- ====== 04 — PROJECTS ====== -->
+  <!-- ====== 04 - PROJECTS ====== -->
   <section id="projects" class="projects-section" tabindex="-1">
     <div id="projects-pin" class="projects-pin">
       <div class="projects-sticky">
         <div class="bg-word top-24 !left-auto right-0" data-parallax="10,-25" aria-hidden="true">PROJECTS</div>
 
         <div class="projects-head max-w-7xl mx-auto px-6 md:px-12 w-full">
-          <p class="eyebrow mb-4" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>04 — Selected Work</span></p>
+          <p class="eyebrow mb-4" data-aos="fade-right"><i class="fas fa-folder-open text-primary" aria-hidden="true"></i><span>04 - Selected Work</span></p>
           <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 lg:gap-8 mb-8 lg:mb-6">
             <div>
               <h2 class="section-title lg:whitespace-nowrap" data-aos="fade-up">Featured <span class="text-gradient">projects</span></h2>
@@ -2210,7 +2153,7 @@
                 <span>All Projects</span><span class="filter-count">3</span>
               </button>
               <button type="button" class="project-filter-btn" data-filter="concurrency" aria-pressed="false">
-                <i class="fas fa-bolt text-[11px] text-neon" aria-hidden="true"></i><span>High Concurrency</span><span class="filter-count">1</span>
+                <i class="fas fa-bolt text-[11px] text-gold" aria-hidden="true"></i><span>High Concurrency</span><span class="filter-count">1</span>
               </button>
               <button type="button" class="project-filter-btn" data-filter="devops" aria-pressed="false">
                 <i class="fas fa-cloud text-[11px] text-primary" aria-hidden="true"></i><span>Cloud &amp; DevOps</span><span class="filter-count">1</span>
@@ -2236,7 +2179,7 @@
                     <h3 id="project-title-event-booking" class="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-2">Event Booking System</h3>
                     <p class="text-primary font-medium mb-3">High-concurrency event reservation &amp; e-ticketing backend</p>
                     <p class="project-desc text-muted-foreground text-sm md:text-base leading-relaxed max-w-2xl mb-5">
-                      83-endpoint Spring Boot booking platform with seat, payment, and ticketing workflows — pessimistic and optimistic locking (<code class="font-mono text-xs text-foreground/90">@Version</code>) stop concurrent overbooking, verified by a multithreaded test, while seat updates are pushed live over WebSocket/STOMP.
+                      83-endpoint Spring Boot booking platform with seat, payment, and ticketing workflows; pessimistic and optimistic locking (<code class="font-mono text-xs text-foreground/90">@Version</code>) stop concurrent overbooking, verified by a multithreaded test, while seat updates are pushed live over WebSocket/STOMP.
                     </p>
                     <ul class="flex flex-wrap gap-2.5 mb-5" aria-label="Key metrics">
                       <li class="metric"><span class="metric-value text-gradient-static">83</span><span class="metric-label">REST endpoints</span></li>
@@ -2268,7 +2211,7 @@
                     <h3 id="project-title-linkpulse" class="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-2">LinkPulse</h3>
                     <p class="text-primary font-medium mb-3">URL shortener platform with automated CI/CD</p>
                     <p class="project-desc text-muted-foreground text-sm md:text-base leading-relaxed max-w-2xl mb-5">
-                      Production URL shortener live on Render — a 5-endpoint REST API with indexed lookups and database-enforced, collision-safe short codes, shipped by a GitHub Actions pipeline that tests against a live database before every deploy.
+                      Production URL shortener live on Render: a 5-endpoint REST API with indexed lookups and database-enforced, collision-safe short codes, shipped by a GitHub Actions pipeline that tests against a live database before every deploy.
                     </p>
                     <ul class="flex flex-wrap gap-2.5 mb-5" aria-label="Key metrics">
                       <li class="metric"><span class="metric-value text-gradient-static">5</span><span class="metric-label">REST endpoints</span></li>
@@ -2339,20 +2282,19 @@
     </div>
   </section>
 
-  <!-- ====== 05 — CURRENTLY EXPLORING ====== -->
+  <!-- ====== 05 - CURRENTLY EXPLORING ====== -->
   <section id="learning" class="section" tabindex="-1">
     <div class="bg-word top-16" data-parallax="4,-10" aria-hidden="true">LEARNING</div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>05 — Currently Exploring</span></p>
+      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-compass text-primary" aria-hidden="true"></i><span>05 - Currently Exploring</span></p>
       <h2 class="section-title mb-4" data-aos="fade-up">Always <span class="text-gradient">learning</span></h2>
       <p class="text-muted-foreground text-base md:text-lg max-w-2xl mb-14" data-aos="fade-up" data-aos-delay="80">
         Technologies and concepts I'm actively studying and building with to deepen my backend engineering expertise.
       </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <article class="group relative rounded-3xl glass-card overflow-hidden lift-card flex flex-col" data-aos="fade-up" data-aos-delay="100">
-          <div class="card-strip is-accent" aria-hidden="true"></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <article class="group relative rounded-2xl glass-card overflow-hidden lift-card flex flex-col" data-aos="fade-up" data-aos-delay="100">
           <div class="hover-glow" aria-hidden="true"></div>
           <div class="relative p-8 flex-1 flex flex-col">
             <div class="flex items-center justify-between mb-6">
@@ -2367,12 +2309,11 @@
           </div>
         </article>
 
-        <article class="group relative rounded-3xl glass-card overflow-hidden lift-card flex flex-col" data-aos="fade-up" data-aos-delay="200">
-          <div class="card-strip is-neon" aria-hidden="true"></div>
+        <article class="group relative rounded-2xl glass-card overflow-hidden lift-card flex flex-col" data-aos="fade-up" data-aos-delay="200">
           <div class="hover-glow" aria-hidden="true"></div>
           <div class="relative p-8 flex-1 flex flex-col">
             <div class="flex items-center justify-between mb-6">
-              <div class="icon-tile is-neon w-14 h-14"><i class="fas fa-bars-staggered text-xl" aria-hidden="true"></i></div>
+              <div class="icon-tile is-gold w-14 h-14"><i class="fas fa-bars-staggered text-xl" aria-hidden="true"></i></div>
               <span class="font-mono text-[9px] tracking-[0.2em] uppercase font-bold px-3 py-1.5 rounded-full bg-secondary/60 text-muted-foreground border border-border">In Progress</span>
             </div>
             <h3 class="font-display text-xl font-bold mb-3">Message Queues &amp; Event Streaming</h3>
@@ -2383,8 +2324,7 @@
           </div>
         </article>
 
-        <article class="group relative rounded-3xl glass-card overflow-hidden lift-card flex flex-col md:col-span-2 lg:col-span-1" data-aos="fade-up" data-aos-delay="300">
-          <div class="card-strip" aria-hidden="true"></div>
+        <article class="group relative rounded-2xl glass-card overflow-hidden lift-card flex flex-col" data-aos="fade-up" data-aos-delay="300">
           <div class="hover-glow" aria-hidden="true"></div>
           <div class="relative p-8 flex-1 flex flex-col">
             <div class="flex items-center justify-between mb-6">
@@ -2398,16 +2338,31 @@
             </ul>
           </div>
         </article>
+
+        <article class="group relative rounded-2xl glass-card overflow-hidden lift-card flex flex-col" data-aos="fade-up" data-aos-delay="400">
+          <div class="hover-glow" aria-hidden="true"></div>
+          <div class="relative p-8 flex-1 flex flex-col">
+            <div class="flex items-center justify-between mb-6">
+              <div class="icon-tile is-accent w-14 h-14"><i class="fas fa-chart-line text-xl" aria-hidden="true"></i></div>
+              <span class="font-mono text-[9px] tracking-[0.2em] uppercase font-bold px-3 py-1.5 rounded-full bg-secondary/60 text-muted-foreground border border-border">In Progress</span>
+            </div>
+            <h3 class="font-display text-xl font-bold mb-3">Observability &amp; Metrics</h3>
+            <p class="flex-1 text-sm text-muted-foreground leading-relaxed mb-6">Implementing distributed tracing, structured logging, latency profiling, and health monitors across backend services.</p>
+            <ul class="flex flex-wrap gap-2 pt-4 border-t border-border/50">
+              <li class="chip">OpenTelemetry</li><li class="chip">Prometheus</li><li class="chip">Grafana</li>
+            </ul>
+          </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- ====== 06 — EDUCATION & CERTIFICATIONS ====== -->
+  <!-- ====== 06 - EDUCATION & CERTIFICATIONS ====== -->
   <section id="education" class="section" tabindex="-1">
     <div class="bg-word top-16" data-parallax="-4,8" aria-hidden="true">JOURNEY</div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>06 — Journey</span></p>
+      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-graduation-cap text-primary" aria-hidden="true"></i><span>06 - Journey</span></p>
       <h2 class="section-title mb-4" data-aos="fade-up">Education &amp; <span class="text-gradient">credentials</span></h2>
       <p class="text-muted-foreground text-base md:text-lg max-w-2xl mb-14" data-aos="fade-up" data-aos-delay="80">
         The academic foundation and training behind my engineering work.
@@ -2416,7 +2371,6 @@
       <div class="grid lg:grid-cols-12 gap-6">
         <!-- Education Card -->
         <article class="lg:col-span-7 min-w-0 group relative rounded-3xl glass-card overflow-hidden flex flex-col transition-colors duration-700 hover:border-accent/30" data-aos="fade-up" data-aos-delay="100">
-          <div class="card-strip is-accent" aria-hidden="true"></div>
           <div class="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" aria-hidden="true"></div>
           <div class="relative p-8 md:p-10 flex flex-col h-full">
             <div class="flex items-center justify-between mb-6">
@@ -2427,7 +2381,7 @@
             <h3 class="font-display text-2xl md:text-3xl font-bold mb-1 group-hover:text-accent transition-colors duration-300">Computer Science &amp; Engineering</h3>
             <p class="text-base text-accent/90 font-semibold mb-5">KCC Institute of Technology &amp; Management, AKTU</p>
             <div class="flex flex-wrap gap-3 mb-6">
-              <span class="meta-pill"><i class="far fa-calendar text-[11px]" aria-hidden="true"></i> 2023 – 2027 (Expected)</span>
+              <span class="meta-pill"><i class="far fa-calendar text-[11px]" aria-hidden="true"></i> 2023 - 2027 (Expected)</span>
               <span class="meta-pill"><i class="fas fa-building-columns text-[11px]" aria-hidden="true"></i> AKTU</span>
             </div>
             <div class="p-4 rounded-2xl bg-accent/10 border border-accent/20 mb-8 flex items-center gap-3">
@@ -2474,7 +2428,7 @@
             <article class="tilt-card group relative rounded-3xl glass-card overflow-hidden p-7 lift-card" data-tilt-max="3" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.08">
               <div class="hover-glow" aria-hidden="true"></div>
               <div class="relative flex gap-5 items-start">
-                <div class="icon-tile is-neon w-12 h-12 rounded-xl"><i class="fas fa-shield-halved text-lg" aria-hidden="true"></i></div>
+                <div class="icon-tile is-gold w-12 h-12 rounded-xl"><i class="fas fa-shield-halved text-lg" aria-hidden="true"></i></div>
                 <div class="min-w-0">
                   <h3 class="font-display text-lg font-bold mb-1">Cyber Job Simulation</h3>
                   <p class="font-mono text-xs text-primary/90 mb-3">Deloitte Australia (Forage) · 2024</p>
@@ -2497,12 +2451,12 @@
     </div>
   </section>
 
-  <!-- ====== 07 — GITHUB ACTIVITY ====== -->
+  <!-- ====== 07 - GITHUB ACTIVITY ====== -->
   <section id="github-activity" class="section" tabindex="-1">
     <div class="bg-word top-16" data-parallax="6,-6" aria-hidden="true">ACTIVITY</div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>07 — Coding Activity</span></p>
+      <p class="eyebrow mb-6" data-aos="fade-right"><i class="fas fa-chart-simple text-primary" aria-hidden="true"></i><span>07 - Coding Activity</span></p>
       <h2 class="section-title mb-4" data-aos="fade-up">Shipping <span class="text-gradient">consistently</span></h2>
       <p class="text-muted-foreground text-base md:text-lg max-w-2xl mb-14" data-aos="fade-up" data-aos-delay="80">
         Live GitHub contribution metrics and coding streak data, pulled directly from my public repositories.
@@ -2511,11 +2465,11 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="stat-card-img glass-card rounded-3xl p-6 flex items-center justify-center min-h-[220px]" data-aos="fade-up">
           <img class="stat-img" src="https://github-readme-stats.vercel.app/api?username=kritagya025&show_icons=true&hide_border=true&bg_color=00000000&title_color=f59e0b&text_color=8c8580&icon_color=fb7185&ring_color=f59e0b" alt="Kritagya's GitHub Stats" loading="lazy" decoding="async" fetchpriority="low" width="467" height="195">
-          <a class="stat-fallback items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors" href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer"><i class="fab fa-github text-2xl" aria-hidden="true"></i> GitHub stats are unavailable right now — view the profile</a>
+          <a class="stat-fallback items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors" href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer"><i class="fab fa-github text-2xl" aria-hidden="true"></i> GitHub stats are unavailable right now - view the profile</a>
         </div>
         <div class="stat-card-img glass-card rounded-3xl p-6 flex items-center justify-center min-h-[220px]" data-aos="fade-up" data-aos-delay="100">
           <img class="stat-img" src="https://streak-stats.demolab.com/?user=kritagya025&hide_border=true&background=00000000&ring=f59e0b&fire=fb7185&currStreakLabel=f59e0b&sideLabels=8c8580&currStreakNum=f59e0b&sideNums=f59e0b&dates=8c8580&stroke=8c858044" alt="Kritagya's GitHub Streak" loading="lazy" decoding="async" fetchpriority="low" width="495" height="195">
-          <a class="stat-fallback items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors" href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer"><i class="fas fa-fire text-2xl" aria-hidden="true"></i> Streak stats are unavailable right now — view the profile</a>
+          <a class="stat-fallback items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors" href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer"><i class="fas fa-fire text-2xl" aria-hidden="true"></i> Streak stats are unavailable right now - view the profile</a>
         </div>
       </div>
 
@@ -2534,13 +2488,13 @@
         <div id="lang-bar" class="lang-bar" aria-hidden="true">
           <span style="--w:53.71%; --c:hsl(var(--primary))"></span>
           <span style="--w:42.47%; --c:hsl(var(--accent))"></span>
-          <span style="--w:3.51%; --c:hsl(var(--neon))"></span>
+          <span style="--w:3.51%; --c:hsl(var(--gold))"></span>
           <span style="--w:0.31%; --c:hsl(var(--muted-foreground) / 0.7)"></span>
         </div>
         <ul id="lang-list" class="grid sm:grid-cols-2 gap-3 mt-6">
           <li class="lang-row"><span class="lang-dot" style="--c:hsl(var(--primary))"></span><span class="lang-name">Java</span><span class="lang-pct">53.7%</span><span class="lang-bytes">776 KB</span></li>
           <li class="lang-row"><span class="lang-dot" style="--c:hsl(var(--accent))"></span><span class="lang-name">JavaScript</span><span class="lang-pct">42.5%</span><span class="lang-bytes">614 KB</span></li>
-          <li class="lang-row"><span class="lang-dot" style="--c:hsl(var(--neon))"></span><span class="lang-name">Python</span><span class="lang-pct">3.5%</span><span class="lang-bytes">51 KB</span></li>
+          <li class="lang-row"><span class="lang-dot" style="--c:hsl(var(--gold))"></span><span class="lang-name">Python</span><span class="lang-pct">3.5%</span><span class="lang-bytes">51 KB</span></li>
           <li class="lang-row"><span class="lang-dot" style="--c:hsl(var(--muted-foreground) / 0.7)"></span><span class="lang-name">Dockerfile</span><span class="lang-pct">0.3%</span><span class="lang-bytes">4 KB</span></li>
         </ul>
         <p class="font-mono text-[11px] text-muted-foreground mt-6 leading-relaxed">
@@ -2552,13 +2506,12 @@
     </div>
   </section>
 
-  <!-- ====== 08 — CONTACT ====== -->
+  <!-- ====== 08 - CONTACT ====== -->
   <section id="contact" class="section !pb-0" tabindex="-1">
     <div class="bg-word top-1/2 -translate-y-1/2 !opacity-[0.15]" aria-hidden="true">LET'S CONNECT</div>
-    <div class="hidden md:block absolute top-20 right-10 w-[400px] h-[400px] rounded-full blur-[70px] bg-primary/10 pointer-events-none" aria-hidden="true"></div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-      <p class="eyebrow mb-8" data-aos="fade-right"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>08 — Get In Touch</span></p>
+      <p class="eyebrow mb-8" data-aos="fade-right"><i class="fas fa-paper-plane text-primary" aria-hidden="true"></i><span>08 - Get In Touch</span></p>
 
       <h2 class="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.95] mb-6" data-aos="fade-up">
         Let's connect<br><span class="text-gradient">&amp; build.</span>
@@ -2590,21 +2543,20 @@
         </div>
       </div>
 
-      <!-- Contact bento grid -->
-      <div class="grid md:grid-cols-3 gap-4 mb-12">
-        <div class="group relative p-7 rounded-2xl glass-card overflow-hidden md:row-span-2 flex flex-col" data-aos="fade-up" data-aos-delay="100">
-          <div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" aria-hidden="true"></div>
-          <div class="relative">
+      <!-- Contact channels grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+        <div class="group relative p-7 rounded-2xl glass-card overflow-hidden flex flex-col justify-between" data-aos="fade-up" data-aos-delay="100">
+          <div>
             <div class="icon-tile w-14 h-14 mb-5"><i class="fas fa-location-dot text-xl" aria-hidden="true"></i></div>
-            <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-2">Location</p>
+            <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-2">Location &amp; Status</p>
             <p class="font-display text-xl font-bold mb-1">Noida, India</p>
             <p class="font-mono text-xs text-muted-foreground">Local time · <span class="live-ist-time text-foreground font-semibold">--:-- IST</span></p>
           </div>
-          <div class="relative mt-8 md:mt-auto pt-5 border-t border-border/60 space-y-5">
+          <div class="mt-6 pt-5 border-t border-border/60 space-y-4">
             <p class="flex items-start gap-2.5">
               <span class="relative flex h-2.5 w-2.5 mt-1 shrink-0" aria-hidden="true">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-neon"></span>
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gold"></span>
               </span>
               <span class="font-mono text-xs text-muted-foreground leading-relaxed">Available for Backend Roles &amp; Internships</span>
             </p>
@@ -2614,53 +2566,51 @@
           </div>
         </div>
 
-        <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" rel="noopener noreferrer" class="link-card group relative p-6 rounded-2xl glass-card overflow-hidden" data-aos="fade-up" data-aos-delay="150">
-          <div class="hover-glow" aria-hidden="true"></div>
-          <div class="relative">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <a href="https://www.linkedin.com/in/kritagya-yadav/" target="_blank" rel="noopener noreferrer" class="link-card group relative p-6 rounded-2xl glass-card overflow-hidden flex flex-col justify-between" data-aos="fade-up" data-aos-delay="150">
             <div class="flex items-center justify-between mb-4">
               <div class="icon-tile w-12 h-12 rounded-xl"><i class="fab fa-linkedin-in text-lg" aria-hidden="true"></i></div>
               <i class="fas fa-arrow-right -rotate-45 link-arrow" aria-hidden="true"></i>
             </div>
-            <p class="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">LinkedIn</p>
-            <p class="link-value text-sm font-semibold truncate transition-colors">kritagya-yadav</p>
-          </div>
-        </a>
+            <div>
+              <p class="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">LinkedIn</p>
+              <p class="link-value text-sm font-semibold truncate transition-colors">kritagya-yadav</p>
+            </div>
+          </a>
 
-        <a href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer" class="link-card group relative p-6 rounded-2xl glass-card overflow-hidden" data-aos="fade-up" data-aos-delay="200">
-          <div class="hover-glow" aria-hidden="true"></div>
-          <div class="relative">
+          <a href="https://github.com/kritagya025" target="_blank" rel="noopener noreferrer" class="link-card group relative p-6 rounded-2xl glass-card overflow-hidden flex flex-col justify-between" data-aos="fade-up" data-aos-delay="200">
             <div class="flex items-center justify-between mb-4">
               <div class="icon-tile w-12 h-12 rounded-xl"><i class="fab fa-github text-lg" aria-hidden="true"></i></div>
               <i class="fas fa-arrow-right -rotate-45 link-arrow" aria-hidden="true"></i>
             </div>
-            <p class="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">GitHub</p>
-            <p class="link-value text-sm font-semibold truncate transition-colors">kritagya025</p>
-          </div>
-        </a>
+            <div>
+              <p class="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">GitHub</p>
+              <p class="link-value text-sm font-semibold truncate transition-colors">kritagya025</p>
+            </div>
+          </a>
 
-        <a href="https://leetcode.com/u/Kritagya028" target="_blank" rel="noopener noreferrer" class="link-card group relative p-6 rounded-2xl glass-card overflow-hidden" data-aos="fade-up" data-aos-delay="250">
-          <div class="hover-glow" aria-hidden="true"></div>
-          <div class="relative">
+          <a href="https://leetcode.com/u/Kritagya028" target="_blank" rel="noopener noreferrer" class="link-card group relative p-6 rounded-2xl glass-card overflow-hidden flex flex-col justify-between" data-aos="fade-up" data-aos-delay="250">
             <div class="flex items-center justify-between mb-4">
               <div class="icon-tile w-12 h-12 rounded-xl"><i class="fas fa-laptop-code text-lg" aria-hidden="true"></i></div>
               <i class="fas fa-arrow-right -rotate-45 link-arrow" aria-hidden="true"></i>
             </div>
-            <p class="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">LeetCode</p>
-            <p class="link-value text-sm font-semibold truncate transition-colors">Kritagya028</p>
-          </div>
-        </a>
+            <div>
+              <p class="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">LeetCode</p>
+              <p class="link-value text-sm font-semibold truncate transition-colors">Kritagya028</p>
+            </div>
+          </a>
 
-        <a href="tel:+918368099806" class="link-card group relative p-6 rounded-2xl glass-card overflow-hidden" data-aos="fade-up" data-aos-delay="300">
-          <div class="hover-glow" aria-hidden="true"></div>
-          <div class="relative">
+          <a href="tel:+918368099806" class="link-card group relative p-6 rounded-2xl glass-card overflow-hidden flex flex-col justify-between" data-aos="fade-up" data-aos-delay="300">
             <div class="flex items-center justify-between mb-4">
               <div class="icon-tile w-12 h-12 rounded-xl"><i class="fas fa-phone text-base" aria-hidden="true"></i></div>
               <i class="fas fa-arrow-right -rotate-45 link-arrow" aria-hidden="true"></i>
             </div>
-            <p class="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Phone</p>
-            <p class="link-value text-sm font-semibold truncate transition-colors">+91-8368099806</p>
-          </div>
-        </a>
+            <div>
+              <p class="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Phone</p>
+              <p class="link-value text-sm font-semibold truncate transition-colors">+91-8368099806</p>
+            </div>
+          </a>
+        </div>
       </div>
 
       <!-- Roles marquee strip -->
@@ -2688,7 +2638,7 @@
     <footer class="relative z-10 max-w-7xl mx-auto px-6 md:px-12 pt-8 pb-10 border-t border-border">
       <div class="flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-muted-foreground">
         <p class="flex items-center gap-2 font-mono text-xs">
-          <span class="w-2 h-2 rounded-full bg-neon animate-pulse" aria-hidden="true"></span>
+          <span class="w-2 h-2 rounded-full bg-gold animate-pulse" aria-hidden="true"></span>
           © <span id="footer-year"></span> Kritagya Yadav. All rights reserved.
         </p>
         <div class="flex items-center gap-5 text-xs font-mono">
@@ -2719,7 +2669,7 @@
 
 <!-- Floating Toast Notification -->
 <div id="toast" class="glass-card px-5 py-3 rounded-full text-xs font-mono text-foreground shadow-2xl flex items-center gap-2" role="status" aria-live="polite">
-  <i class="fas fa-check text-neon" aria-hidden="true"></i>
+  <i class="fas fa-check text-gold" aria-hidden="true"></i>
   <span id="toast-message">Copied to clipboard!</span>
 </div>
 
@@ -2745,7 +2695,7 @@
 <dialog id="mobile-menu" class="ky-dialog mobile-menu" aria-label="Site navigation">
   <div class="dialog-panel mobile-menu-panel">
     <div class="flex items-center justify-between px-8 py-6">
-      <a href="#top" class="brand" aria-label="Kritagya Yadav — back to top"><span class="brand-mark" aria-hidden="true">KY</span><span class="brand-name" aria-hidden="true">Kritagya<span class="text-primary">.</span></span></a>
+      <a href="#top" class="brand" aria-label="Kritagya Yadav - back to top"><span class="brand-mark" aria-hidden="true">KY</span><span class="brand-name" aria-hidden="true">Kritagya<span class="text-primary">.</span></span></a>
       <button id="mobile-menu-close" type="button" class="w-10 h-10 rounded-full glass-card flex items-center justify-center" aria-label="Close navigation menu" autofocus>
         <i class="fas fa-xmark" aria-hidden="true"></i>
       </button>
@@ -2816,11 +2766,11 @@
 <!-- ====== System Architecture Modal (Event Booking System) ====== -->
 <dialog id="arch-modal" class="ky-dialog center-dialog" aria-labelledby="arch-title" data-lenis-prevent>
   <div class="dialog-panel dialog-scroll rounded-3xl w-[min(46rem,calc(100vw-2rem))] max-h-[88vh]">
-    <div class="h-1 bg-gradient-to-r from-neon via-primary to-accent" aria-hidden="true"></div>
+    <div class="h-1 bg-gradient-to-r from-gold via-primary to-accent" aria-hidden="true"></div>
     <div class="p-6 md:p-8">
       <div class="flex items-center justify-between gap-4 pb-4 border-b border-border mb-6">
         <div class="flex items-center gap-3">
-          <div class="icon-tile is-neon w-11 h-11 rounded-xl"><i class="fas fa-sitemap text-sm" aria-hidden="true"></i></div>
+          <div class="icon-tile is-gold w-11 h-11 rounded-xl"><i class="fas fa-sitemap text-sm" aria-hidden="true"></i></div>
           <div>
             <h3 id="arch-title" class="font-display font-bold text-lg">System Architecture</h3>
             <p class="font-mono text-xs text-muted-foreground">Event Booking Engine &middot; Concurrency &amp; State Flow</p>
@@ -2833,7 +2783,7 @@
       <div class="rounded-2xl border border-border bg-secondary/40 p-4 mb-6 font-mono text-xs">
         <div class="text-[11px] text-muted-foreground uppercase tracking-wider mb-3 flex flex-wrap items-center justify-between gap-2">
           <span>High-Concurrency Booking Lifecycle</span>
-          <span class="text-neon">REST + STOMP / WebSocket</span>
+          <span class="text-gold">REST + STOMP / WebSocket</span>
         </div>
         <ol class="grid grid-cols-1 md:grid-cols-4 gap-2 text-center">
           <li class="p-3 rounded-xl bg-card/70 border border-border">
@@ -2841,8 +2791,8 @@
             <div class="font-semibold mt-1">Seat Lock Req</div>
             <div class="text-[10px] text-muted-foreground mt-0.5">JWT Authorization</div>
           </li>
-          <li class="p-3 rounded-xl bg-neon/10 border border-neon/25">
-            <div class="text-neon text-[10px] uppercase">2. Security &amp; Guard</div>
+          <li class="p-3 rounded-xl bg-gold/10 border border-gold/25">
+            <div class="text-gold text-[10px] uppercase">2. Security &amp; Guard</div>
             <div class="font-semibold mt-1">Spring Security</div>
             <div class="text-[10px] text-muted-foreground mt-0.5">RBAC &amp; Refresh Rotation</div>
           </li>
@@ -2863,7 +2813,7 @@
       <div class="space-y-3 text-sm">
         <div class="p-4 rounded-xl bg-secondary/40 border border-border/60">
           <div class="flex items-center gap-2 mb-1.5 font-mono text-xs font-semibold">
-            <i class="fas fa-shield-virus text-neon" aria-hidden="true"></i>
+            <i class="fas fa-shield-virus text-gold" aria-hidden="true"></i>
             <span>Optimistic &amp; Pessimistic Locking (@Version)</span>
           </div>
           <p class="text-muted-foreground leading-relaxed">
@@ -2900,7 +2850,7 @@
       </div>
 
       <div class="pt-5 mt-6 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-muted-foreground">
-        <span class="flex items-center gap-2"><i class="fas fa-circle-check text-neon" aria-hidden="true"></i> Verified by a multithreaded test &amp; security regression suite</span>
+        <span class="flex items-center gap-2"><i class="fas fa-circle-check text-gold" aria-hidden="true"></i> Verified by a multithreaded test &amp; security regression suite</span>
         <a href="https://github.com/kritagya025/Event-Booking-System" target="_blank" rel="noopener noreferrer" class="text-foreground hover:text-primary flex items-center gap-1.5 transition-colors">
           <span>View Source Code</span><i class="fas fa-arrow-up-right-from-square text-[10px]" aria-hidden="true"></i>
         </a>
@@ -3422,7 +3372,7 @@
         if (!ok) return;
         const icon = btn.querySelector('i');
         const label = btn.querySelector('.copy-label');
-        if (icon) icon.className = 'fas fa-check text-neon';
+        if (icon) icon.className = 'fas fa-check text-gold';
         if (label) label.textContent = 'Copied!';
         setTimeout(() => {
           if (icon) icon.className = 'far fa-copy';
@@ -3689,7 +3639,7 @@
         w: starCanvas.clientWidth,
         h: starCanvas.clientHeight,
         dpr: Math.min(window.devicePixelRatio || 1, 1.5),
-        colors: [tone('--primary'), tone('--accent'), tone('--neon')],
+        colors: [tone('--primary'), tone('--accent'), tone('--gold')],
       };
       if (starCanvas.transferControlToOffscreen && window.Worker) {
         try {
@@ -4296,7 +4246,7 @@
     const CACHE_KEY = 'ky-langs-v1';
     const CACHE_TTL = 24 * 60 * 60 * 1000;
     const MAX_ROWS = 5;
-    const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--neon))'];
+    const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--gold))'];
     const MUTED = 'hsl(var(--muted-foreground) / 0.7)';
     const formatBytes = (bytes) => (bytes >= 1e6 ? `${(bytes / 1e6).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1000))} KB`);
 
@@ -4435,7 +4385,7 @@
     }
     function draw() {
       ctx.clearRect(0, 0, width, height);
-      // Draw connections — O(n²) pairwise distance check; keep particle count low
+      // Draw connections: O(n²) pairwise distance check; keep particle count low
       // to avoid frame drops. Consider spatial hashing if count exceeds ~200.
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -4535,11 +4485,11 @@
 
   // ---- Developer Easter Egg Console Message ----
   console.log(
-    '%c\n  ╔═══════════════════════════════════════════╗\n  ║     🚀  KRITAGYA YADAV  —  PORTFOLIO      ║\n  ║                                           ║\n  ║   Java Backend  •  Spring Boot  •  APIs   ║\n  ║                                           ║\n  ║   Curious about the source?               ║\n  ║   github.com/kritagya025/Portfolio-main    ║\n  ╚═══════════════════════════════════════════╝\n',
+    '%c\n  ╔═══════════════════════════════════════════╗\n  ║     🚀  KRITAGYA YADAV  -  PORTFOLIO      ║\n  ║                                           ║\n  ║   Java Backend  •  Spring Boot  •  APIs   ║\n  ║                                           ║\n  ║   Curious about the source?               ║\n  ║   github.com/kritagya025/Portfolio-main    ║\n  ╚═══════════════════════════════════════════╝\n',
     'color: #f59e0b; font-family: monospace; font-size: 12px; line-height: 1.6;'
   );
   console.log(
-    '%c💼 Open to Backend Engineering opportunities — let\'s connect!',
+    '%c💼 Open to Backend Engineering opportunities - let\'s connect!',
     'color: #fb7185; font-size: 13px; font-weight: bold; padding: 8px 0;'
   );
 })();
