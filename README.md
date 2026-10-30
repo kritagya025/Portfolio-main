@@ -54,7 +54,7 @@ A modern, high-performance personal developer portfolio showcasing software engi
 
 - **Core Technologies**: HTML5, Vanilla JavaScript (ES6+), CSS3
 - **CSS Utility Engine**: Tailwind CSS
-- **Design System & Typography**: Google Fonts (*Space Grotesk* display, *Syne* body, *JetBrains Mono* labels) & FontAwesome 6
+- **Design System & Typography**: Google Fonts (*Plus Jakarta Sans* display, *Syne* body, *JetBrains Mono* labels) & FontAwesome 6
 - **Animation & Physics Libraries**: GSAP, AOS, Lenis Scroll, Vanilla-Tilt.js
 - **3D**: three.js (r160, ES module via import map) with RoomEnvironment reflections; Bella is modeled from three.js primitives and the wolf face is a canvas texture drawn at runtime
 

@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.18.1] - 2026-10-30
+
+### Fixed
+- Replaced legacy Space Grotesk font with Plus Jakarta Sans across 404 page typography and README design system documentation to ensure visual consistency with the main site
+
+---
+
 ## [3.18.0] - 2026-10-21
 
 ### Changed
