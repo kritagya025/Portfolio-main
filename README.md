@@ -35,7 +35,7 @@ A modern, high-performance personal developer portfolio showcasing software engi
 - **📊 Code-Only Language Breakdown**: A native card that sums bytes per language across public, non-fork repositories (excluding HTML/CSS markup and notebooks), refreshed live from the GitHub API with a day-long cache and a bundled snapshot fallback.
 - **🏛️ System Architecture Deep Dive**: Interactive architecture modal detailing the Event Booking Engine's high-concurrency lifecycle, `@Version` optimistic locking, Redis TTL locks, and STOMP WebSocket broadcasting.
 - **🧭 Interactive Skills Explorer**: Eight skill categories in an accessible tab list (arrow-key navigation) with animated tool tiles; stacked cards on mobile.
-- **⌘ Command Palette & Shortcuts**: Fast navigation with `Ctrl+K` quick switcher (sections, project filters, architecture deep dive, theme toggle, copy email, resume) and `?` keyboard shortcuts cheat sheet.
+- **⌘ Command Palette & Shortcuts**: Fast navigation with `Ctrl+K` quick switcher (sections, project filters, architecture deep dive, theme toggle, copy email, resume), direct key bindings (`T` for theme, `M` for audio), and `?` keyboard shortcuts cheat sheet.
 - **📋 One-Click Copy & Toast**: Instant email copying to clipboard with floating animated glass toast feedback.
 - **♿ Accessible Dialogs**: All overlays use native `<dialog>` elements for focus trapping, `Esc` handling, and focus restoration.
 - **⚡ Interactive Micro-Animations**:

@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.19.0] - 2026-11-01
+
+### Added
+- Direct keyboard shortcuts for theme (`T`) and audio (`M`) toggling without having to open the command palette
+- Visual and audio confirmation when copying email address to clipboard
+- Updated Keyboard Shortcuts modal to display `T` and `M` shortcuts for quick reference
+
+---
+
 ## [3.18.1] - 2026-10-30
 
 ### Fixed

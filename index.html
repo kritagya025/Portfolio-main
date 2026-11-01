@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Portfolio Version: 3.18.1 -->
+<!-- Portfolio Version: 3.19.0 -->
 <!--
   ========================================================
   Kritagya Yadav Portfolio - Interactive Web Application
   Tech Stack: HTML5, CSS3/Tailwind, JavaScript, GSAP, AOS, Lenis
-  Last Updated: October 30, 2026
+  Last Updated: November 01, 2026
   ========================================================
 -->
 <html lang="en" data-theme="dark">
@@ -2761,6 +2761,8 @@
     <div class="space-y-2.5 text-sm">
       <div class="shortcut-row"><span>Command Palette / Search</span><span class="flex gap-1"><kbd class="kbd">Ctrl</kbd><kbd class="kbd">K</kbd></span></div>
       <div class="shortcut-row"><span>Keyboard Shortcuts</span><kbd class="kbd">?</kbd></div>
+      <div class="shortcut-row"><span>Toggle Theme (Dark / Light)</span><kbd class="kbd">T</kbd></div>
+      <div class="shortcut-row"><span>Toggle Sound (Mute / Unmute)</span><kbd class="kbd">M</kbd></div>
       <div class="shortcut-row"><span>Dismiss Dialogs</span><kbd class="kbd">Esc</kbd></div>
       <div class="shortcut-row"><span>Navigate Palette Items</span><span class="flex gap-1"><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd></span></div>
       <div class="shortcut-row"><span>Execute Selected Command</span><kbd class="kbd">↵ Enter</kbd></div>
@@ -3366,6 +3368,7 @@
     return attempt
       .then(() => {
         showToast('Email copied to clipboard!');
+        sfx('check');
         document.dispatchEvent(new CustomEvent('ky:copy-email'));
         return true;
       })
@@ -4200,7 +4203,7 @@
     const trigger = $('#cmd-palette-trigger');
     if (trigger) trigger.addEventListener('click', () => openPalette(trigger));
 
-    // Global keyboard shortcuts: Ctrl/Cmd+K and ?
+    // Global keyboard shortcuts: Ctrl/Cmd+K, ?, T (theme), M (sound)
     document.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
@@ -4213,6 +4216,17 @@
       if (e.key === '?') {
         e.preventDefault();
         toggleShortcutsModal(document.activeElement);
+      } else if (!$$('dialog[open]').length) {
+        if (e.key === 't' || e.key === 'T') {
+          e.preventDefault();
+          toggleTheme();
+        } else if (e.key === 'm' || e.key === 'M') {
+          e.preventDefault();
+          if (window.KYSound) {
+            window.KYSound.toggle();
+            showToast(window.KYSound.enabled ? 'Sound effects enabled' : 'Sound effects muted');
+          }
+        }
       }
     });
   })();
